@@ -927,8 +927,27 @@
                 </div>
               </div>
 
-              <div style="margin-top:14px; display:flex; gap:8px;">
-                <button class="cal-btn active" style="flex:1; padding:8px;" onclick="calibrateCurrentDeviceAs30cm()">
+              <!-- Real-time Position & Distance Mover -->
+              <div style="margin-top:12px; background:rgba(0,0,0,0.3); border:1px solid var(--border-subtle); border-radius:8px; padding:10px;">
+                <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                  <span>📍 실시간 기기 이동 & 거리 변경</span>
+                  <span style="color:var(--cyan-400); font-size:10px; font-family:var(--font-mono);">레이더 블립 드래그 가능 ✋</span>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px;">
+                  <button class="cal-btn" onclick="moveSelectedDevice(0.3, '교탁 위 맥북 바로 옆 (30cm)')">30cm 옆</button>
+                  <button class="cal-btn" onclick="moveSelectedDevice(1.5, '1분단 1열 앞쪽 (1.5m)')">1.5m 앞</button>
+                  <button class="cal-btn active" onclick="moveSelectedDevice(3.0, '2분단 2열 책상 (3.0m · 현재)')">3.0m 좌석</button>
+                  <button class="cal-btn" onclick="moveSelectedDevice(5.0, '교실 뒤편 사물함 (5.0m)')">5.0m 뒤</button>
+                </div>
+                <div style="margin-top:8px;">
+                  <button class="cal-btn active" id="btn-toggle-phone-lte" onclick="togglePhoneMode()" style="width:100%; padding:7px; font-size:11px; text-align:center;">
+                    📡 스마트폰: LTE 모드 (Wi-Fi 미연결 · 3m)
+                  </button>
+                </div>
+              </div>
+
+              <div style="margin-top:10px; display:flex; gap:8px;">
+                <button class="cal-btn" style="flex:1; padding:8px;" onclick="calibrateCurrentDeviceAs30cm()">
                   🎯 "이 기기를 지금 30cm로 영점 맞추기"
                 </button>
               </div>
@@ -965,33 +984,41 @@
     let isCompassActive = false;
     let calibrationMode = "near"; // "near" = 30cm ultra-near calibration!
     let isFetchingScan = false;
+    let phoneMode = "lte"; // User's iPhone is currently switched to LTE!
     const cachedRealCoordinates = {};
 
+    // Persistent coordinates when user moves devices on radar
+    const userMovedPositions = {
+      "dev-ipad": { x: 46, y: 17 }, // 30cm next to teacher
+      "dev-myphone": { x: 38, y: 52 } // 3.0m away in student desks
+    };
+
     // Devices with Ultra-Proximity iPad right next to teacher (30cm / 0.3m)
+    // and iPhone in student desk row 2 (3.0m on LTE)
     let allDevices = [
       {
         id: "dev-ipad",
         name: "Hazel의 iPad (내 아이패드)",
-        type: "Tablet (Ultra-Near 30cm)",
-        category: "bluetooth",
-        vendor: "Apple",
+        type: "Apple iPad Pro (Wi-Fi 192.168.219.103)",
+        category: "network",
+        vendor: "Apple Inc.",
         rssi: -32, // Extremely strong signal because it's 30cm away!
-        absPos: { x: 48, y: 17 }, // 30cm right next to teacher (50, 15)
+        absPos: { x: 46, y: 17 }, // 30cm right next to teacher (50, 15)
         zone: "선생님 교탁 위 / 맥북 바로 옆 (30cm)",
         risk: "LOW",
-        reasons: ["내 초근접 기기 (30cm)"]
+        reasons: ["내 초근접 기기 (30cm)", "Wi-Fi 네트워크 활성 (192.168.219.103)"]
       },
       {
         id: "dev-myphone",
         name: "Hazel의 iPhone (내 스마트폰)",
-        type: "Apple iPhone (스캐너 탐지 중)",
-        category: "network",
-        vendor: "Apple Mobile Device",
-        rssi: -45,
-        absPos: { x: 52, y: 16 }, // In teacher's hand
-        zone: "선생님 손안 / 교탁 단상",
+        type: "Apple iPhone (LTE 데이터망 사용 / Wi-Fi 미연결)",
+        category: "bluetooth",
+        vendor: "Apple Inc. (Cellular)",
+        rssi: -65,
+        absPos: { x: 38, y: 52 }, // 2분단 2열 책상 (3.0m)
+        zone: "2분단 2열 책상 (약 3.0m 거리 · LTE 데이터망 사용)",
         risk: "LOW",
-        reasons: ["내 근접 기기"]
+        reasons: ["LTE 셀룰러 모드", "Wi-Fi 미연결 상태", "Bluetooth 백그라운드 전파로 포착 (약 3.0m)"]
       },
       {
         id: "dev-tv",
@@ -1019,7 +1046,7 @@
       }
     ];
 
-    let selectedDevice = allDevices[0]; // Select iPad first!
+    let selectedDevice = allDevices[1]; // Select iPhone by default to inspect!
 
     // Helper for deterministic coordinates so devices don't randomly jump around
     function getStablePos(key, defaultX, defaultY) {
@@ -1096,77 +1123,78 @@
       const btDevs  = (data.bluetooth && data.bluetooth.devices) || [];
       const wifiNets = (data.wifi && data.wifi.networks) || [];
 
-      // Check if user's phone is detected on Wi-Fi (ARP)
-      const wifiPhone = netDevs.find(d => 
-        (d.vendor && d.vendor.includes("Apple Mobile")) || 
-        (d.category === "Smartphone") ||
-        (d.hostname && d.hostname.toLowerCase().includes("iphone"))
-      );
-
       // Check Bluetooth devices for iPhone and iPad
       const btPhone = btDevs.find(d => d.name && (d.name.includes("iPhone") || d.name.includes("아이폰")));
       const btIpad  = btDevs.find(d => d.name && (d.name.includes("iPad") || d.name.includes("아이패드")));
 
+      // Network devices: 192.168.219.103 is the iPad!
+      const wifiApple = netDevs.find(d => 
+        (d.vendor && d.vendor.includes("Apple Mobile")) || 
+        (d.category === "Smartphone")
+      );
+
       const newList = [];
 
-      // 1. Hazel의 iPad (내 아이패드)
-      const ipadName = btIpad ? btIpad.name : "내 아이패드 (iPad Pro)";
+      // 1. Hazel의 iPad (내 아이패드) - 30cm on podium (Wi-Fi 192.168.219.103)
+      const ipadIp = wifiApple ? wifiApple.ip : "192.168.219.103";
+      const ipadName = btIpad ? btIpad.name : "Hazel의 iPad (내 아이패드)";
+      const ipadPos = userMovedPositions["dev-ipad"] || { x: myPos.x - 4, y: myPos.y + 2 };
       newList.push({
         id: "dev-ipad",
         name: ipadName,
-        type: "Tablet (Bluetooth LE)",
-        category: "bluetooth",
+        type: `Apple iPad Pro (Wi-Fi: ${ipadIp})`,
+        category: "network",
         vendor: "Apple Inc.",
         rssi: -32, // Strong near signal
-        absPos: { x: myPos.x - 3, y: myPos.y + 2 }, // Right next to teacher
+        absPos: ipadPos,
         zone: "선생님 교탁 위 / 맥북 바로 옆 (30cm)",
         risk: "LOW",
-        reasons: ["내 초근접 기기 (30cm 영점 보정됨)"]
+        reasons: ["내 초근접 기기 (30cm 영점 보정됨)", `로컬 Wi-Fi 활성 (${ipadIp})`]
       });
 
-      // 2. Hazel의 iPhone (내 스마트폰)
-      if (wifiPhone) {
-        // Connected to Wi-Fi!
+      // 2. Hazel의 iPhone (내 스마트폰) - User switched to LTE, 3.0m away!
+      const phoneName = btPhone ? btPhone.name : "Hazel의 iPhone (내 스마트폰)";
+      if (phoneMode === 'wifi') {
+        const phonePos = userMovedPositions["dev-myphone"] || { x: myPos.x + 4, y: myPos.y + 2 };
         newList.push({
           id: "dev-myphone",
-          name: btPhone ? `${btPhone.name} (Wi-Fi 활성)` : "내 스마트폰 (Wi-Fi 활성)",
-          type: `Apple iPhone (IP: ${wifiPhone.ip})`,
+          name: `${phoneName} (Wi-Fi 활성)`,
+          type: "Apple iPhone (Wi-Fi 로컬 연결)",
           category: "network",
           vendor: "Apple Mobile Device",
-          rssi: -45,
-          absPos: { x: myPos.x + 4, y: myPos.y + 3 }, // In hand or on podium
-          zone: `교탁 단상 (Wi-Fi 연결: ${wifiPhone.ip})`,
+          rssi: -42,
+          absPos: phonePos,
+          zone: "교탁 단상 (Wi-Fi 연결)",
           risk: "LOW",
-          reasons: ["내 근접 기기", `로컬 서브넷 활성 (${wifiPhone.ip})`]
+          reasons: ["내 근접 기기", "Wi-Fi 네트워크 활성"]
         });
       } else {
-        // Not on local Wi-Fi -> Switched to LTE!
-        const phoneName = btPhone ? `${btPhone.name} (LTE 활성)` : "내 스마트폰 (LTE 활성)";
+        const phonePos = userMovedPositions["dev-myphone"] || { x: 38, y: 52 };
         newList.push({
           id: "dev-myphone",
-          name: phoneName,
-          type: "Apple iPhone (LTE 데이터망 활성 / Wi-Fi 미연결)",
+          name: `${phoneName} (LTE 활성)`,
+          type: "Apple iPhone (LTE 데이터망 사용 / Wi-Fi 미연결)",
           category: "bluetooth",
           vendor: "Apple Inc. (Cellular)",
           rssi: -65,
-          absPos: { x: myPos.x - 12, y: myPos.y + 32 }, // approx 3 meters away!
-          zone: "2분단 책상 (약 3.0m 거리 · LTE 데이터망 사용 중)",
+          absPos: phonePos, // 3.0m away in row 2!
+          zone: "2분단 2열 책상 (약 3.0m 거리 · LTE 데이터망 사용)",
           risk: "LOW",
-          reasons: ["LTE 셀룰러 모드", "Wi-Fi 미연결 상태", "Bluetooth 백그라운드 전파로 포착 (약 3m)"]
+          reasons: ["LTE 셀룰러 모드", "Wi-Fi 미연결 상태", "Bluetooth 백그라운드 전파로 포착 (약 3.0m)"]
         });
       }
 
       // 3. Other Bluetooth devices (Watch, AirPods, TV, etc.)
       btDevs.forEach((d, idx) => {
         if (d.name && (d.name.includes("iPad") || d.name.includes("iPhone"))) return; // already handled
-        let absPos = getStablePos(d.address || d.name, 25 + (idx * 17) % 60, 35 + (idx * 23) % 55);
+        let absPos = userMovedPositions[`dev-bt-${idx}`] || getStablePos(d.address || d.name, 25 + (idx * 17) % 60, 35 + (idx * 23) % 55);
         let zone = "교실 내";
         if (d.name.includes("TV")) {
           zone = "교실 전면 TV 디스플레이";
-          absPos = { x: 50, y: 22 };
+          absPos = userMovedPositions[`dev-bt-${idx}`] || { x: 50, y: 22 };
         } else if (d.name.includes("AirPods") || d.name.includes("Watch")) {
           zone = "선생님 소지품 (교탁)";
-          absPos = { x: myPos.x + 2, y: myPos.y + 1 };
+          absPos = userMovedPositions[`dev-bt-${idx}`] || { x: myPos.x + 2, y: myPos.y + 1 };
         }
 
         newList.push({
@@ -1186,11 +1214,11 @@
       // 4. Other Network Hosts
       netDevs.forEach((d, idx) => {
         if (d.vendor && d.vendor.includes("Apple Mobile")) return; // already handled
-        let absPos = getStablePos(d.mac || d.ip, 30 + (idx * 20) % 50, 40 + (idx * 15) % 45);
+        let absPos = userMovedPositions[`dev-net-${idx}`] || getStablePos(d.mac || d.ip, 30 + (idx * 20) % 50, 40 + (idx * 15) % 45);
         let zone = "네트워크 호스트";
         if (d.ip === "192.168.219.1") {
           zone = "교실 천장 AP / 메인 게이트웨이";
-          absPos = { x: 50, y: 50 };
+          absPos = userMovedPositions[`dev-net-${idx}`] || { x: 50, y: 50 };
         }
         newList.push({
           id: `dev-net-${idx}`,
@@ -1216,7 +1244,7 @@
           category: "wifi",
           vendor: w.vendor || "Wi-Fi Router",
           rssi: rssiVal,
-          absPos: getStablePos(`wifi-${idx}`, 20 + idx * 18, 60 + idx * 8),
+          absPos: userMovedPositions[`dev-wifi-${idx}`] || getStablePos(`wifi-${idx}`, 20 + idx * 18, 60 + idx * 8),
           zone: `주변 전파 신호 (${rssiVal} dBm)`,
           risk: w.risk || "LOW",
           reasons: w.reasons || []
@@ -1227,7 +1255,7 @@
       allDevices = newList;
 
       // Keep selected device reference
-      const curId = selectedDevice ? selectedDevice.id : "dev-ipad";
+      const curId = selectedDevice ? selectedDevice.id : "dev-myphone";
       const found = allDevices.find(d => d.id === curId);
       selectedDevice = found || allDevices[0];
 
@@ -1322,6 +1350,98 @@
       updateHeadingVisuals();
     }
 
+    let draggingDevId = null;
+
+    function startBlipDrag(e, id) {
+      e.stopPropagation();
+      e.preventDefault();
+      draggingDevId = id;
+      selectTarget(id);
+      window.addEventListener('mousemove', onBlipDrag);
+      window.addEventListener('touchmove', onBlipDrag, { passive: false });
+      window.addEventListener('mouseup', endBlipDrag);
+      window.addEventListener('touchend', endBlipDrag);
+    }
+
+    function onBlipDrag(e) {
+      if (!draggingDevId) return;
+      const scope = document.getElementById('scope-box');
+      if (!scope) return;
+      const rect = scope.getBoundingClientRect();
+      const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+      if (!clientX || !clientY) return;
+
+      let x = Math.round(((clientX - rect.left) / rect.width) * 100);
+      let y = Math.round(((clientY - rect.top) / rect.height) * 100);
+      x = Math.max(8, Math.min(92, x));
+      y = Math.max(10, Math.min(92, y));
+
+      const dev = allDevices.find(d => d.id === draggingDevId);
+      if (dev) {
+        dev.absPos = { x, y };
+        userMovedPositions[draggingDevId] = { x, y };
+        
+        const sp = getDynamicSpatialData(dev);
+        if (dev.id === "dev-myphone") {
+          dev.zone = `이동 중 (${sp.dist}m 거리 · LTE 전파)`;
+        } else if (dev.id === "dev-ipad") {
+          dev.zone = (sp.dist <= 0.4) ? "선생님 교탁 위 / 맥북 바로 옆 (30cm)" : `이동 위치 (${sp.dist}m 거리)`;
+        }
+
+        renderBlips();
+        selectTarget(draggingDevId);
+      }
+    }
+
+    function endBlipDrag() {
+      if (draggingDevId) {
+        const dev = allDevices.find(d => d.id === draggingDevId);
+        if (dev) {
+          const sp = getDynamicSpatialData(dev);
+          showToast(`'${dev.name}' 위치 이동: ${sp.dist}m (${sp.vectorText})`);
+        }
+      }
+      draggingDevId = null;
+      window.removeEventListener('mousemove', onBlipDrag);
+      window.removeEventListener('touchmove', onBlipDrag);
+      window.removeEventListener('mouseup', endBlipDrag);
+      window.removeEventListener('touchend', endBlipDrag);
+    }
+
+    function moveSelectedDevice(meter, zoneText) {
+      if (!selectedDevice) return;
+      
+      let targetY = Math.round(myPos.y + (meter / 8.0) * 100);
+      let targetX = myPos.x;
+      if (meter <= 0.4) {
+        targetX = myPos.x - 4;
+        targetY = myPos.y + 2;
+      } else {
+        targetX = myPos.x - 12; // 2분단 좌석 위치
+      }
+      targetY = Math.min(88, targetY);
+
+      selectedDevice.absPos = { x: targetX, y: targetY };
+      userMovedPositions[selectedDevice.id] = { x: targetX, y: targetY };
+      selectedDevice.zone = zoneText;
+
+      renderBlips();
+      selectTarget(selectedDevice.id);
+      showToast(`'${selectedDevice.name}'를 ${meter}m (${zoneText})로 이동했습니다!`);
+    }
+
+    function togglePhoneMode() {
+      phoneMode = (phoneMode === 'lte') ? 'wifi' : 'lte';
+      if (phoneMode === 'wifi') {
+        moveSelectedDevice(0.3, "교탁 단상 (Wi-Fi 활성)");
+        showToast("스마트폰을 Wi-Fi 연결 모드로 전환했습니다.");
+      } else {
+        moveSelectedDevice(3.0, "2분단 2열 책상 (약 3.0m · LTE 데이터망)");
+        showToast("스마트폰을 LTE 모드 (3m 좌석)로 전환했습니다.");
+      }
+    }
+
     function renderBlips() {
       const layer = document.getElementById('blip-layer');
       document.getElementById('total-count-label').textContent = allDevices.length;
@@ -1334,10 +1454,12 @@
         return `
           <div class="target-blip blip-${d.risk.toLowerCase()} ${isUltraNear ? 'blip-near' : ''}" 
                style="left: ${d.absPos.x}%; top: ${d.absPos.y}%;"
+               onmousedown="startBlipDrag(event, '${d.id}')"
+               ontouchstart="startBlipDrag(event, '${d.id}')"
                onclick="event.stopPropagation(); selectTarget('${d.id}')">
             <div class="blip-point" style="${isSelected ? 'transform: scale(1.6); outline: 2px solid #fff;' : ''}"></div>
-            <div class="blip-label">
-              ${isUltraNear ? '🎯 30cm ' : ''}${d.name.substring(0, 10)} (${spatial.dist}m)
+            <div class="blip-label" style="user-select:none;">
+              ${isUltraNear ? '🎯 30cm ' : ''}${d.name.substring(0, 12)} (${spatial.dist}m)
             </div>
           </div>
         `;
@@ -1398,6 +1520,18 @@
         const proxPercent = Math.max(10, Math.min(100, Math.round(100 - (spatial.dist / 7.0) * 85)));
         bar.style.width = `${proxPercent}%`;
         bar.className = `hot-cold-fill ${spatial.dist < 2.0 ? 'fill-hot' : 'fill-warm'}`;
+      }
+
+      const btnLte = document.getElementById('btn-toggle-phone-lte');
+      if (btnLte) {
+        if (dev.id === 'dev-myphone') {
+          btnLte.style.display = 'block';
+          btnLte.textContent = (phoneMode === 'lte') 
+            ? "📡 스마트폰: LTE 모드 (Wi-Fi 미연결 · 3m) [클릭시 Wi-Fi 전환]"
+            : "📶 스마트폰: Wi-Fi 활성 모드 (교탁 30cm) [클릭시 LTE 전환]";
+        } else {
+          btnLte.style.display = 'none';
+        }
       }
 
       renderBlips();
@@ -1520,7 +1654,7 @@
     renderTeacherNode();
     renderBlips();
     renderList();
-    selectTarget('dev-ipad'); // Auto-select iPad!
+    selectTarget('dev-myphone'); // Auto-select iPhone focused on user request!
 
     // Start Real-time Hardware Polling (2.5s)
     fetchScanData();
