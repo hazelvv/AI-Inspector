@@ -62,7 +62,7 @@ We have active plans to expand AI-Inspector into a comprehensive local security 
 
 - [ ] **Cross-Platform Network Engine**: Decouple macOS-specific commands and add support for Linux (`iwlist`, `ip neigh`) and Windows (`netsh`, `arp -a`).
 - [ ] **Port & Service Inspection**: Integrate non-intrusive local port probing (e.g., RTSP port 554, HTTP 80/8080) to detect streaming camera endpoints.
-- [ ] **Persistent Audit Logging & SQLite Store**: Implement a historical database to track when new devices appear or disappear over time.
+- [ ] **Cloud Sync & History with Firebase**: Integrate Firebase (Firestore) to securely store scan logs and track detected devices over time across sessions.
 - [ ] **Real-time Alerting**: Add desktop notifications and configurable Webhook alerts (Discord/Slack/Telegram) when a high-risk device is detected.
 - [ ] **MAC Address Vendor Database Expansion**: Automate IEEE OUI database synchronization for more accurate hardware vendor identification.
 - [ ] **Automated Testing Suite**: Introduce unit tests and mock integration tests with `pytest` for the scanning parsers.
