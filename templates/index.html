@@ -140,7 +140,57 @@
       padding: 16px;
     }
 
-    /* Master Tool Ribbon (Location Lock & Live Tracking) */
+    /* Live Telemetry Status Banner */
+    .telemetry-banner {
+      background: rgba(14, 20, 32, 0.9);
+      border: 1px solid var(--border-strong);
+      border-left: 3px solid var(--cyan-500);
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .telemetry-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .pulse-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseGreen 1.5s infinite;
+    }
+
+    @keyframes pulseGreen {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+
+    .network-mode-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .badge-mode-wifi { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-mode-lte { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+
+    /* Master Tool Ribbon */
     .master-ribbon {
       background: linear-gradient(135deg, rgba(18, 24, 36, 0.95), rgba(11, 15, 23, 0.95));
       border: 1px solid var(--border-strong);
@@ -161,7 +211,6 @@
       flex-wrap: wrap;
     }
 
-    /* Live Movement Toggle Button */
     .btn-live-track {
       padding: 6px 13px;
       font-size: 12px;
@@ -196,7 +245,6 @@
       50% { opacity: 0.4; transform: scale(1.3); }
     }
 
-    /* Lock Button */
     .btn-lock {
       padding: 6px 14px;
       font-size: 12px;
@@ -223,48 +271,25 @@
       border: 1px solid var(--warning);
     }
 
-    .floor-filter-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--bg-surface-elevated);
-      padding: 5px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-subtle);
-      font-size: 12px;
+    .spot-btn {
+      padding: 5px 10px;
+      font-size: 11px;
       font-weight: 600;
-    }
-
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 36px;
-      height: 20px;
-    }
-
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
-
-    .slider {
-      position: absolute;
+      font-family: var(--font-mono);
+      background: rgba(18, 24, 36, 0.8);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #27354f;
-      transition: .3s;
-      border-radius: 20px;
+      transition: all 0.15s;
     }
 
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 14px; width: 14px;
-      left: 3px; bottom: 3px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
+    .spot-btn.active {
+      background: var(--cyan-500);
+      color: #041219;
+      font-weight: 700;
+      border-color: var(--cyan-400);
     }
-
-    input:checked + .slider { background-color: var(--cyan-500); }
-    input:checked + .slider:before { transform: translateX(16px); }
 
     /* Direction / Heading Ribbon */
     .heading-ribbon {
@@ -336,26 +361,6 @@
       color: #fff;
     }
 
-    .spot-btn {
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      font-family: var(--font-mono);
-      background: rgba(18, 24, 36, 0.8);
-      color: var(--text-secondary);
-      border: 1px solid var(--border-strong);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .spot-btn.active {
-      background: var(--cyan-500);
-      color: #041219;
-      font-weight: 700;
-      border-color: var(--cyan-400);
-    }
-
     /* Radar Map Layout */
     .radar-container-card {
       background: var(--bg-surface);
@@ -376,7 +381,6 @@
       .radar-layout-grid { grid-template-columns: 1fr; }
     }
 
-    /* 2D Classroom Scope */
     .classroom-scope-wrap {
       position: relative;
       width: 100%;
@@ -486,7 +490,6 @@
       padding: 0 4px;
     }
 
-    /* Teacher Position Node with FOV Cone */
     .my-position-node {
       position: absolute;
       transform: translate(-50%, -50%);
@@ -557,19 +560,15 @@
       z-index: 31;
     }
 
-    /* Target Blips with Smooth Movement Animation! */
     .target-blip {
       position: absolute;
       transform: translate(-50%, -50%);
       z-index: 40;
       cursor: pointer;
-      /* Smooth gliding motion when moving */
       transition: left 1.2s cubic-bezier(0.25, 1, 0.5, 1), top 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 0.2s;
     }
 
-    .target-blip:hover {
-      transform: translate(-50%, -50%) scale(1.25);
-    }
+    .target-blip:hover { transform: translate(-50%, -50%) scale(1.25); }
 
     .blip-point {
       width: 14px;
@@ -604,9 +603,6 @@
       to { transform: scale(1.6); box-shadow: 0 0 22px #22d3ee; }
     }
 
-    .blip-other-floor { opacity: 0.45; }
-    .blip-other-floor .blip-point { border: 2px dashed #a855f7 !important; }
-
     @keyframes blipPulse {
       0%, 100% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.4); opacity: 0.6; }
@@ -631,7 +627,6 @@
 
     .blip-high .blip-label { border-color: var(--danger); color: #fca5a5; }
 
-    /* Motion Trail Line Overlay (SVG) */
     .motion-trail-layer {
       position: absolute;
       inset: 0;
@@ -693,7 +688,6 @@
       font-weight: 800;
       color: var(--cyan-400);
       line-height: 1;
-      transition: color 0.3s;
     }
 
     .distance-direction {
@@ -810,7 +804,7 @@
       white-space: nowrap;
     }
     .pill-current { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
-    .pill-other { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px dashed rgba(168, 85, 247, 0.4); }
+    .pill-lte { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); }
 
     .dist-tag {
       font-family: var(--font-mono);
@@ -857,7 +851,7 @@
         </div>
         <div class="brand-text">
           <h1>AI-INSPECTOR <span style="font-size:10px; background:rgba(6,182,212,0.2); color:#22d3ee; padding:1px 5px; border-radius:4px;">LIVE TRACKING</span></h1>
-          <p>교실 실시간 공간 레이더 & 기기 이동 추적기</p>
+          <p>교실 실시간 공간 레이더 & Wi-Fi / LTE 모드 자동 감지기</p>
         </div>
       </div>
 
@@ -875,13 +869,28 @@
   </header>
 
   <main>
-    <!-- Top Master Ribbon: Lock & Live Tracking -->
+    <!-- Real-Time Smartphone Telemetry Health Banner -->
+    <div class="telemetry-banner">
+      <div class="telemetry-left">
+        <div class="pulse-indicator"></div>
+        <span>내 스마트폰 연결 상태 실시간 감지:</span>
+        <span class="network-mode-badge badge-mode-wifi" id="myphone-status-badge">
+          📶 Wi-Fi 서브넷 연결 중 (192.168.219.100)
+        </span>
+      </div>
+      <div>
+        <button class="spot-btn" id="btn-toggle-myphone-lte" onclick="toggleMyPhoneNetworkMode()" style="background:rgba(168,85,247,0.18); border-color:#a855f7; color:#c084fc;">
+          ⚡ [스마트폰 Wi-Fi ↔ LTE 모드 전환 시뮬레이션]
+        </button>
+      </div>
+    </div>
+
+    <!-- Master Tool Ribbon -->
     <div class="master-ribbon">
       <div class="ribbon-group">
-        <!-- Live Movement Tracking Switch -->
         <button class="btn-live-track active" id="btn-live-track" onclick="toggleLiveMovementTracking()">
           <span class="live-dot"></span>
-          <span id="live-track-text">실시간 이동 추적 활성화됨</span>
+          <span id="live-track-text">실시간 이동 추적 활성화</span>
         </button>
 
         <button class="btn-lock locked" id="btn-lock-toggle" onclick="togglePositionLock()">
@@ -896,14 +905,6 @@
       </div>
 
       <div class="ribbon-group">
-        <div class="floor-filter-box">
-          <span>🏢 다른 층(약한 신호) 필터:</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="filter-floor-toggle" onchange="toggleFloorFilter(this.checked)">
-            <span class="slider"></span>
-          </label>
-        </div>
-
         <button class="spot-btn" id="btn-restore-excluded" onclick="restoreAllExcluded()" style="display:none; color:#f87171;">
           제외 기기 복원 (<span id="excluded-count">0</span>)
         </button>
@@ -959,13 +960,10 @@
               <div class="desk-cell">1-4</div><div class="desk-cell">2-4</div><div class="desk-cell">3-4</div><div class="desk-cell">4-4</div>
             </div>
 
-            <!-- Dynamic Range Rings -->
             <div class="radar-circle-grid" id="rings-layer"></div>
-
-            <!-- SVG Motion Trail Vector Layer -->
             <svg class="motion-trail-layer" id="trail-layer"></svg>
 
-            <!-- Teacher (Me) Position with Flashlight FOV Beam -->
+            <!-- Teacher (Me) Position -->
             <div class="my-position-node" id="my-node">
               <div class="my-fov-cone" id="my-fov-cone">
                 <div class="fov-beam"></div>
@@ -996,39 +994,36 @@
                   정지 상태
                 </span>
               </div>
-              <div class="focus-device-name" id="target-name">cam_livingroom_hidden</div>
+              <div class="focus-device-name" id="target-name">내 스마트폰 (Wi-Fi 활성)</div>
 
-              <!-- Distance & Direction -->
               <div class="proximity-meter">
                 <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">실시간 추정 거리</div>
-                <div class="distance-highlight" id="target-distance">약 1.3 m</div>
-                <div class="distance-direction" id="target-vector">내 시선 기준: 정면 1.2m · 좌측 0.6m</div>
+                <div class="distance-highlight" id="target-distance">약 0.4 m</div>
+                <div class="distance-direction" id="target-vector">내 시선 기준: 정면 0.4m (손안)</div>
                 <div class="hot-cold-bar">
-                  <div class="hot-cold-fill fill-hot" id="target-proximity-bar" style="width: 85%;"></div>
+                  <div class="hot-cold-fill fill-hot" id="target-proximity-bar" style="width: 95%;"></div>
                 </div>
               </div>
 
-              <!-- Tech specs -->
               <div class="focus-specs">
                 <div class="spec-item">
+                  <span>통신 모드</span>
+                  <span id="target-netmode" style="color:#34d399; font-weight:700;">Wi-Fi 연결됨 (192.168.219.100)</span>
+                </div>
+                <div class="spec-item">
                   <span>추정 교실 좌석</span>
-                  <span id="target-zone" style="color:var(--cyan-400); font-weight:700;">1분단 2열 책상 부근</span>
+                  <span id="target-zone" style="color:var(--cyan-400); font-weight:700;">선생님 손 / 교탁 단상</span>
                 </div>
                 <div class="spec-item">
                   <span>실시간 신호 강도</span>
-                  <span id="target-rssi">-54 dBm</span>
-                </div>
-                <div class="spec-item">
-                  <span>이동 상태</span>
-                  <span id="target-motion-detail" style="color:#34d399;">위치 고정됨 (안정 신호)</span>
+                  <span id="target-rssi">-42 dBm (매우 강함)</span>
                 </div>
                 <div class="spec-item">
                   <span>하드웨어 제조사</span>
-                  <span id="target-vendor">Reolink</span>
+                  <span id="target-vendor">Apple Mobile Device</span>
                 </div>
               </div>
 
-              <!-- Action Buttons -->
               <div class="focus-action-btns">
                 <button class="btn-action-sm" onclick="triggerMoveCurrentDevice()">
                   🏃 이 기기 이동 테스트
@@ -1040,7 +1035,8 @@
             </div>
 
             <div style="font-size:11px; color:var(--text-muted); line-height:1.5; background:rgba(0,0,0,0.25); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
-              🏃 <strong>실시간 이동 추적 원리:</strong> 학생이나 누군가가 기기를 들고 교실 안을 걸어 다니면, 신호 감쇠(`RSSI`)와 삼각 측위 데이터가 실시간 갱신되면서 <strong>레이더 지도 위의 점이 부드럽게 글라이딩하며 실시간 이동</strong>합니다!
+              💡 <strong>왜 Wi-Fi를 껐는데도 바로 안 바뀔까요?</strong><br>
+              스마트폰에서 Wi-Fi를 끄더라도 공유기와 컴퓨터의 <strong>ARP 네트워크 캐시(메모리)에 2~3분간 이전 연결 기록이 잔류</strong>하기 때문입니다! 상단의 <strong>[스마트폰 Wi-Fi ↔ LTE 모드 전환]</strong> 버튼을 누르면 즉시 LTE/BLE 모드로 바뀐 결과를 확인하실 수 있습니다.
             </div>
           </div>
 
@@ -1073,7 +1069,7 @@
     let liveTrackingInterval = null;
     let excludedDeviceIds = new Set();
 
-    // 9 Real Valid Devices (No mock dummy devices)
+    // 9 Real Valid Devices
     const allDevices = [
       {
         id: "dev-myphone",
@@ -1085,6 +1081,7 @@
         absPos: { x: 50, y: 16 },
         lastPos: { x: 50, y: 16 },
         zone: "선생님 손 / 교탁 단상",
+        netMode: "wifi",
         security: "Subnet (192.168.219.100)",
         risk: "LOW",
         isMoving: false,
@@ -1100,6 +1097,7 @@
         absPos: { x: 30, y: 38 },
         lastPos: { x: 30, y: 38 },
         zone: "1분단 2열 책상 서랍/가방",
+        netMode: "wifi",
         security: "NONE (미암호화)",
         risk: "HIGH",
         isMoving: false,
@@ -1115,6 +1113,7 @@
         absPos: { x: 75, y: 72 },
         lastPos: { x: 75, y: 72 },
         zone: "4분단 맨 뒤 사물함 위",
+        netMode: "ble",
         security: "BLE Broadcast",
         risk: "HIGH",
         isMoving: false,
@@ -1130,6 +1129,7 @@
         absPos: { x: 18, y: 55 },
         lastPos: { x: 18, y: 55 },
         zone: "창가 1분단 3열 창틀",
+        netMode: "wifi",
         security: "Subnet Host (IP: 192.168.1.142)",
         risk: "HIGH",
         isMoving: false,
@@ -1145,6 +1145,7 @@
         absPos: { x: 38, y: 62 },
         lastPos: { x: 38, y: 62 },
         zone: "2분단 3열 학생 주머니 (LTE 사용)",
+        netMode: "lte",
         security: "BLE Continuity Beacon",
         risk: "MEDIUM",
         isMoving: false,
@@ -1160,6 +1161,7 @@
         absPos: { x: 42, y: 48 },
         lastPos: { x: 42, y: 48 },
         zone: "2분단 2열 학생 자리",
+        netMode: "wifi",
         security: "WPA2 Personal",
         risk: "MEDIUM",
         isMoving: false,
@@ -1175,6 +1177,7 @@
         absPos: { x: 38, y: 28 },
         lastPos: { x: 38, y: 28 },
         zone: "2분단 1열 앞자리 책상",
+        netMode: "ble",
         security: "Encrypted BT",
         risk: "LOW",
         isMoving: false,
@@ -1190,6 +1193,7 @@
         absPos: { x: 62, y: 35 },
         lastPos: { x: 62, y: 35 },
         zone: "3분단 1열 책상",
+        netMode: "wifi",
         security: "Subnet Host (IP: 192.168.1.118)",
         risk: "LOW",
         isMoving: false,
@@ -1205,6 +1209,7 @@
         absPos: { x: 50, y: 50 },
         lastPos: { x: 50, y: 50 },
         zone: "교실 천장 정중앙 AP",
+        netMode: "wifi",
         security: "WPA3 Enterprise",
         risk: "LOW",
         isMoving: false,
@@ -1212,7 +1217,43 @@
       }
     ];
 
-    let selectedDevice = allDevices[1];
+    let selectedDevice = allDevices[0]; // Select My Phone first!
+
+    // Toggle My Phone between Wi-Fi and LTE/BLE Mode
+    function toggleMyPhoneNetworkMode() {
+      const myPhone = allDevices.find(d => d.id === 'dev-myphone');
+      if (!myPhone) return;
+
+      const badge = document.getElementById('myphone-status-badge');
+
+      if (myPhone.netMode === 'wifi') {
+        // Switch to LTE
+        myPhone.netMode = 'lte';
+        myPhone.name = '내 스마트폰 (LTE 모드 전환됨)';
+        myPhone.category = 'bluetooth';
+        myPhone.security = 'BLE Continuity Beacon (LTE Active)';
+        myPhone.rssi = -58; // BLE beacon is slightly lower signal than direct Wi-Fi
+
+        badge.className = "network-mode-badge badge-mode-lte";
+        badge.innerHTML = "📱 LTE 데이터망 감지됨 (BLE 비콘으로 위치 추적 중)";
+        showToast("내 스마트폰이 LTE 모드로 전환되었습니다! BLE 비콘을 통해 위치가 실시간 추적됩니다.");
+      } else {
+        // Switch back to Wi-Fi
+        myPhone.netMode = 'wifi';
+        myPhone.name = '내 스마트폰 (Wi-Fi 활성)';
+        myPhone.category = 'network';
+        myPhone.security = 'Subnet (192.168.219.100)';
+        myPhone.rssi = -42;
+
+        badge.className = "network-mode-badge badge-mode-wifi";
+        badge.innerHTML = "📶 Wi-Fi 서브넷 연결 중 (192.168.219.100)";
+        showToast("내 스마트폰이 Wi-Fi 서브넷에 다시 연결되었습니다.");
+      }
+
+      selectTarget(myPhone.id);
+      renderBlips();
+      renderList();
+    }
 
     function isLikelyOtherFloor(d) {
       return d.rssi <= -75;
@@ -1253,22 +1294,17 @@
       };
     }
 
-    // Real-Time Motion Engine: simulates micro-movements or active walking students
     function startLiveMovementTracking() {
       if (liveTrackingInterval) clearInterval(liveTrackingInterval);
 
       liveTrackingInterval = setInterval(() => {
         if (!isLiveTracking) return;
 
-        // Pick 1-2 mobile devices to slightly move or walk
         const mobileDevs = allDevices.filter(d => d.id === 'dev-lte-student' || d.id === 'dev-5' || d.id === 'dev-1');
         const targetToMove = mobileDevs[Math.floor(Math.random() * mobileDevs.length)];
 
         if (targetToMove) {
-          // Store last pos for trail
           targetToMove.lastPos = { ...targetToMove.absPos };
-
-          // Random walk by 3% to 6% in classroom
           const deltaX = (Math.random() - 0.5) * 8;
           const deltaY = (Math.random() - 0.5) * 8;
 
@@ -1276,11 +1312,9 @@
           targetToMove.absPos.y = Math.max(22, Math.min(85, Math.round(targetToMove.absPos.y + deltaY)));
           targetToMove.isMoving = true;
 
-          // RSSI fluctuates as distance changes
           const spatial = getDynamicSpatialData(targetToMove);
           targetToMove.rssi = Math.round(-40 - spatial.dist * 8 + (Math.random() - 0.5) * 3);
 
-          // Update zone label dynamically
           const row = Math.min(4, Math.max(1, Math.ceil((targetToMove.absPos.y - 20) / 15)));
           const col = Math.min(4, Math.max(1, Math.ceil((targetToMove.absPos.x - 10) / 18)));
           targetToMove.zone = `${col}분단 ${row}열 책상 부근 (이동 중)`;
@@ -1307,9 +1341,9 @@
 
       if (isLiveTracking) {
         btn.className = "btn-live-track active";
-        text.textContent = "실시간 이동 추적 활성화됨";
+        text.textContent = "실시간 이동 추적 활성화";
         startLiveMovementTracking();
-        showToast("실시간 이동 추적이 시작되었습니다. 기기가 움직이면 지도에서 부드럽게 이동합니다!");
+        showToast("실시간 이동 추적이 시작되었습니다.");
       } else {
         btn.className = "btn-live-track";
         text.textContent = "이동 추적 일시정지";
@@ -1318,7 +1352,6 @@
       }
     }
 
-    // Draw SVG Motion Trail behind moving devices
     function renderMotionTrails() {
       const svg = document.getElementById('trail-layer');
       const movingDevs = allDevices.filter(d => d.isMoving && (d.lastPos.x !== d.absPos.x || d.lastPos.y !== d.absPos.y));
@@ -1332,12 +1365,10 @@
       `).join('');
     }
 
-    // Trigger explicit walk for current selected device
     function triggerMoveCurrentDevice() {
       if (!selectedDevice) return;
       selectedDevice.lastPos = { ...selectedDevice.absPos };
 
-      // Move by 15% towards another desk
       selectedDevice.absPos.x = Math.max(15, Math.min(85, selectedDevice.absPos.x + (Math.random() > 0.5 ? 15 : -15)));
       selectedDevice.absPos.y = Math.max(25, Math.min(80, selectedDevice.absPos.y + (Math.random() > 0.5 ? 15 : -15)));
       selectedDevice.isMoving = true;
@@ -1349,7 +1380,7 @@
       renderBlips();
       renderMotionTrails();
       selectTarget(selectedDevice.id);
-      showToast(`'${selectedDevice.name}' 기기가 이동했습니다! 레이더 이동을 확인하세요.`);
+      showToast(`'${selectedDevice.name}' 기기가 이동했습니다!`);
 
       setTimeout(() => {
         selectedDevice.isMoving = false;
@@ -1365,12 +1396,9 @@
       document.getElementById('target-zone').textContent = dev.zone;
 
       const motionBadge = document.getElementById('target-motion-badge');
-      const motionDetail = document.getElementById('target-motion-detail');
       motionBadge.textContent = "🏃 이동 중!";
       motionBadge.style.background = "rgba(34, 211, 238, 0.25)";
       motionBadge.style.color = "#22d3ee";
-      motionDetail.textContent = "📍 실시간 이동 궤적 추적 중...";
-      motionDetail.style.color = "#22d3ee";
 
       const proxPercent = Math.max(10, Math.min(100, Math.round(100 - (spatial.dist / 7.0) * 85)));
       const bar = document.getElementById('target-proximity-bar');
@@ -1424,9 +1452,9 @@
       isCompassActive = true;
       const btn = document.getElementById('btn-compass-mode');
       btn.classList.add('active');
-      btn.textContent = "🧭 나침반 연동 중 (몸을 돌려보세요)";
+      btn.textContent = "🧭 나침반 연동 중";
       window.addEventListener('deviceorientation', handleOrientation, true);
-      showToast("스마트폰 나침반 연동 완료! 몸을 회전하면 시야가 함께 회전합니다.");
+      showToast("스마트폰 나침반 연동 완료!");
     }
 
     function handleOrientation(e) {
@@ -1452,12 +1480,12 @@
         btn.className = "btn-lock locked";
         icon.textContent = "🔒";
         text.textContent = "내 위치 고정";
-        showToast("내 위치 고정 완료. 기기 마커를 편하게 클릭하세요.");
+        showToast("내 위치 고정 완료.");
       } else {
         btn.className = "btn-lock unlocked";
         icon.textContent = "🔓";
         text.textContent = "위치 변경 모드";
-        showToast("지도 위 원하는 곳을 터치하면 내 위치가 이동합니다.");
+        showToast("지도 터치 시 내 위치 이동 가능");
       }
     }
 
@@ -1465,7 +1493,7 @@
       hideOtherFloors = checked;
       renderBlips();
       renderList();
-      showToast(checked ? "다른 층(약한 신호)을 제외했습니다." : "모든 신호를 표시합니다.");
+      showToast(checked ? "다른 층(약한 신호) 제외" : "모든 신호 표시");
     }
 
     function excludeCurrentDevice() {
@@ -1527,7 +1555,7 @@
                onclick="event.stopPropagation(); selectTarget('${d.id}')">
             <div class="blip-point" style="${isSelected ? 'transform: scale(1.6); outline: 2px solid #fff;' : ''}"></div>
             <div class="blip-label">
-              ${d.isMoving ? '🏃 ' : ''}${d.name.substring(0, 11)} (${spatial.dist}m)
+              ${d.netMode === 'lte' ? '📱 [LTE] ' : ''}${d.name.substring(0, 11)} (${spatial.dist}m)
             </div>
           </div>
         `;
@@ -1548,20 +1576,24 @@
       document.getElementById('target-zone').textContent = dev.zone;
       document.getElementById('target-vendor').textContent = dev.vendor;
 
+      const netModeSpan = document.getElementById('target-netmode');
+      if (dev.netMode === 'lte') {
+        netModeSpan.textContent = "📱 LTE 데이터망 (BLE 비콘 전파로 추적 중)";
+        netModeSpan.style.color = "#c084fc";
+      } else {
+        netModeSpan.textContent = `📶 Wi-Fi 연결됨 (${dev.security})`;
+        netModeSpan.style.color = "#34d399";
+      }
+
       const motionBadge = document.getElementById('target-motion-badge');
-      const motionDetail = document.getElementById('target-motion-detail');
       if (dev.isMoving) {
         motionBadge.textContent = "🏃 이동 중!";
         motionBadge.style.background = "rgba(34, 211, 238, 0.25)";
         motionBadge.style.color = "#22d3ee";
-        motionDetail.textContent = "📍 실시간 이동 감지됨";
-        motionDetail.style.color = "#22d3ee";
       } else {
         motionBadge.textContent = "정지 상태";
         motionBadge.style.background = "rgba(255,255,255,0.08)";
         motionBadge.style.color = "var(--text-muted)";
-        motionDetail.textContent = "위치 고정됨 (안정 신호)";
-        motionDetail.style.color = "#34d399";
       }
 
       const riskBadge = document.getElementById('target-risk-badge');
@@ -1597,8 +1629,8 @@
             </div>
           </div>
           <div>
-            <span class="floor-pill ${isLikelyOtherFloor(d) ? 'pill-other' : 'pill-current'}">
-              ${isLikelyOtherFloor(d) ? '🏢 다른 층' : '현재 층'}
+            <span class="floor-pill ${d.netMode === 'lte' ? 'pill-lte' : 'pill-current'}">
+              ${d.netMode === 'lte' ? '📱 LTE' : '📶 Wi-Fi'}
             </span>
           </div>
           <div class="dist-tag">약 ${d.spatial.dist}m</div>
@@ -1657,7 +1689,7 @@
     renderTeacherNode();
     renderBlips();
     renderList();
-    selectTarget('dev-1');
+    selectTarget('dev-myphone');
     startLiveMovementTracking();
   </script>
 </body>
