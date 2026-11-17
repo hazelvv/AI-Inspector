@@ -237,16 +237,25 @@ def _parse_bt_device(name, info):
     minor_type = info.get("device_minorType", info.get("Minor Type", ""))
     vendor = info.get("device_vendorID", info.get("Vendor ID", ""))
 
-    # 카메라/영상 기기 여부 체크
+    # 카메라/영상 기기 여부 체크 (일반 TV 디스플레이는 정상 기기로 분류)
     suspicious = any(kw in name.lower() for kw in SUSPICIOUS_KEYWORDS)
-    is_av_device = "video" in minor_type.lower() or "camera" in minor_type.lower()
+    is_camera = "camera" in minor_type.lower()
+    is_tv = "tv" in name.lower() or "display" in minor_type.lower()
 
-    risk = "HIGH" if (suspicious or is_av_device) else "LOW"
+    if suspicious or is_camera:
+        risk = "HIGH"
+    elif is_tv:
+        risk = "LOW"
+    else:
+        risk = "LOW"
+
     reasons = []
     if suspicious:
         reasons.append("기기명에 카메라 관련 키워드")
-    if is_av_device:
-        reasons.append(f"영상/카메라 기기 유형 ({minor_type})")
+    if is_camera:
+        reasons.append(f"영상 촬영 기기 유형 ({minor_type})")
+    elif is_tv:
+        reasons.append("가정/교실 디스플레이 TV (정상 기기)")
 
     return {
         "name": name,
