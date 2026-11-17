@@ -35,6 +35,8 @@
       --success: #10b981;
       --success-bg: rgba(16, 185, 129, 0.14);
 
+      --purple: #a855f7;
+
       --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -138,11 +140,11 @@
       padding: 16px;
     }
 
-    /* Teacher's Vantage Point Control Bar */
-    .viewpoint-bar {
-      background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(16, 185, 129, 0.06));
-      border: 1px solid var(--border-accent);
-      border-radius: 12px;
+    /* Master Tool Ribbon (Location Lock & Floor Filter) */
+    .master-ribbon {
+      background: linear-gradient(135deg, rgba(18, 24, 36, 0.95), rgba(11, 15, 23, 0.95));
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
       padding: 12px 18px;
       margin-bottom: 16px;
       display: flex;
@@ -152,24 +154,92 @@
       flex-wrap: wrap;
     }
 
-    .viewpoint-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--cyan-400);
+    .ribbon-group {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .spot-selector {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
+    /* Lock Button */
+    .btn-lock {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .btn-lock.locked {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid var(--success);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-lock.unlocked {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid var(--warning);
+    }
+
+    /* Floor Filter Switch */
+    .floor-filter-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface-elevated);
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+    }
+
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #27354f;
+      transition: .3s;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px; width: 14px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--cyan-500);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+
     .spot-btn {
-      padding: 5px 11px;
+      padding: 5px 10px;
       font-size: 11px;
       font-weight: 600;
       font-family: var(--font-mono);
@@ -199,7 +269,7 @@
 
     .radar-layout-grid {
       display: grid;
-      grid-template-columns: 1fr 360px;
+      grid-template-columns: 1fr 370px;
       gap: 20px;
       align-items: start;
     }
@@ -220,10 +290,9 @@
       border-radius: 16px;
       overflow: hidden;
       box-shadow: inset 0 0 50px rgba(0,0,0,0.85), 0 0 30px rgba(6, 182, 212, 0.1);
-      cursor: crosshair;
+      user-select: none;
     }
 
-    /* Classroom Wall Landmarks */
     .classroom-wall {
       position: absolute;
       font-family: var(--font-mono);
@@ -269,7 +338,6 @@
       color: #94a3b8;
     }
 
-    /* Student Desk Rows Visualization */
     .desks-grid-overlay {
       position: absolute;
       top: 26%;
@@ -295,7 +363,6 @@
       font-family: var(--font-mono);
     }
 
-    /* Concentric Distance Rings from Teacher */
     .radar-circle-grid {
       position: absolute;
       inset: 0;
@@ -321,7 +388,6 @@
       padding: 0 4px;
     }
 
-    /* Sweeper beam */
     .radar-sweep-beam {
       position: absolute;
       width: 45%;
@@ -338,7 +404,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Teacher's Position Node */
     .my-position-node {
       position: absolute;
       transform: translate(-50%, -50%);
@@ -346,8 +411,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      cursor: grab;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .my-node-pulse {
@@ -382,9 +446,13 @@
     .target-blip {
       position: absolute;
       transform: translate(-50%, -50%);
-      z-index: 25;
+      z-index: 40;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: transform 0.2s ease, opacity 0.3s;
+    }
+
+    .target-blip:hover {
+      transform: translate(-50%, -50%) scale(1.2);
     }
 
     .blip-point {
@@ -410,9 +478,16 @@
       box-shadow: 0 0 6px #38bdf8;
     }
 
+    .blip-other-floor {
+      opacity: 0.45;
+    }
+    .blip-other-floor .blip-point {
+      border: 2px dashed #a855f7 !important;
+    }
+
     @keyframes blipPulse {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.5); opacity: 0.6; }
+      50% { transform: scale(1.4); opacity: 0.6; }
     }
 
     .blip-label {
@@ -538,6 +613,33 @@
       font-weight: 600;
     }
 
+    /* Action Buttons in Focus Panel */
+    .focus-action-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .btn-exclude {
+      flex: 1;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .btn-exclude:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
     /* Device List View */
     .device-table-card {
       background: var(--bg-surface);
@@ -549,9 +651,9 @@
 
     .device-row {
       display: grid;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns: auto 1fr auto auto;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       padding: 12px 18px;
       border-bottom: 1px solid rgba(39, 53, 79, 0.4);
       cursor: pointer;
@@ -560,6 +662,17 @@
 
     .device-row:hover { background: var(--bg-surface-hover); }
     .device-row.selected { background: rgba(6, 182, 212, 0.12); border-left: 3px solid var(--cyan-400); }
+
+    .floor-pill {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .pill-current { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+    .pill-other { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px dashed rgba(168, 85, 247, 0.4); }
 
     .dist-tag {
       font-family: var(--font-mono);
@@ -606,7 +719,7 @@
         </div>
         <div class="brand-text">
           <h1>AI-INSPECTOR <span style="font-size:10px; background:rgba(6,182,212,0.2); color:#22d3ee; padding:1px 5px; border-radius:4px;">CLASSROOM 2D</span></h1>
-          <p>교실 공간 스마트기기 탐지 & 실시간 거리 측정기</p>
+          <p>교실 공간 스마트기기 탐지 & 층간 신호 필터링</p>
         </div>
       </div>
 
@@ -624,17 +737,35 @@
   </header>
 
   <main>
-    <!-- Viewpoint Selector -->
-    <div class="viewpoint-bar">
-      <div class="viewpoint-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        <span>내 현재 서 있는 위치 (시점 변경):</span>
+    <!-- Master Ribbon: Location Lock & Floor Filter -->
+    <div class="master-ribbon">
+      <div class="ribbon-group">
+        <!-- 1. Position Lock Toggle Button -->
+        <button class="btn-lock locked" id="btn-lock-toggle" onclick="togglePositionLock()">
+          <span id="lock-icon">🔒</span>
+          <span id="lock-text">내 위치 고정됨 (안전 클릭 모드)</span>
+        </button>
+
+        <!-- Quick Spot Selectors -->
+        <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">빠른 이동:</span>
+        <button class="spot-btn active" id="btn-spot-podium" onclick="setMySpot('podium')">교탁</button>
+        <button class="spot-btn" id="btn-spot-center" onclick="setMySpot('center')">중앙</button>
+        <button class="spot-btn" id="btn-spot-back" onclick="setMySpot('back')">뒷문</button>
       </div>
-      <div class="spot-selector">
-        <button class="spot-btn active" id="btn-spot-podium" onclick="setMySpot('podium')">👨‍🏫 교탁 (학생들 바라봄 - 기본)</button>
-        <button class="spot-btn" id="btn-spot-center" onclick="setMySpot('center')">📍 교실 중앙 (2분단 책상)</button>
-        <button class="spot-btn" id="btn-spot-back" onclick="setMySpot('back')">🚪 교실 뒷문</button>
-        <button class="spot-btn" id="btn-spot-window" onclick="setMySpot('window')">🪟 창가 쪽</button>
+
+      <div class="ribbon-group">
+        <!-- 2. Floor Filter Toggle -->
+        <div class="floor-filter-box">
+          <span>🏢 다른 층(위/아래층) 신호 제외:</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="filter-floor-toggle" onchange="toggleFloorFilter(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <button class="spot-btn" id="btn-restore-excluded" onclick="restoreAllExcluded()" style="display:none; color:#f87171;">
+          제외 기기 복원 (<span id="excluded-count">0</span>)
+        </button>
       </div>
     </div>
 
@@ -652,22 +783,10 @@
 
             <!-- Student Desk Rows (1분단 ~ 4분단 / 1열 ~ 4열) -->
             <div class="desks-grid-overlay">
-              <div class="desk-cell">1-1 책상</div>
-              <div class="desk-cell">2-1 책상</div>
-              <div class="desk-cell">3-1 책상</div>
-              <div class="desk-cell">4-1 책상</div>
-              <div class="desk-cell">1-2 책상</div>
-              <div class="desk-cell">2-2 책상</div>
-              <div class="desk-cell">3-2 책상</div>
-              <div class="desk-cell">4-2 책상</div>
-              <div class="desk-cell">1-3 책상</div>
-              <div class="desk-cell">2-3 책상</div>
-              <div class="desk-cell">3-3 책상</div>
-              <div class="desk-cell">4-3 책상</div>
-              <div class="desk-cell">1-4 책상</div>
-              <div class="desk-cell">2-4 책상</div>
-              <div class="desk-cell">3-4 책상</div>
-              <div class="desk-cell">4-4 책상</div>
+              <div class="desk-cell">1-1</div><div class="desk-cell">2-1</div><div class="desk-cell">3-1</div><div class="desk-cell">4-1</div>
+              <div class="desk-cell">1-2</div><div class="desk-cell">2-2</div><div class="desk-cell">3-2</div><div class="desk-cell">4-2</div>
+              <div class="desk-cell">1-3</div><div class="desk-cell">2-3</div><div class="desk-cell">3-3</div><div class="desk-cell">4-3</div>
+              <div class="desk-cell">1-4</div><div class="desk-cell">2-4</div><div class="desk-cell">3-4</div><div class="desk-cell">4-4</div>
             </div>
 
             <!-- Dynamic Range Rings Centered at Teacher -->
@@ -687,7 +806,7 @@
           <div class="tracker-panel">
             <h3>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              선택 기기 실시간 거리 & 위치 추적
+              선택 기기 실시간 거리 & 층수 분석
             </h3>
 
             <div class="target-focus-card">
@@ -695,19 +814,19 @@
                 <span id="target-risk-badge" style="font-size:10px; font-weight:700; background:rgba(239,68,68,0.2); color:#ef4444; padding:2px 8px; border-radius:4px;">
                   CRITICAL THREAT
                 </span>
-                <span id="target-type-label" style="font-size:11px; font-family:var(--font-mono); color:var(--text-muted);">
-                  Wi-Fi Camera
+                <span id="target-floor-badge" class="floor-pill pill-current">
+                  현재 층 (2층 교실)
                 </span>
               </div>
               <div class="focus-device-name" id="target-name">cam_livingroom_hidden</div>
 
               <!-- Distance meter -->
               <div class="proximity-meter">
-                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">내 위치 기준 추정 거리</div>
-                <div class="distance-highlight" id="target-distance">약 2.1 m</div>
-                <div class="distance-direction" id="target-vector">학생들 바라보고: 앞쪽 2.0m · 좌측 0.8m</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">교실 실내 보정 직선 거리</div>
+                <div class="distance-highlight" id="target-distance">약 1.3 m</div>
+                <div class="distance-direction" id="target-vector">학생들 바라보고: 앞쪽 1.2m · 좌측 0.6m</div>
                 <div class="hot-cold-bar">
-                  <div class="hot-cold-fill fill-hot" id="target-proximity-bar" style="width: 80%;"></div>
+                  <div class="hot-cold-fill fill-hot" id="target-proximity-bar" style="width: 85%;"></div>
                 </div>
               </div>
 
@@ -719,7 +838,11 @@
                 </div>
                 <div class="spec-item">
                   <span>추정 교실 좌석</span>
-                  <span id="target-zone" style="color:var(--cyan-400); font-weight:700;">1분단 2번째 줄 책상 부근</span>
+                  <span id="target-zone" style="color:var(--cyan-400); font-weight:700;">1분단 2열 책상 부근</span>
+                </div>
+                <div class="spec-item">
+                  <span>층간 신호 분석</span>
+                  <span id="target-floor-analysis" style="color:#34d399;">동일 층 수평 전파 (교실 내부)</span>
                 </div>
                 <div class="spec-item">
                   <span>하드웨어 제조사</span>
@@ -730,10 +853,18 @@
                   <span id="target-security">Wi-Fi (802.11 Open)</span>
                 </div>
               </div>
+
+              <!-- Exclude Actions -->
+              <div class="focus-action-btns">
+                <button class="btn-exclude" onclick="excludeCurrentDevice()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                  이 기기 목록/지도에서 제외 (숨기기)
+                </button>
+              </div>
             </div>
 
             <div style="font-size:11px; color:var(--text-muted); line-height:1.5; background:rgba(0,0,0,0.25); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
-              💡 <strong>교실 순회 팁:</strong> 지도 위 원하는 위치를 터치하거나 상단 버튼을 눌러 내 위치를 이동시키면, 그 자리 기준으로 모든 학생 책상까지의 거리가 즉시 다시 계산됩니다!
+              💡 <strong>층간 구분 원리:</strong> 콘크리트 바닥/천장을 뚫고 온 신호는 수평 신호보다 감쇠(-75dBm 이하)가 크고 지터가 발생합니다. 상단 토글을 켜면 위층/아래층 의심 기기가 자동으로 걸러집니다!
             </div>
           </div>
 
@@ -745,7 +876,7 @@
     <div id="view-list" style="display:none;">
       <div class="device-table-card">
         <div style="padding:14px 18px; border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
-          <strong style="font-size:14px;">탐지된 전체 기기 목록 (총 12개 · 거리 순 정렬)</strong>
+          <strong style="font-size:14px;">탐지된 기기 목록 (거리 순 정렬)</strong>
           <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">터치하면 레이더에서 해당 기기 위치 확인</span>
         </div>
         <div id="device-list-container"></div>
@@ -756,41 +887,28 @@
   <div id="toast" class="toast">위치 업데이트 완료</div>
 
   <script>
-    // Classroom Coordinate Space (0 to 100%)
-    // (50, 15) = Teacher's Podium (Front center)
-    // (50, 90) = Back Door
-    // (10, y)  = Window side (Left)
-    // (90, y)  = Corridor side (Right)
-
     let myPos = { x: 50, y: 15, name: "교탁" };
+    let isPositionLocked = true; // Default: Locked so user can freely click target blips!
+    let hideOtherFloors = false;
+    let excludedDeviceIds = new Set();
 
-    // Full 12 Devices (Wi-Fi, Bluetooth, Subnet ARP)
+    // 12 Devices with Floor Estimation
+    // floor: 'current' (현재 교실) vs 'other' (위층 3층 or 아래층 1층 의심)
     const allDevices = [
       {
         id: "dev-myphone",
-        name: "내 스마트폰 (Wi-Fi 활성 감지됨)",
-        type: "Apple iPhone (Wi-Fi Connected)",
+        name: "내 스마트폰 (Wi-Fi 활성)",
+        type: "Apple iPhone",
         category: "network",
         vendor: "Apple Mobile Device",
         rssi: -42,
-        absPos: { x: 50, y: 16 }, // 내 손안에 있음 (교탁 바로 앞)
-        zone: "선생님 본인 손 / 교탁 단상 위",
-        security: "Subnet Host (IP: 192.168.219.100)",
+        absPos: { x: 50, y: 16 },
+        zone: "선생님 손 / 교탁 단상",
+        security: "Subnet (192.168.219.100)",
         risk: "LOW",
-        reasons: ["Wi-Fi 연결된 스마트폰/태블릿 탐지됨", "내 근접 기기"]
-      },
-      {
-        id: "dev-lte-student",
-        name: "LTE 사용 학생 폰 (BLE 비콘 감지)",
-        type: "Mobile Phone (LTE Active / BLE Beacon)",
-        category: "bluetooth",
-        vendor: "Samsung/Apple (LTE)",
-        rssi: -65,
-        absPos: { x: 38, y: 62 }, // 2분단 3열 학생
-        zone: "2분단 3열 학생 주머니 (LTE 데이터 사용 중)",
-        security: "BLE Continuity Beacon",
-        risk: "MEDIUM",
-        reasons: ["LTE 데이터망 사용 중", "블루투스 BLE 백그라운드 전파로 위치 포착"]
+        floor: "current",
+        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        reasons: ["내 근접 기기"]
       },
       {
         id: "dev-1",
@@ -799,10 +917,12 @@
         category: "wifi",
         vendor: "Reolink",
         rssi: -54,
-        absPos: { x: 30, y: 38 }, // 1분단 2열 책상
+        absPos: { x: 30, y: 38 },
         zone: "1분단 2열 책상 서랍/가방",
         security: "NONE (미암호화)",
         risk: "HIGH",
+        floor: "current",
+        floorDetail: "동일 층 수평 전파 (교실 내부)",
         reasons: ["SSID에 'cam' 포함", "보안 없음", "Reolink 카메라 OUI"]
       },
       {
@@ -812,10 +932,12 @@
         category: "bluetooth",
         vendor: "Generic",
         rssi: -62,
-        absPos: { x: 75, y: 72 }, // 4분단 4열 사물함
+        absPos: { x: 75, y: 72 },
         zone: "4분단 맨 뒤 사물함 위",
         security: "BLE Broadcast",
         risk: "HIGH",
+        floor: "current",
+        floorDetail: "동일 층 수평 전파 (교실 내부)",
         reasons: ["비디오/카메라 하드웨어 클래스", "Spy Cam 키워드"]
       },
       {
@@ -825,24 +947,28 @@
         category: "network",
         vendor: "Dahua",
         rssi: -58,
-        absPos: { x: 18, y: 55 }, // 창가 블라인드 근처
+        absPos: { x: 18, y: 55 },
         zone: "창가 1분단 3열 창틀",
         security: "Subnet Host (IP: 192.168.1.142)",
         risk: "HIGH",
+        floor: "current",
+        floorDetail: "동일 층 수평 전파 (교실 내부)",
         reasons: ["알려진 감시카메라 제조사 (Dahua)"]
       },
       {
-        id: "dev-4",
-        name: "SmartLife-Socket-88",
-        type: "IoT Smart Plug",
-        category: "wifi",
-        vendor: "Tuya/Smartlife",
-        rssi: -69,
-        absPos: { x: 82, y: 85 }, // 뒤편 청소함 콘센트
-        zone: "교실 뒤편 복도 쪽 콘센트",
-        security: "WPA2",
+        id: "dev-lte-student",
+        name: "LTE 사용 학생 폰 (BLE 감지)",
+        type: "Mobile Phone (LTE Active)",
+        category: "bluetooth",
+        vendor: "Samsung/Apple (LTE)",
+        rssi: -65,
+        absPos: { x: 38, y: 62 },
+        zone: "2분단 3열 학생 주머니 (LTE 사용)",
+        security: "BLE Continuity Beacon",
         risk: "MEDIUM",
-        reasons: ["Tuya IoT 모듈"]
+        floor: "current",
+        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        reasons: ["LTE 데이터망 사용 중", "BLE 백그라운드 전파로 포착"]
       },
       {
         id: "dev-5",
@@ -851,10 +977,12 @@
         category: "wifi",
         vendor: "Apple Inc.",
         rssi: -64,
-        absPos: { x: 42, y: 48 }, // 2분단 2열 학생
-        zone: "2분단 2열 학생 스마트폰",
+        absPos: { x: 42, y: 48 },
+        zone: "2분단 2열 학생 자리",
         security: "WPA2 Personal",
         risk: "MEDIUM",
+        floor: "current",
+        floorDetail: "동일 층 수평 전파 (교실 내부)",
         reasons: ["개인용 모바일 핫스팟"]
       },
       {
@@ -864,10 +992,12 @@
         category: "bluetooth",
         vendor: "Apple",
         rssi: -52,
-        absPos: { x: 38, y: 28 }, // 2분단 1열 (맨 앞)
+        absPos: { x: 38, y: 28 },
         zone: "2분단 1열 앞자리 책상",
         security: "Encrypted BT",
         risk: "LOW",
+        floor: "current",
+        floorDetail: "동일 층 수평 전파 (교실 내부)",
         reasons: []
       },
       {
@@ -877,36 +1007,12 @@
         category: "network",
         vendor: "Samsung",
         rssi: -56,
-        absPos: { x: 62, y: 35 }, // 3분단 1열
+        absPos: { x: 62, y: 35 },
         zone: "3분단 1열 책상",
         security: "Subnet Host (IP: 192.168.1.118)",
         risk: "LOW",
-        reasons: []
-      },
-      {
-        id: "dev-8",
-        name: "AirPods Pro (Student)",
-        type: "Bluetooth Audio",
-        category: "bluetooth",
-        vendor: "Apple",
-        rssi: -74,
-        absPos: { x: 65, y: 58 }, // 3분단 3열
-        zone: "3분단 3열 학생 자리",
-        security: "Encrypted BT",
-        risk: "LOW",
-        reasons: []
-      },
-      {
-        id: "dev-9",
-        name: "Apple Watch Series 9",
-        type: "Wearable Watch",
-        category: "bluetooth",
-        vendor: "Apple",
-        rssi: -68,
-        absPos: { x: 25, y: 45 }, // 1분단 2열
-        zone: "1분단 2열 학생 손목",
-        security: "Encrypted BT",
-        risk: "LOW",
+        floor: "current",
+        floorDetail: "동일 층 수평 전파 (교실 내부)",
         reasons: []
       },
       {
@@ -916,57 +1022,84 @@
         category: "wifi",
         vendor: "Cisco/Aruba",
         rssi: -45,
-        absPos: { x: 50, y: 50 }, // 천장 중앙
+        absPos: { x: 50, y: 50 },
         zone: "교실 천장 정중앙 AP",
         security: "WPA3 Enterprise",
         risk: "LOW",
+        floor: "current",
+        floorDetail: "동일 층 수평 전파 (교실 내부)",
         reasons: []
       },
+      // --- OTHER FLOORS (위층/아래층 의심 기기 3개) ---
       {
-        id: "dev-11",
-        name: "philips-hue-bridge",
-        type: "Smart Lighting Bridge",
-        category: "network",
-        vendor: "Signify",
-        rssi: -50,
-        absPos: { x: 45, y: 18 }, // 교탁 아래
-        zone: "교탁 아래 멀티탭/단상",
-        security: "Subnet Host (IP: 192.168.1.105)",
+        id: "dev-floor-up",
+        name: "Class302_WiFi_Upstairs",
+        type: "Wi-Fi AP (위층 교실)",
+        category: "wifi",
+        vendor: "iptime",
+        rssi: -82,
+        absPos: { x: 52, y: 30 },
+        zone: "🏢 3층 교실 (천장 콘크리트 슬래브 통과 신호)",
+        security: "WPA2",
         risk: "LOW",
-        reasons: []
+        floor: "other",
+        floorDetail: "위층 (3층) 추정: 콘크리트 슬래브 층간 감쇠 (-82dBm)",
+        reasons: ["층간 전파 감쇠 특성 감지됨"]
       },
       {
-        id: "dev-12",
-        name: "gateway.router",
-        type: "School Network Gateway",
+        id: "dev-floor-down",
+        name: "Printer_1stFloor_Office",
+        type: "Network Printer (아래층)",
         category: "network",
-        vendor: "ASUSTek",
-        rssi: -58,
-        absPos: { x: 88, y: 15 }, // 앞쪽 벽 구석
-        zone: "교실 앞문 쪽 네트워크 단자함",
-        security: "Subnet Host (IP: 192.168.1.1)",
+        vendor: "HP Network",
+        rssi: -85,
+        absPos: { x: 80, y: 20 },
+        zone: "🏢 1층 교무실 (바닥 슬래브 통과 신호)",
+        security: "Subnet Host (IP: 192.168.1.200)",
         risk: "LOW",
-        reasons: []
+        floor: "other",
+        floorDetail: "아래층 (1층) 추정: 바닥 슬래브 통과 약한 신호 (-85dBm)",
+        reasons: ["층간 전파 감쇠 특성 감지됨"]
+      },
+      {
+        id: "dev-floor-up-bt",
+        name: "Galaxy Buds (위층 복도)",
+        type: "Bluetooth Audio",
+        category: "bluetooth",
+        vendor: "Samsung",
+        rssi: -86,
+        absPos: { x: 22, y: 80 },
+        zone: "🏢 3층 복도 추정",
+        security: "BLE",
+        risk: "LOW",
+        floor: "other",
+        floorDetail: "위층 복도 추정 (초약신호 -86dBm)",
+        reasons: ["층간 전파 감쇠 특성 감지됨"]
       }
     ];
 
-    let selectedDevice = allDevices[0];
+    let selectedDevice = allDevices[1];
 
-    // Recalculate dynamic relative distance & orientation based on Teacher's current spot
+    function getVisibleDevices() {
+      return allDevices.filter(d => {
+        if (excludedDeviceIds.has(d.id)) return false;
+        if (hideOtherFloors && d.floor === 'other') return false;
+        return true;
+      });
+    }
+
+    // Classroom indoor distance calibration (approx 35% scaling for realistic desk spacing)
     function getDynamicSpatialData(dev) {
-      // 100% in X = 8 meters wide classroom
-      // 100% in Y = 10 meters deep classroom
-      const dxMeter = ((dev.absPos.x - myPos.x) / 100) * 8.0;
-      const dyMeter = ((dev.absPos.y - myPos.y) / 100) * 10.0;
+      const dxMeter = ((dev.absPos.x - myPos.x) / 100) * 6.5;
+      const dyMeter = ((dev.absPos.y - myPos.y) / 100) * 8.0;
 
       const distMeter = Math.sqrt(dxMeter * dxMeter + dyMeter * dyMeter);
-      const roundedDist = Math.max(0.5, Math.round(distMeter * 10) / 10);
+      const roundedDist = Math.max(0.4, Math.round(distMeter * 10) / 10);
 
-      // Orientation relative to Teacher facing front (downwards into student seats)
       let lrText = "";
-      if (Math.abs(dxMeter) < 0.4) lrText = "정면";
-      else if (dxMeter < 0) lrText = `좌측 ${Math.abs(Math.round(dxMeter * 10) / 10)}m (창가 쪽)`;
-      else lrText = `우측 ${Math.round(dxMeter * 10) / 10}m (복도 쪽)`;
+      if (Math.abs(dxMeter) < 0.3) lrText = "정면";
+      else if (dxMeter < 0) lrText = `좌측 ${Math.abs(Math.round(dxMeter * 10) / 10)}m (창가)`;
+      else lrText = `우측 ${Math.round(dxMeter * 10) / 10}m (복도)`;
 
       let fbText = "";
       if (dyMeter >= 0) fbText = `앞쪽 ${Math.round(dyMeter * 10) / 10}m`;
@@ -978,33 +1111,93 @@
       };
     }
 
+    function togglePositionLock() {
+      isPositionLocked = !isPositionLocked;
+      const btn = document.getElementById('btn-lock-toggle');
+      const icon = document.getElementById('lock-icon');
+      const text = document.getElementById('lock-text');
+
+      if (isPositionLocked) {
+        btn.className = "btn-lock locked";
+        icon.textContent = "🔒";
+        text.textContent = "내 위치 고정됨 (안전 클릭 모드)";
+        showToast("내 위치가 고정되었습니다. 이제 지도를 눌러도 위치가 바뀌지 않고 기기를 편하게 선택할 수 있습니다!");
+      } else {
+        btn.className = "btn-lock unlocked";
+        icon.textContent = "🔓";
+        text.textContent = "위치 변경 모드 (지도 터치 시 이동)";
+        showToast("위치 변경 모드: 지도 위 원하는 곳을 터치하면 내 위치가 이동합니다.");
+      }
+    }
+
+    function toggleFloorFilter(checked) {
+      hideOtherFloors = checked;
+      renderBlips();
+      renderList();
+      showToast(checked ? "다른 층(위/아래층) 신호를 필터링하여 숨겼습니다." : "모든 층의 신호를 표시합니다.");
+    }
+
+    function excludeCurrentDevice() {
+      if (!selectedDevice) return;
+      excludedDeviceIds.add(selectedDevice.id);
+      showToast(`'${selectedDevice.name}' 기기를 제외 목록에 등록했습니다.`);
+
+      const visible = getVisibleDevices();
+      if (visible.length > 0) {
+        selectTarget(visible[0].id);
+      }
+      updateExcludedButton();
+      renderBlips();
+      renderList();
+    }
+
+    function restoreAllExcluded() {
+      excludedDeviceIds.clear();
+      updateExcludedButton();
+      renderBlips();
+      renderList();
+      showToast("제외되었던 모든 기기를 다시 복원했습니다.");
+    }
+
+    function updateExcludedButton() {
+      const btn = document.getElementById('btn-restore-excluded');
+      const count = document.getElementById('excluded-count');
+      count.textContent = excludedDeviceIds.size;
+      btn.style.display = excludedDeviceIds.size > 0 ? "inline-block" : "none";
+    }
+
     function renderTeacherNode() {
       const node = document.getElementById('my-node');
       node.style.left = `${myPos.x}%`;
       node.style.top = `${myPos.y}%`;
       document.getElementById('my-node-label').textContent = `내 위치 (${myPos.name})`;
 
-      // Render rings centered on Teacher
       const ringsContainer = document.getElementById('rings-layer');
       ringsContainer.innerHTML = `
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:160px; height:160px;"><span class="ring-label">약 2m</span></div>
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:320px; height:320px;"><span class="ring-label">약 4m</span></div>
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:500px; height:500px;"><span class="ring-label">약 7m</span></div>
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:140px; height:140px;"><span class="ring-label">약 1.5m</span></div>
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:280px; height:280px;"><span class="ring-label">약 3.0m</span></div>
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:440px; height:440px;"><span class="ring-label">약 5.0m</span></div>
       `;
     }
 
     function renderBlips() {
       const layer = document.getElementById('blip-layer');
-      layer.innerHTML = allDevices.map(d => {
+      const visible = getVisibleDevices();
+      document.getElementById('total-count-label').textContent = visible.length;
+
+      layer.innerHTML = visible.map(d => {
         const spatial = getDynamicSpatialData(d);
-        const isSelected = selectedDevice.id === d.id;
+        const isSelected = selectedDevice && selectedDevice.id === d.id;
+        const isOtherFloor = d.floor === 'other';
 
         return `
-          <div class="target-blip blip-${d.risk.toLowerCase()} ${isSelected ? 'selected' : ''}" 
+          <div class="target-blip blip-${d.risk.toLowerCase()} ${isOtherFloor ? 'blip-other-floor' : ''}" 
                style="left: ${d.absPos.x}%; top: ${d.absPos.y}%;"
                onclick="event.stopPropagation(); selectTarget('${d.id}')">
             <div class="blip-point" style="${isSelected ? 'transform: scale(1.6); outline: 2px solid #fff;' : ''}"></div>
-            <div class="blip-label">${d.name.substring(0, 12)} (${spatial.dist}m)</div>
+            <div class="blip-label">
+              ${isOtherFloor ? '🏢 ' : ''}${d.name.substring(0, 11)} (${spatial.dist}m)
+            </div>
           </div>
         `;
       }).join('');
@@ -1020,21 +1213,35 @@
       document.getElementById('target-name').textContent = dev.name;
       document.getElementById('target-distance').textContent = `약 ${spatial.dist} m`;
       document.getElementById('target-vector').textContent = `학생들 바라보고: ${spatial.vectorText}`;
-      document.getElementById('target-rssi').textContent = `${dev.rssi} dBm (${dev.rssi > -60 ? '신호 매우 강함' : '신호 보통'})`;
+      document.getElementById('target-rssi').textContent = `${dev.rssi} dBm`;
       document.getElementById('target-zone').textContent = dev.zone;
       document.getElementById('target-vendor').textContent = dev.vendor;
       document.getElementById('target-security').textContent = dev.security;
-      document.getElementById('target-type-label').textContent = `${dev.category.toUpperCase()} · ${dev.type}`;
+
+      // Floor info badge
+      const floorBadge = document.getElementById('target-floor-badge');
+      const floorAnalysis = document.getElementById('target-floor-analysis');
+      if (dev.floor === 'other') {
+        floorBadge.className = "floor-pill pill-other";
+        floorBadge.textContent = "🏢 위/아래층 의심";
+        floorAnalysis.style.color = "#c084fc";
+        floorAnalysis.textContent = dev.floorDetail;
+      } else {
+        floorBadge.className = "floor-pill pill-current";
+        floorBadge.textContent = "현재 층 (2층 교실)";
+        floorAnalysis.style.color = "#34d399";
+        floorAnalysis.textContent = dev.floorDetail;
+      }
 
       const riskBadge = document.getElementById('target-risk-badge');
       riskBadge.textContent = `${dev.risk} RISK`;
       riskBadge.style.color = dev.risk === 'HIGH' ? '#ef4444' : dev.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8';
       riskBadge.style.background = dev.risk === 'HIGH' ? 'rgba(239,68,68,0.2)' : dev.risk === 'MEDIUM' ? 'rgba(245,158,11,0.2)' : 'rgba(56,189,248,0.2)';
 
-      const proxPercent = Math.max(10, Math.min(100, Math.round(100 - (spatial.dist / 8.0) * 85)));
+      const proxPercent = Math.max(10, Math.min(100, Math.round(100 - (spatial.dist / 7.0) * 85)));
       const bar = document.getElementById('target-proximity-bar');
       bar.style.width = `${proxPercent}%`;
-      bar.className = `hot-cold-fill ${spatial.dist < 2.5 ? 'fill-hot' : 'fill-warm'}`;
+      bar.className = `hot-cold-fill ${spatial.dist < 2.0 ? 'fill-hot' : 'fill-warm'}`;
 
       renderBlips();
       renderList();
@@ -1042,12 +1249,13 @@
 
     function renderList() {
       const container = document.getElementById('device-list-container');
-      const sorted = [...allDevices].map(d => {
+      const visible = getVisibleDevices();
+      const sorted = [...visible].map(d => {
         return { ...d, spatial: getDynamicSpatialData(d) };
       }).sort((a, b) => a.spatial.dist - b.spatial.dist);
 
       container.innerHTML = sorted.map(d => `
-        <div class="device-row ${selectedDevice.id === d.id ? 'selected' : ''}" onclick="selectTarget('${d.id}')">
+        <div class="device-row ${selectedDevice && selectedDevice.id === d.id ? 'selected' : ''}" onclick="selectTarget('${d.id}')">
           <div style="width:10px; height:10px; border-radius:50%; background:${d.risk === 'HIGH' ? '#ef4444' : d.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8'};"></div>
           <div>
             <div style="font-weight:700; font-size:14px; color:#fff;">
@@ -1056,6 +1264,11 @@
             <div style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
               📍 <span style="color:#22d3ee; font-weight:600;">${d.zone}</span> · ${d.spatial.vectorText}
             </div>
+          </div>
+          <div>
+            <span class="floor-pill ${d.floor === 'other' ? 'pill-other' : 'pill-current'}">
+              ${d.floor === 'other' ? '🏢 다른 층' : '현재 층'}
+            </span>
           </div>
           <div class="dist-tag">약 ${d.spatial.dist}m</div>
         </div>
@@ -1067,34 +1280,37 @@
       document.getElementById(`btn-spot-${spot}`)?.classList.add('active');
 
       if (spot === 'podium') {
-        myPos = { x: 50, y: 15, name: "교탁 앞" };
+        myPos = { x: 50, y: 15, name: "교탁" };
       } else if (spot === 'center') {
-        myPos = { x: 50, y: 50, name: "교실 중앙" };
+        myPos = { x: 50, y: 50, name: "중앙" };
       } else if (spot === 'back') {
-        myPos = { x: 50, y: 88, name: "교실 뒷문" };
-      } else if (spot === 'window') {
-        myPos = { x: 15, y: 50, name: "창가 1분단" };
+        myPos = { x: 50, y: 88, name: "뒷문" };
       }
 
       renderTeacherNode();
       renderBlips();
-      selectTarget(selectedDevice.id);
-      showToast(`내 위치를 '${myPos.name}'(으)로 변경했습니다. 거리가 재계산되었습니다.`);
+      if (selectedDevice) selectTarget(selectedDevice.id);
+      showToast(`내 위치를 '${myPos.name}'(으)로 이동했습니다.`);
     }
 
     function handleScopeClick(e) {
+      // If position is locked, clicking scope does NOT move Teacher!
+      if (isPositionLocked) {
+        showToast("💡 위치가 고정되어 있습니다. 이동하려면 상단의 '🔒 내 위치 고정' 버튼을 눌러 잠금을 해제하세요.");
+        return;
+      }
+
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = Math.round(((e.clientX - rect.left) / rect.width) * 100);
       const clickY = Math.round(((e.clientY - rect.top) / rect.height) * 100);
 
-      // Set custom position
-      myPos = { x: clickX, y: clickY, name: `직접 이동 (${clickX}%, ${clickY}%)` };
+      myPos = { x: clickX, y: clickY, name: `이동 (${clickX}%, ${clickY}%)` };
       document.querySelectorAll('.spot-btn').forEach(b => b.classList.remove('active'));
 
       renderTeacherNode();
       renderBlips();
-      selectTarget(selectedDevice.id);
-      showToast(`터치한 위치로 내 위치가 이동되었습니다!`);
+      if (selectedDevice) selectTarget(selectedDevice.id);
+      showToast("터치한 위치로 이동되었습니다.");
     }
 
     function switchView(mode) {
