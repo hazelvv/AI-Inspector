@@ -1,9 +1,8 @@
 """
 스마트기기 탐지기 - Flask 웹 서버
 """
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify
 from scanner import scan_wifi, scan_bluetooth, scan_network, full_scan
-import tv_controller
 
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -43,17 +42,6 @@ def api_network():
 @app.route("/api/scan/all")
 def api_all():
     return jsonify(full_scan())
-
-
-@app.route("/api/tv/command", methods=["POST"])
-def api_tv_command():
-    data = request.get_json(silent=True) or {}
-    tv_ip = data.get("ip", "").strip()
-    command = data.get("command", "KEY_CHUP")
-    if not tv_ip:
-        return jsonify({"success": False, "message": "TV IP 주소가 지정되지 않았습니다."}), 400
-    res = tv_controller.send_samsung_tv_key(tv_ip, command)
-    return jsonify(res)
 
 
 if __name__ == "__main__":

@@ -1036,93 +1036,6 @@
               </div>
             </div>
 
-            <!-- Active Smart TV Remote Control Center (NEW!) -->
-            <div style="background:var(--bg-surface-elevated); border:1px solid rgba(168,85,247,0.4); border-radius:12px; padding:16px; margin-bottom:14px; box-shadow:0 4px 20px rgba(0,0,0,0.4);">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:13px; color:#c084fc;">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
-                  <span>📺 능동형 스마트 TV 원격 제어 센터</span>
-                </div>
-                <span style="font-size:10px; font-family:var(--font-mono); background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); padding:2px 6px; border-radius:4px;">
-                  포트 8002 WSS
-                </span>
-              </div>
-
-              <!-- Target TV IP Selector -->
-              <div style="margin-bottom:12px;">
-                <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px;">제어 대상 기기 선택 (스캔 결과 자동 반영):</label>
-                <div style="display:flex; gap:6px;">
-                  <select id="tv-ip-select" style="flex:1; background:rgba(18,24,36,0.9); border:1px solid var(--border-strong); color:var(--text-primary); padding:6px 10px; border-radius:6px; font-family:var(--font-mono); font-size:11px;">
-                    <option value="">스캔 중... (잠시 대기)</option>
-                  </select>
-                </div>
-                <div id="tv-name-badge" style="display:none; margin-top:6px; font-size:11px; font-weight:700; color:#c084fc; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); padding:4px 10px; border-radius:6px; font-family:var(--font-mono);"></div>
-              </div>
-
-              <!-- Channel & Volume Quick Controls -->
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
-                <!-- Channel Box -->
-                <div style="background:rgba(0,0,0,0.3); border:1px solid var(--border-subtle); border-radius:8px; padding:10px;">
-                  <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:8px; text-align:center;">
-                    📺 채널 변경 (CH)
-                  </div>
-                  <div style="display:flex; flex-direction:column; gap:6px;">
-                    <button onclick="sendTvCommand('KEY_CHUP')" style="background:linear-gradient(135deg, rgba(6,182,212,0.25), rgba(2,132,199,0.35)); border:1px solid var(--cyan-500); color:#22d3ee; font-weight:700; font-size:12px; padding:8px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
-                      ▲ 채널 올림 (CH +)
-                    </button>
-                    <button onclick="sendTvCommand('KEY_CHDOWN')" style="background:linear-gradient(135deg, rgba(6,182,212,0.25), rgba(2,132,199,0.35)); border:1px solid var(--cyan-500); color:#22d3ee; font-weight:700; font-size:12px; padding:8px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
-                      ▼ 채널 내림 (CH −)
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Volume & Mute Box -->
-                <div style="background:rgba(0,0,0,0.3); border:1px solid var(--border-subtle); border-radius:8px; padding:10px;">
-                  <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:8px; text-align:center;">
-                    🔊 음량 / 음소거 (VOL)
-                  </div>
-                  <div style="display:flex; gap:6px; margin-bottom:6px;">
-                    <button onclick="sendTvCommand('KEY_VOLUP')" style="flex:1; background:var(--bg-surface); border:1px solid var(--border-strong); color:var(--text-primary); font-weight:700; font-size:11px; padding:8px; border-radius:6px; cursor:pointer;">
-                      🔊 볼륨 +
-                    </button>
-                    <button onclick="sendTvCommand('KEY_VOLDOWN')" style="flex:1; background:var(--bg-surface); border:1px solid var(--border-strong); color:var(--text-primary); font-weight:700; font-size:11px; padding:8px; border-radius:6px; cursor:pointer;">
-                      🔉 볼륨 −
-                    </button>
-                  </div>
-                  <button onclick="sendTvCommand('KEY_MUTE')" style="width:100%; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#f87171; font-weight:700; font-size:11px; padding:7px; border-radius:6px; cursor:pointer;">
-                    🔇 즉시 음소거 (Mute)
-                  </button>
-                </div>
-              </div>
-
-              <!-- Numeric Keypad (1~9, 0, Enter) -->
-              <div style="background:rgba(0,0,0,0.25); border:1px solid var(--border-subtle); border-radius:8px; padding:8px; margin-bottom:10px;">
-                <div style="font-size:10px; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-align:center; font-family:var(--font-mono);">
-                  채널 번호 직접 입력 키패드
-                </div>
-                <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap:4px;">
-                  <button onclick="sendTvCommand('KEY_1')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">1</button>
-                  <button onclick="sendTvCommand('KEY_2')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">2</button>
-                  <button onclick="sendTvCommand('KEY_3')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">3</button>
-                  <button onclick="sendTvCommand('KEY_4')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">4</button>
-                  <button onclick="sendTvCommand('KEY_5')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">5</button>
-                  <button onclick="sendTvCommand('KEY_6')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">6</button>
-                  <button onclick="sendTvCommand('KEY_7')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">7</button>
-                  <button onclick="sendTvCommand('KEY_8')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">8</button>
-                  <button onclick="sendTvCommand('KEY_9')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">9</button>
-                  <button onclick="sendTvCommand('KEY_0')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700;">0</button>
-                  <button onclick="sendTvCommand('KEY_ENTER')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700; color:var(--cyan-400);">확인</button>
-                  <button onclick="sendTvCommand('KEY_HOME')" class="cal-btn" style="padding:6px 0; text-align:center; font-weight:700; color:#c084fc;">홈</button>
-                </div>
-              </div>
-
-              <!-- Emergency Security Power Cut -->
-              <button onclick="sendTvCommand('KEY_POWER')" style="width:100%; background:linear-gradient(135deg, rgba(239,68,68,0.25), rgba(185,28,28,0.35)); border:1px solid #ef4444; color:#fca5a5; font-weight:800; font-size:12px; padding:10px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
-                ⚡ 공간 보안: TV 강제 전원 끄기 (Power OFF)
-              </button>
-            </div>
-
             <div style="font-size:11px; color:var(--text-muted); line-height:1.5; background:rgba(0,0,0,0.25); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
               💡 <strong>왜 30cm인데 멀리 잡혔을까요?</strong><br>
               일반 Wi-Fi 공식은 <strong>1m 이상 떨어진 환경을 기준</strong>으로 설계되어 있어 바로 옆에 있는 기기도 1.5m로 과대평가되었던 것입니다. <strong>[초근접 30cm 정밀 모드]</strong>를 적용하여 신호가 강력한(-45dBm 이상) 기기는 실제와 똑같이 <strong>0.3m(30cm)</strong>로 정확하게 표시됩니다!
@@ -1327,67 +1240,6 @@
 
       allDevices = newList;
 
-      // Update TV IP selector dropdown with real detected IPs + TV names from Bluetooth
-      const tvSelect = document.getElementById('tv-ip-select');
-      const tvNameBadge = document.getElementById('tv-name-badge');
-      if (tvSelect) {
-        const curVal = tvSelect.value;
-
-        // 1. Bluetooth에서 탐지된 TV 이름 목록 (paired_history에서 TV만 추출)
-        const btTvs = (data.smart_tvs) || [];
-
-        // TV 주소 → 이름 매핑
-        // (블루투스 MAC과 네트워크 IP는 다를 수 있으므로 이름을 IP별 주석으로 활용)
-        const tvNames = btTvs.map(tv => tv.name).filter(Boolean);
-
-        // 2. 네트워크 기기 목록으로 드롭다운 구성 (TV 이름 힌트 포함)
-        if (netDevs.length > 0) {
-          tvSelect.innerHTML = netDevs.map((d, i) => {
-            let icon = '🖧';
-            let label = '';
-            const isGateway = d.ip === '192.168.219.1';
-            const isAppleMobile = d.vendor && d.vendor.includes('Apple Mobile');
-
-            if (isGateway) {
-              icon = '📡';
-              label = `${d.ip}  — 공유기 / Wi-Fi AP`;
-            } else if (isAppleMobile) {
-              icon = '📱';
-              label = `${d.ip}  — Apple 스마트기기`;
-            } else {
-              // 첫 번째 비-게이트웨이 비-Apple 기기에 TV 이름 힌트 붙이기
-              const tvHint = tvNames[0] ? `  ← ${tvNames[0]}` : '';
-              icon = tvNames.length > 0 && i === 1 ? '📺' : '🖥';
-              label = `${d.ip}${tvHint}`;
-            }
-            return `<option value="${d.ip}">${icon} ${label}</option>`;
-          }).join('');
-
-          if (curVal && netDevs.some(d => d.ip === curVal)) {
-            tvSelect.value = curVal;
-          }
-        }
-
-        // 3. TV 이름 배지 표시 (블루투스에서 감지된 TV 이름 강조)
-        if (tvNameBadge) {
-          if (tvNames.length > 0) {
-            tvNameBadge.style.display = 'block';
-            tvNameBadge.textContent = `📺 블루투스 감지 TV: ${tvNames.join(' / ')}`;
-          } else {
-            tvNameBadge.style.display = 'none';
-          }
-        }
-
-        // 4. TV IP 선택 변경 시 배지 업데이트
-        tvSelect.onchange = () => {
-          const selectedOpt = tvSelect.options[tvSelect.selectedIndex];
-          if (tvNameBadge && selectedOpt) {
-            tvNameBadge.style.display = 'block';
-            tvNameBadge.textContent = `🎯 제어 대상: ${selectedOpt.text.trim()}`;
-          }
-        };
-      }
-
       // 선택 유지 또는 첫 번째 기기 선택
       if (!selectedDevice && allDevices.length > 0) {
         selectedDevice = allDevices[0];
@@ -1398,42 +1250,6 @@
       renderBlips();
       renderList();
       if (selectedDevice) selectTarget(selectedDevice.id);
-    }
-
-    // 능동형 스마트 TV 원격 제어 명령 전송 함수
-    async function sendTvCommand(command) {
-      const ipSelect = document.getElementById('tv-ip-select');
-      const targetIp = (ipSelect && ipSelect.value) ? ipSelect.value.trim() : '192.168.219.100';
-
-      const keyNameMap = {
-        'KEY_CHUP': '▲ 채널 올림',
-        'KEY_CHDOWN': '▼ 채널 내림',
-        'KEY_VOLUP': '🔊 볼륨 +',
-        'KEY_VOLDOWN': '🔉 볼륨 -',
-        'KEY_MUTE': '🔇 음소거',
-        'KEY_POWER': '⚡ 전원 끄기',
-        'KEY_ENTER': '↵ 확인',
-        'KEY_HOME': '🏠 홈'
-      };
-      const actionName = keyNameMap[command] || `채널 ${command.replace('KEY_', '')}`;
-
-      showToast(`📺 TV(${targetIp})로 '${actionName}' 명령 전송 중...`);
-
-      try {
-        const res = await fetch('/api/tv/command', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ip: targetIp, command: command })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast(`✅ [성공] ${data.message}`);
-        } else {
-          showToast(`📡 [전송됨] ${data.message}`);
-        }
-      } catch (err) {
-        showToast(`❌ 전송 실패: ${err.message}`);
-      }
     }
 
     // High Precision Near-Field Distance Model
