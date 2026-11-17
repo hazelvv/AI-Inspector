@@ -838,7 +838,7 @@
 
       <div class="ribbon-group">
         <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">내 위치:</span>
-        <button class="spot-btn active" id="btn-spot-podium" onclick="setMySpot('podium')">교탁</button>
+        <button class="spot-btn active" id="btn-spot-bottom" onclick="setMySpot('bottom')">💻 내 자리 (아래 착석)</button>
         <button class="spot-btn" id="btn-spot-center" onclick="setMySpot('center')">중앙</button>
       </div>
     </div>
@@ -854,14 +854,14 @@
       </div>
 
       <div class="heading-controls">
-        <button class="dir-btn active" id="btn-dir-front" onclick="setFacingHeading(180, '학생들 정면')">
-          👁️ 학생들 정면 (180°)
+        <button class="dir-btn active" id="btn-dir-front" onclick="setFacingHeading(0, 'TV 정면 앞쪽')">
+          👁️ TV 정면 앞쪽 (0°)
         </button>
-        <button class="dir-btn" id="dir-btn-window" onclick="setFacingHeading(270, '창가 쪽')">
-          🪟 창가 쪽 (270°)
+        <button class="dir-btn" id="dir-btn-window" onclick="setFacingHeading(270, '왼쪽 식탁')">
+          🍽️ 왼쪽 식탁 (270°)
         </button>
-        <button class="dir-btn" id="dir-btn-corridor" onclick="setFacingHeading(90, '복도 쪽')">
-          🚪 복도 쪽 (90°)
+        <button class="dir-btn" id="dir-btn-corridor" onclick="setFacingHeading(90, '우측 문')">
+          🚪 우측 문 (90°)
         </button>
         <button class="btn-compass-mode" id="btn-compass-mode" onclick="toggleCompassTracking()">
           🧭 폰 나침반 연동

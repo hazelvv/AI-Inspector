@@ -201,7 +201,10 @@ def _parse_wifi_entry(ssid, info, connected=False):
 
 
 def scan_bluetooth():
-    """Bluetooth 기기 스캔"""
+    """Bluetooth 기기 스캔
+    - device_connected: 현재 실제로 Mac과 연결되어 통신 중인 기기 (LIVE)
+    - device_not_connected: 과거에 페어링되었던 기록 (오프라인/부재 중일 수 있음 - 기본 제외)
+    """
     output = _run(["system_profiler", "SPBluetoothDataType", "-json"], timeout=10)
     devices = []
 
@@ -211,26 +214,40 @@ def scan_bluetooth():
     except Exception:
         return {"error": "Bluetooth 스캔 실패", "devices": []}
 
-    # 연결된 기기
-    for section_key in ["device_connected", "device_not_connected", "devices_list"]:
-        section = bt_data.get(section_key, {})
-        if isinstance(section, list):
-            for item in section:
-                if isinstance(item, dict):
-                    for name, info in item.items():
-                        devices.append(_parse_bt_device(name, info))
-        elif isinstance(section, dict):
-            for name, info in section.items():
-                devices.append(_parse_bt_device(name, info))
+    # 1. 현재 실제로 통신/연결 중인 기기만 LIVE 기기로 분류
+    connected_section = bt_data.get("device_connected", [])
+    if isinstance(connected_section, list):
+        for item in connected_section:
+            if isinstance(item, dict):
+                for name, info in item.items():
+                    devices.append(_parse_bt_device(name, info, is_connected=True))
+    elif isinstance(connected_section, dict):
+        for name, info in connected_section.items():
+            devices.append(_parse_bt_device(name, info, is_connected=True))
+
+    # 2. device_not_connected는 "과거 등록 이력"이므로 현재 물리적으로 곁에 없는 기기(마우스, 이전 폰 등)가 포함됨.
+    # 상용 제품 판매 관점에서 오프라인 기기를 실시간 탐지 기기로 속이지 않도록 분리 처리
+    paired_history = []
+    not_connected_section = bt_data.get("device_not_connected", [])
+    if isinstance(not_connected_section, list):
+        for item in not_connected_section:
+            if isinstance(item, dict):
+                for name, info in item.items():
+                    paired_history.append(_parse_bt_device(name, info, is_connected=False))
+    elif isinstance(not_connected_section, dict):
+        for name, info in not_connected_section.items():
+            paired_history.append(_parse_bt_device(name, info, is_connected=False))
 
     return {
-        "devices": devices,
+        "devices": devices, # 현재 실제 연결된 기기
+        "paired_history": paired_history, # 과거 페어링 기록 (오프라인)
         "count": len(devices),
+        "history_count": len(paired_history),
         "scanned_at": datetime.now().strftime("%H:%M:%S"),
     }
 
 
-def _parse_bt_device(name, info):
+def _parse_bt_device(name, info, is_connected=False):
     if not isinstance(info, dict):
         info = {}
     address = info.get("device_address", info.get("Address", "알 수 없음"))
@@ -250,6 +267,11 @@ def _parse_bt_device(name, info):
         risk = "LOW"
 
     reasons = []
+    if is_connected:
+        reasons.append("현재 활성 통신 중 (LIVE)")
+    else:
+        reasons.append("과거 등록 이력 (오프라인 / 현장 부재 가능)")
+
     if suspicious:
         reasons.append("기기명에 카메라 관련 키워드")
     if is_camera:
@@ -262,6 +284,8 @@ def _parse_bt_device(name, info):
         "address": address,
         "type": minor_type or "알 수 없음",
         "vendor": vendor,
+        "connected": is_connected,
+        "status": "LIVE" if is_connected else "PAIRED_HISTORY",
         "risk": risk,
         "reasons": reasons,
     }
