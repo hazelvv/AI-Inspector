@@ -411,6 +411,31 @@
       font-family: var(--font-mono);
     }
 
+    .surroundings-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+      z-index: 6;
+      transition: opacity 0.3s;
+    }
+    .surroundings-container.active {
+      display: block;
+    }
+    .surrounding-zone {
+      position: absolute;
+      border: 1px dashed rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      border-radius: 6px;
+    }
+
     .radar-circle-grid {
       position: absolute;
       inset: 0;
@@ -847,10 +872,54 @@
     <!-- RADAR VIEW -->
     <div id="view-radar">
       <div class="radar-container-card">
+
+        <!-- Zoom & Perimeter Scope Toolbar -->
+        <div style="background:var(--bg-surface-elevated); border:1px solid var(--border-subtle); border-radius:10px; padding:10px 16px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:12px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+              레이더 탐지 반경 (축소/확대):
+            </span>
+            <div class="calibration-box" style="margin:0;">
+              <button class="cal-btn active" id="btn-scale-6m" onclick="setRadarScale('6m')">🏫 교실 정밀 (6m)</button>
+              <button class="cal-btn" id="btn-scale-15m" onclick="setRadarScale('15m')">🏢 층 전체 / 복도 (15m 축소)</button>
+              <button class="cal-btn" id="btn-scale-30m" onclick="setRadarScale('30m')">🌐 건물 광역 조감도 (30m)</button>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">배율:</span>
+            <button onclick="adjustZoom(-0.25)" title="축소 (Zoom Out)" style="background:var(--bg-surface); border:1px solid var(--border-strong); color:var(--text-primary); width:28px; height:28px; border-radius:6px; font-weight:800; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center;">−</button>
+            <span id="zoom-badge-text" style="font-size:11px; font-family:var(--font-mono); color:var(--cyan-400); min-width:44px; text-align:center; font-weight:700;">100%</span>
+            <button onclick="adjustZoom(0.25)" title="확대 (Zoom In)" style="background:var(--bg-surface); border:1px solid var(--border-strong); color:var(--text-primary); width:28px; height:28px; border-radius:6px; font-weight:800; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center;">+</button>
+            <button onclick="resetZoom()" title="기본 배율로 리셋" style="background:var(--bg-surface); border:1px solid var(--border-strong); color:var(--text-muted); padding:0 8px; height:28px; border-radius:6px; font-size:11px; cursor:pointer;">⟲ 리셋</button>
+          </div>
+        </div>
+
         <div class="radar-layout-grid">
           
           <!-- 2D Scope Visualizer -->
           <div class="classroom-scope-wrap" id="scope-box" onclick="handleScopeClick(event)">
+            <!-- Surrounding Floor / Building Overlay (Visible when zoomed out) -->
+            <div id="surroundings-overlay" class="surroundings-container">
+              <!-- Top Corridor -->
+              <div class="surrounding-zone" style="top:2%; left:2%; right:2%; height:16%; border-color:rgba(6,182,212,0.4); background:rgba(6,182,212,0.06);">
+                <span style="color:#22d3ee; font-weight:700;">🚪 중앙 복도 (HALLWAY / CORRIDOR)</span>
+              </div>
+              <!-- Left Classroom 301 -->
+              <div class="surrounding-zone" style="top:20%; left:2%; width:20%; bottom:6%; border-color:rgba(148,163,184,0.3);">
+                <span style="writing-mode:vertical-rl; transform:rotate(180deg);">⬅️ 301호 교실 / 교무실</span>
+              </div>
+              <!-- Right Classroom 303 -->
+              <div class="surrounding-zone" style="top:20%; right:2%; width:20%; bottom:6%; border-color:rgba(148,163,184,0.3);">
+                <span style="writing-mode:vertical-rl;">➡️ 303호 교실 / 도서관</span>
+              </div>
+              <!-- Center Classroom 302 boundary -->
+              <div style="position:absolute; top:20%; left:24%; right:24%; bottom:6%; border:2px dashed rgba(6,182,212,0.6); border-radius:8px; pointer-events:none; background:rgba(6,182,212,0.03);">
+                <div style="position:absolute; top:4px; left:50%; transform:translateX(-50%); font-size:9px; font-family:var(--font-mono); color:#22d3ee; background:rgba(6,182,212,0.2); padding:1px 6px; border-radius:3px;">🏫 302호 교실 (내 위치)</div>
+              </div>
+            </div>
+
             <div class="classroom-wall wall-front">칠판 / 교탁 (FRONT)</div>
             <div class="classroom-wall wall-back">교실 뒷문 & 사물함 (BACK)</div>
             <div class="classroom-wall wall-left">창가 (LEFT)</div>
@@ -985,6 +1054,8 @@
     let calibrationMode = "near"; // "near" = 30cm ultra-near calibration!
     let isFetchingScan = false;
     let phoneMode = "lte"; // User's iPhone is currently switched to LTE!
+    let currentScale = '6m'; // '6m' (교실 6m), '15m' (층 전체 15m), '30m' (건물 광역 30m)
+    let zoomMultiplier = 1.0;
     const cachedRealCoordinates = {};
 
     // Persistent coordinates when user moves devices on radar
@@ -1276,22 +1347,23 @@
 
     // High Precision Near-Field Distance Model
     function getDynamicSpatialData(dev) {
-      const dxWorld = ((dev.absPos.x - myPos.x) / 100) * 6.5;
-      const dyWorld = ((dev.absPos.y - myPos.y) / 100) * 8.0;
+      let maxDistScale = 6.0;
+      if (currentScale === '15m') maxDistScale = 15.0;
+      else if (currentScale === '30m') maxDistScale = 30.0;
+
+      const dxWorld = ((dev.absPos.x - myPos.x) / 100) * (maxDistScale * 1.1);
+      const dyWorld = ((dev.absPos.y - myPos.y) / 100) * (maxDistScale * 1.3);
 
       let distMeter = Math.sqrt(dxWorld * dxWorld + dyWorld * dyWorld);
 
       // Ultra-near field calibration (< 0.5m detection)
       if (calibrationMode === "near") {
-        if (dev.rssi >= -35) {
-          // Extremely close (30cm or less)
-          distMeter = 0.3;
-        } else if (dev.rssi >= -42) {
-          distMeter = 0.5;
+        if (dev.rssi >= -35 || dev.id === "dev-ipad") {
+          if (distMeter <= (currentScale === '6m' ? 0.6 : 1.5)) distMeter = 0.3;
         }
       }
 
-      const roundedDist = Math.max(0.2, Math.round(distMeter * 10) / 10);
+      const roundedDist = Math.max(0.3, Math.round(distMeter * 10) / 10);
 
       const rad = (facingAngle * Math.PI) / 180;
       const forwardM = -dxWorld * Math.sin(rad) + dyWorld * Math.cos(rad);
@@ -1317,6 +1389,86 @@
         dist: roundedDist,
         vectorText: displayVector
       };
+    }
+
+    function setRadarScale(scale) {
+      currentScale = scale;
+      document.getElementById('btn-scale-6m')?.classList.toggle('active', scale === '6m');
+      document.getElementById('btn-scale-15m')?.classList.toggle('active', scale === '15m');
+      document.getElementById('btn-scale-30m')?.classList.toggle('active', scale === '30m');
+
+      const surrOverlay = document.getElementById('surroundings-overlay');
+      const desksGrid = document.querySelector('.desks-grid-overlay');
+      const wallFront = document.querySelector('.wall-front');
+      const wallBack  = document.querySelector('.wall-back');
+      const wallLeft  = document.querySelector('.wall-left');
+      const wallRight = document.querySelector('.wall-right');
+
+      if (scale === '6m') {
+        zoomMultiplier = 1.0;
+        if (surrOverlay) surrOverlay.classList.remove('active');
+        if (desksGrid) desksGrid.style.display = 'grid';
+        if (wallFront) wallFront.style.display = 'block';
+        if (wallBack) wallBack.style.display = 'block';
+        if (wallLeft) wallLeft.style.display = 'block';
+        if (wallRight) wallRight.style.display = 'block';
+        showToast("🏫 교실 정밀 모드 (반경 6m) - 책상 및 교탁 정밀 배치");
+      } else if (scale === '15m') {
+        zoomMultiplier = 0.5;
+        if (surrOverlay) surrOverlay.classList.add('active');
+        if (desksGrid) desksGrid.style.display = 'none';
+        if (wallFront) wallFront.style.display = 'none';
+        if (wallBack) wallBack.style.display = 'none';
+        if (wallLeft) wallLeft.style.display = 'none';
+        if (wallRight) wallRight.style.display = 'none';
+        showToast("🏢 층 전체 / 복도 모드 (반경 15m 축소) - 주변 복도 및 인접 교실 표시");
+      } else if (scale === '30m') {
+        zoomMultiplier = 0.25;
+        if (surrOverlay) surrOverlay.classList.add('active');
+        if (desksGrid) desksGrid.style.display = 'none';
+        if (wallFront) wallFront.style.display = 'none';
+        if (wallBack) wallBack.style.display = 'none';
+        if (wallLeft) wallLeft.style.display = 'none';
+        if (wallRight) wallRight.style.display = 'none';
+        showToast("🌐 건물 광역 조감도 모드 (반경 30m) - 전체 층 전파 기기 조망");
+      }
+
+      updateZoomDisplay();
+      renderTeacherNode();
+      renderBlips();
+      renderList();
+      if (selectedDevice) selectTarget(selectedDevice.id);
+    }
+
+    function adjustZoom(delta) {
+      zoomMultiplier = Math.max(0.2, Math.min(2.5, Math.round((zoomMultiplier + delta) * 100) / 100));
+      if (zoomMultiplier >= 0.85) currentScale = '6m';
+      else if (zoomMultiplier >= 0.4) currentScale = '15m';
+      else currentScale = '30m';
+
+      document.getElementById('btn-scale-6m')?.classList.toggle('active', currentScale === '6m');
+      document.getElementById('btn-scale-15m')?.classList.toggle('active', currentScale === '15m');
+      document.getElementById('btn-scale-30m')?.classList.toggle('active', currentScale === '30m');
+
+      const surrOverlay = document.getElementById('surroundings-overlay');
+      const desksGrid = document.querySelector('.desks-grid-overlay');
+      if (surrOverlay) surrOverlay.classList.toggle('active', currentScale !== '6m');
+      if (desksGrid) desksGrid.style.display = (currentScale === '6m') ? 'grid' : 'none';
+
+      updateZoomDisplay();
+      renderTeacherNode();
+      renderBlips();
+      renderList();
+      if (selectedDevice) selectTarget(selectedDevice.id);
+    }
+
+    function resetZoom() {
+      setRadarScale('6m');
+    }
+
+    function updateZoomDisplay() {
+      const badge = document.getElementById('zoom-badge-text');
+      if (badge) badge.textContent = `${Math.round(zoomMultiplier * 100)}%`;
     }
 
     function setCalibrationMode(mode) {
@@ -1351,12 +1503,28 @@
       document.getElementById('my-node-label').textContent = `내 위치 (${myPos.name})`;
 
       const ringsContainer = document.getElementById('rings-layer');
-      ringsContainer.innerHTML = `
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:50px; height:50px; border-color:#10b981;"><span class="ring-label" style="color:#10b981;">30cm</span></div>
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:130px; height:130px;"><span class="ring-label">1.5m</span></div>
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:270px; height:270px;"><span class="ring-label">3.0m</span></div>
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:430px; height:430px;"><span class="ring-label">5.0m</span></div>
-      `;
+      if (currentScale === '6m') {
+        ringsContainer.innerHTML = `
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:50px; height:50px; border-color:#10b981;"><span class="ring-label" style="color:#10b981;">30cm</span></div>
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:130px; height:130px;"><span class="ring-label">1.5m</span></div>
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:270px; height:270px;"><span class="ring-label">3.0m</span></div>
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:430px; height:430px;"><span class="ring-label">5.0m</span></div>
+        `;
+      } else if (currentScale === '15m') {
+        ringsContainer.innerHTML = `
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:60px; height:60px; border-color:#10b981;"><span class="ring-label" style="color:#10b981;">1.5m</span></div>
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:150px; height:150px;"><span class="ring-label">5.0m</span></div>
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:300px; height:300px;"><span class="ring-label">10.0m</span></div>
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:470px; height:470px;"><span class="ring-label">15.0m</span></div>
+        `;
+      } else { // 30m
+        ringsContainer.innerHTML = `
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:70px; height:70px; border-color:#10b981;"><span class="ring-label" style="color:#10b981;">5.0m</span></div>
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:150px; height:150px;"><span class="ring-label">10.0m</span></div>
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:300px; height:300px;"><span class="ring-label">20.0m</span></div>
+          <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:470px; height:470px;"><span class="ring-label">30.0m</span></div>
+        `;
+      }
       updateHeadingVisuals();
     }
 
@@ -1662,6 +1830,19 @@
       toast.textContent = msg;
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // Mouse wheel zoom on radar
+    const scopeBox = document.getElementById('scope-box');
+    if (scopeBox) {
+      scopeBox.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          adjustZoom(0.2);
+        } else {
+          adjustZoom(-0.2);
+        }
+      }, { passive: false });
     }
 
     // Init
