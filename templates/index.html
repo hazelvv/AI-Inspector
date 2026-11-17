@@ -920,16 +920,27 @@
               </div>
             </div>
 
-            <div class="classroom-wall wall-front">칠판 / 교탁 (FRONT)</div>
-            <div class="classroom-wall wall-back">교실 뒷문 & 사물함 (BACK)</div>
-            <div class="classroom-wall wall-left">창가 (LEFT)</div>
-            <div class="classroom-wall wall-right">복도 (RIGHT)</div>
+            <div class="classroom-wall wall-front">💻 내 자리 (교탁 / 맥북)</div>
+            <div class="classroom-wall wall-back">📺 정면 TV 벽면 (약 2.8m)</div>
+            <div class="classroom-wall wall-left">🍽️ 왼쪽 식탁 (Dining Table)</div>
+            <div class="classroom-wall wall-right">🚪 출입문 / 우측 구역</div>
 
-            <div class="desks-grid-overlay">
-              <div class="desk-cell">1-1</div><div class="desk-cell">2-1</div><div class="desk-cell">3-1</div><div class="desk-cell">4-1</div>
-              <div class="desk-cell">1-2</div><div class="desk-cell">2-2</div><div class="desk-cell">3-2</div><div class="desk-cell">4-2</div>
-              <div class="desk-cell">1-3</div><div class="desk-cell">2-3</div><div class="desk-cell">3-3</div><div class="desk-cell">4-3</div>
-              <div class="desk-cell">1-4</div><div class="desk-cell">2-4</div><div class="desk-cell">3-4</div><div class="desk-cell">4-4</div>
+            <!-- Real Room Visual Anchors -->
+            <div style="position:absolute; top:60%; left:50%; transform:translate(-50%, -50%); border:1px solid rgba(168,85,247,0.5); background:rgba(168,85,247,0.12); padding:3px 10px; border-radius:6px; font-size:10px; font-weight:700; color:#c084fc; font-family:var(--font-mono); pointer-events:none; z-index:8;">
+              📺 정면 TV 구역 (약 2.8m)
+            </div>
+            <div style="position:absolute; top:56%; left:16%; transform:translate(-50%, -50%); border:1px solid rgba(6,182,212,0.5); background:rgba(6,182,212,0.12); padding:3px 10px; border-radius:6px; font-size:10px; font-weight:700; color:#22d3ee; font-family:var(--font-mono); pointer-events:none; z-index:8;">
+              🍽️ 식탁 위 (태블릿 4.5m)
+            </div>
+            <div style="position:absolute; top:17%; left:42%; transform:translate(-50%, -50%); border:1px solid rgba(16,185,129,0.5); background:rgba(16,185,129,0.12); padding:2px 6px; border-radius:5px; font-size:9px; font-weight:700; color:#34d399; font-family:var(--font-mono); pointer-events:none; z-index:8;">
+              📱 왼쪽 옆 (30cm)
+            </div>
+
+            <div class="desks-grid-overlay" style="opacity:0.15;">
+              <div class="desk-cell">좌-1</div><div class="desk-cell">중-1</div><div class="desk-cell">우-1</div><div class="desk-cell">벽-1</div>
+              <div class="desk-cell">좌-2</div><div class="desk-cell">중-2</div><div class="desk-cell">우-2</div><div class="desk-cell">벽-2</div>
+              <div class="desk-cell">식탁</div><div class="desk-cell">중앙</div><div class="desk-cell">우-3</div><div class="desk-cell">벽-3</div>
+              <div class="desk-cell">식탁</div><div class="desk-cell">TV앞</div><div class="desk-cell">우-4</div><div class="desk-cell">벽-4</div>
             </div>
 
             <!-- Distance Rings with Near-Field 0.5m ring -->
@@ -1003,10 +1014,10 @@
                   <span style="color:var(--cyan-400); font-size:10px; font-family:var(--font-mono);">레이더 블립 드래그 가능 ✋</span>
                 </div>
                 <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:6px;">
-                  <button class="cal-btn" onclick="moveSelectedDevice(0.3, '교탁 위 맥북 바로 옆 (30cm)')">30cm 옆</button>
-                  <button class="cal-btn" onclick="moveSelectedDevice(1.5, '1분단 1열 앞쪽 (1.5m)')">1.5m 앞</button>
-                  <button class="cal-btn active" onclick="moveSelectedDevice(3.0, '2분단 2열 책상 (3.0m · 현재)')">3.0m 좌석</button>
-                  <button class="cal-btn" onclick="moveSelectedDevice(5.0, '교실 뒤편 사물함 (5.0m)')">5.0m 뒤</button>
+                  <button class="cal-btn active" onclick="moveSelectedDeviceToPreset('left-near')">📱 왼쪽 30cm</button>
+                  <button class="cal-btn" onclick="moveSelectedDeviceToPreset('front-tv')">📺 정면 TV (2.8m)</button>
+                  <button class="cal-btn" onclick="moveSelectedDeviceToPreset('left-table')">🍽️ 왼쪽 식탁 (4.5m)</button>
+                  <button class="cal-btn" onclick="moveSelectedDeviceToPreset('right-far')">⌚ 우측 (4.2m)</button>
                 </div>
                 <div style="margin-top:8px;">
                   <button class="cal-btn active" id="btn-toggle-phone-lte" onclick="togglePhoneMode()" style="width:100%; padding:7px; font-size:11px; text-align:center;">
@@ -1058,38 +1069,33 @@
     let zoomMultiplier = 1.0;
     const cachedRealCoordinates = {};
 
-    // Persistent coordinates when user moves devices on radar
+    // Exact physical coordinates from user:
+    // TV: in front (50, 60) -> 2.8m directly in front
+    // iPhone: left side right next to me (42, 17) -> 30cm!
+    // iPad: far to the left on dining table (16, 56) -> ~4.5m!
+    // Apple Watch: on the right (74, 62) -> ~4.2m!
     const userMovedPositions = {
-      "dev-ipad": { x: 46, y: 17 }, // 30cm next to teacher
-      "dev-myphone": { x: 38, y: 52 } // 3.0m away in student desks
+      "dev-myphone": { x: 42, y: 17 }, // Left side of user (30cm)
+      "dev-ipad": { x: 16, y: 56 },    // Far left on dining table (4.5m)
+      "dev-tv": { x: 50, y: 60 },      // In front of user (2.8m)
+      "Hazel의 iPhone": { x: 42, y: 17 },
+      "Hazel의 iPad": { x: 16, y: 56 },
+      "[TV] Samsung TU700D 85 TV": { x: 50, y: 60 },
+      "Hazel의 Apple Watch": { x: 74, y: 62 } // 4.2m away
     };
 
-    // Devices with Ultra-Proximity iPad right next to teacher (30cm / 0.3m)
-    // and iPhone in student desk row 2 (3.0m on LTE)
     let allDevices = [
-      {
-        id: "dev-ipad",
-        name: "Hazel의 iPad (내 아이패드)",
-        type: "Apple iPad Pro (Wi-Fi 192.168.219.103)",
-        category: "network",
-        vendor: "Apple Inc.",
-        rssi: -32, // Extremely strong signal because it's 30cm away!
-        absPos: { x: 46, y: 17 }, // 30cm right next to teacher (50, 15)
-        zone: "선생님 교탁 위 / 맥북 바로 옆 (30cm)",
-        risk: "LOW",
-        reasons: ["내 초근접 기기 (30cm)", "Wi-Fi 네트워크 활성 (192.168.219.103)"]
-      },
       {
         id: "dev-myphone",
         name: "Hazel의 iPhone (내 스마트폰)",
-        type: "Apple iPhone (LTE 데이터망 사용 / Wi-Fi 미연결)",
+        type: "Apple iPhone (내 왼쪽 옆 30cm)",
         category: "bluetooth",
-        vendor: "Apple Inc. (Cellular)",
-        rssi: -65,
-        absPos: { x: 38, y: 52 }, // 2분단 2열 책상 (3.0m)
-        zone: "2분단 2열 책상 (약 3.0m 거리 · LTE 데이터망 사용)",
+        vendor: "Apple Inc.",
+        rssi: -32, // Strong near signal
+        absPos: { x: 42, y: 17 }, // 30cm on the left
+        zone: "내 바로 왼쪽 옆 (초근접 30cm)",
         risk: "LOW",
-        reasons: ["LTE 셀룰러 모드", "Wi-Fi 미연결 상태", "Bluetooth 백그라운드 전파로 포착 (약 3.0m)"]
+        reasons: ["내 초근접 기기 (30cm)", "신호 세기 극초강력 (-32 dBm)"]
       },
       {
         id: "dev-tv",
@@ -1097,27 +1103,51 @@
         type: "Video Display",
         category: "bluetooth",
         vendor: "Samsung",
-        rssi: -58,
-        absPos: { x: 50, y: 22 },
-        zone: "교실 전면 대형 디스플레이 TV",
+        rssi: -56,
+        absPos: { x: 50, y: 60 }, // Directly in front of user
+        zone: "내 정면 앞쪽 거실 TV (약 2.8m)",
         risk: "HIGH",
         reasons: ["영상/카메라 기기 유형 (Video Display)"]
       },
       {
+        id: "dev-ipad",
+        name: "Hazel의 iPad (식탁 위 태블릿)",
+        type: "Apple iPad Pro (Wi-Fi 192.168.219.103)",
+        category: "network",
+        vendor: "Apple Inc.",
+        rssi: -66,
+        absPos: { x: 16, y: 56 }, // Far left on dining table
+        zone: "왼쪽 멀리 식탁 위 (약 4.5m)",
+        risk: "LOW",
+        reasons: ["원거리 태블릿 (식탁 약 4.5m)", "Wi-Fi 네트워크 활성 (192.168.219.103)"]
+      },
+      {
+        id: "dev-watch",
+        name: "Hazel의 Apple Watch",
+        type: "Smartwatch (BLE)",
+        category: "bluetooth",
+        vendor: "Apple Inc.",
+        rssi: -72,
+        absPos: { x: 74, y: 62 },
+        zone: "우측 테이블/방 (약 4.2m)",
+        risk: "LOW",
+        reasons: ["원거리 웨어러블 (약 4.2m)"]
+      },
+      {
         id: "dev-gateway",
         name: "Wi-Fi 공유기 (192.168.219.1)",
-        type: "School Wi-Fi AP / Gateway",
+        type: "Wi-Fi AP / Gateway",
         category: "network",
         vendor: "Network Gateway",
         rssi: -40,
-        absPos: { x: 50, y: 50 },
-        zone: "교실 천장 중앙 AP",
+        absPos: { x: 50, y: 85 },
+        zone: "거실 중앙 Wi-Fi 공유기",
         risk: "LOW",
         reasons: []
       }
     ];
 
-    let selectedDevice = allDevices[1]; // Select iPhone by default to inspect!
+    let selectedDevice = allDevices[0]; // Select iPhone first!
 
     // Helper for deterministic coordinates so devices don't randomly jump around
     function getStablePos(key, defaultX, defaultY) {
@@ -1206,73 +1236,56 @@
 
       const newList = [];
 
-      // 1. Hazel의 iPad (내 아이패드) - 30cm on podium (Wi-Fi 192.168.219.103)
-      const ipadIp = wifiApple ? wifiApple.ip : "192.168.219.103";
-      const ipadName = btIpad ? btIpad.name : "Hazel의 iPad (내 아이패드)";
-      const ipadPos = userMovedPositions["dev-ipad"] || { x: myPos.x - 4, y: myPos.y + 2 };
+      // 1. Hazel의 iPhone (내 스마트폰) - Left side 30cm!
+      const phoneName = btPhone ? btPhone.name : "Hazel의 iPhone (내 스마트폰)";
+      const phonePos = userMovedPositions["dev-myphone"] || userMovedPositions["Hazel의 iPhone"] || { x: 42, y: 17 };
       newList.push({
-        id: "dev-ipad",
-        name: ipadName,
-        type: `Apple iPad Pro (Wi-Fi: ${ipadIp})`,
-        category: "network",
+        id: "dev-myphone",
+        name: `${phoneName} (왼쪽 30cm)`,
+        type: (phoneMode === 'wifi') ? "Apple iPhone (Wi-Fi 연결 · 왼쪽 30cm)" : "Apple iPhone (LTE 모드 · 왼쪽 30cm)",
+        category: "bluetooth",
         vendor: "Apple Inc.",
-        rssi: -32, // Strong near signal
-        absPos: ipadPos,
-        zone: "선생님 교탁 위 / 맥북 바로 옆 (30cm)",
+        rssi: -32, // Extremely strong near signal
+        absPos: phonePos,
+        zone: "내 바로 왼쪽 옆 (초근접 30cm)",
         risk: "LOW",
-        reasons: ["내 초근접 기기 (30cm 영점 보정됨)", `로컬 Wi-Fi 활성 (${ipadIp})`]
+        reasons: ["내 초근접 기기 (30cm)", "신호 세기 극초강력 (-32 dBm)"]
       });
 
-      // 2. Hazel의 iPhone (내 스마트폰) - User switched to LTE, 3.0m away!
-      const phoneName = btPhone ? btPhone.name : "Hazel의 iPhone (내 스마트폰)";
-      if (phoneMode === 'wifi') {
-        const phonePos = userMovedPositions["dev-myphone"] || { x: myPos.x + 4, y: myPos.y + 2 };
-        newList.push({
-          id: "dev-myphone",
-          name: `${phoneName} (Wi-Fi 활성)`,
-          type: "Apple iPhone (Wi-Fi 로컬 연결)",
-          category: "network",
-          vendor: "Apple Mobile Device",
-          rssi: -42,
-          absPos: phonePos,
-          zone: "교탁 단상 (Wi-Fi 연결)",
-          risk: "LOW",
-          reasons: ["내 근접 기기", "Wi-Fi 네트워크 활성"]
-        });
-      } else {
-        const phonePos = userMovedPositions["dev-myphone"] || { x: 38, y: 52 };
-        newList.push({
-          id: "dev-myphone",
-          name: `${phoneName} (LTE 활성)`,
-          type: "Apple iPhone (LTE 데이터망 사용 / Wi-Fi 미연결)",
-          category: "bluetooth",
-          vendor: "Apple Inc. (Cellular)",
-          rssi: -65,
-          absPos: phonePos, // 3.0m away in row 2!
-          zone: "2분단 2열 책상 (약 3.0m 거리 · LTE 데이터망 사용)",
-          risk: "LOW",
-          reasons: ["LTE 셀룰러 모드", "Wi-Fi 미연결 상태", "Bluetooth 백그라운드 전파로 포착 (약 3.0m)"]
-        });
-      }
+      // 2. Hazel의 iPad (식탁 위 태블릿) - Far left on dining table (4.5m)
+      const ipadIp = wifiApple ? wifiApple.ip : "192.168.219.103";
+      const ipadName = btIpad ? btIpad.name : "Hazel의 iPad (식탁 위 태블릿)";
+      const ipadPos = userMovedPositions["dev-ipad"] || userMovedPositions["Hazel의 iPad"] || { x: 16, y: 56 };
+      newList.push({
+        id: "dev-ipad",
+        name: `${ipadName} (왼쪽 식탁)`,
+        type: `Apple iPad Pro (식탁 / Wi-Fi: ${ipadIp})`,
+        category: "network",
+        vendor: "Apple Inc.",
+        rssi: -66,
+        absPos: ipadPos,
+        zone: "왼쪽 멀리 식탁 위 (약 4.5m)",
+        risk: "LOW",
+        reasons: ["원거리 태블릿 (식탁 약 4.5m)", `로컬 Wi-Fi 활성 (${ipadIp})`]
+      });
 
-      // 3. Other Bluetooth devices (Watch, AirPods, TV, etc.)
+      // 3. Other Bluetooth devices (TV, Apple Watch, etc.)
       btDevs.forEach((d, idx) => {
         if (d.name && (d.name.includes("iPad") || d.name.includes("iPhone"))) return; // already handled
         const posKey = d.name || d.address || `dev-bt-${idx}`;
         let absPos = userMovedPositions[posKey] || userMovedPositions[`dev-bt-${idx}`];
-        let zone = "교실 내";
+        let zone = "교실/방 내부";
 
         if (!absPos) {
           if (d.name && d.name.includes("TV")) {
-            zone = "교실 전면 TV 디스플레이";
-            absPos = { x: 50, y: 22 };
+            zone = "내 정면 앞쪽 거실 TV (약 2.8m)";
+            absPos = userMovedPositions["dev-tv"] || { x: 50, y: 60 };
           } else if (d.name && d.name.includes("Watch")) {
-            // Apple Watch: placed 4.0 meters away as requested!
-            zone = "3분단 뒤편 좌석 (약 4.0m 거리)";
-            absPos = { x: 68, y: 65 };
+            zone = "우측 테이블/방 (약 4.2m)";
+            absPos = userMovedPositions["Hazel의 Apple Watch"] || { x: 74, y: 62 };
           } else if (d.name && d.name.includes("AirPods")) {
-            zone = "1분단 1열 책상 (약 1.5m 거리)";
-            absPos = { x: 35, y: 32 };
+            zone = "내 책상 위 (약 0.8m)";
+            absPos = { x: 48, y: 22 };
           } else {
             absPos = getStablePos(d.address || d.name, 25 + (idx * 17) % 60, 35 + (idx * 23) % 55);
           }
@@ -1588,6 +1601,29 @@
       window.removeEventListener('touchmove', onBlipDrag);
       window.removeEventListener('mouseup', endBlipDrag);
       window.removeEventListener('touchend', endBlipDrag);
+    }
+
+    function moveSelectedDeviceToPreset(presetKey) {
+      if (!selectedDevice) return;
+      let targetX = 50, targetY = 50, zoneText = "";
+      if (presetKey === 'left-near') {
+        targetX = 42; targetY = 17; zoneText = "내 바로 왼쪽 옆 (초근접 30cm)";
+      } else if (presetKey === 'front-tv') {
+        targetX = 50; targetY = 60; zoneText = "내 정면 앞쪽 거실 TV (약 2.8m)";
+      } else if (presetKey === 'left-table') {
+        targetX = 16; targetY = 56; zoneText = "왼쪽 멀리 식탁 위 (약 4.5m)";
+      } else if (presetKey === 'right-far') {
+        targetX = 74; targetY = 62; zoneText = "우측 테이블/방 (약 4.2m)";
+      }
+
+      selectedDevice.absPos = { x: targetX, y: targetY };
+      userMovedPositions[selectedDevice.id] = { x: targetX, y: targetY };
+      if (selectedDevice.name) userMovedPositions[selectedDevice.name] = { x: targetX, y: targetY };
+      selectedDevice.zone = zoneText;
+
+      renderBlips();
+      selectTarget(selectedDevice.id);
+      showToast(`'${selectedDevice.name}'를 ${zoneText}로 이동했습니다!`);
     }
 
     function moveSelectedDevice(meter, zoneText) {
