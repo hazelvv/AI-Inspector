@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스마트기기 탐지기</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d2e;
+      --surface2: #242740;
+      --border: #2e3155;
+      --text: #e2e8f0;
+      --text-muted: #8892a4;
+      --accent: #6366f1;
+      --accent-glow: rgba(99,102,241,0.3);
+      --high: #ef4444;
+      --high-bg: rgba(239,68,68,0.12);
+      --medium: #f59e0b;
+      --medium-bg: rgba(245,158,11,0.12);
+      --low: #22c55e;
+      --low-bg: rgba(34,197,94,0.1);
+      --scan-color: #6366f1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .logo h1 { font-size: 18px; font-weight: 700; }
+    .logo p { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--low);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Main layout */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px;
+    }
+
+    /* Summary cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .summary-card .label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .summary-card .value {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .summary-card .sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .card-high .value { color: var(--high); }
+    .card-wifi .value { color: #60a5fa; }
+    .card-bt .value { color: #a78bfa; }
+    .card-net .value { color: #34d399; }
+
+    /* Scan button */
+    .scan-controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .btn {
+      padding: 11px 24px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #4f46e5;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-secondary.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .scan-info {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Sections */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .section-header:hover { background: rgba(255,255,255,0.03); }
+    .section-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .icon-wifi { background: rgba(96,165,250,0.15); }
+    .icon-bt { background: rgba(167,139,250,0.15); }
+    .icon-net { background: rgba(52,211,153,0.15); }
+    .section-title { font-size: 15px; font-weight: 600; }
+    .section-count {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-high { background: var(--high-bg); color: var(--high); }
+    .badge-medium { background: var(--medium-bg); color: var(--medium); }
+
+    /* Device table */
+    .device-list { padding: 8px 0; }
+    .device-item {
+      padding: 14px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      border-bottom: 1px solid rgba(46,49,85,0.5);
+      transition: background 0.15s;
+    }
+    .device-item:last-child { border-bottom: none; }
+    .device-item:hover { background: rgba(255,255,255,0.025); }
+
+    .risk-indicator {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .risk-high { background: var(--high); box-shadow: 0 0 6px var(--high); }
+    .risk-medium { background: var(--medium); box-shadow: 0 0 6px var(--medium); }
+    .risk-low { background: #3b4262; }
+
+    .device-info { flex: 1; min-width: 0; }
+    .device-name {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .device-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .device-meta span { margin-right: 12px; }
+
+    .device-risk {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .risk-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .risk-badge-HIGH { background: var(--high-bg); color: var(--high); }
+    .risk-badge-MEDIUM { background: var(--medium-bg); color: var(--medium); }
+    .risk-badge-LOW { background: var(--low-bg); color: var(--low); }
+
+    .reasons {
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--high);
+    }
+
+    /* Signal bar */
+    .signal {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+    .signal-bar {
+      width: 3px;
+      background: var(--border);
+      border-radius: 1px;
+    }
+    .signal-bar.active { background: #60a5fa; }
+
+    /* Empty state */
+    .empty-state {
+      padding: 48px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty-state .icon { font-size: 36px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    /* Scanning overlay */
+    .scanning-wave {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 32px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .wave-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: wave-bounce 1.2s ease-in-out infinite;
+    }
+    .wave-dot:nth-child(2) { animation-delay: 0.2s; }
+    .wave-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes wave-bounce {
+      0%,80%,100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* Alert banner */
+    .alert-banner {
+      background: var(--high-bg);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+    .alert-banner.hidden { display: none; }
+    .alert-icon { font-size: 20px; }
+
+    /* Tooltip-like info */
+    .tip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .tip strong { color: var(--text); }
+
+    /* Collapsible */
+    .section-body { display: block; }
+    .section-body.collapsed { display: none; }
+    .toggle-arrow { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; }
+    .toggle-arrow.open { transform: rotate(180deg); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📡</div>
+      <div>
+        <h1>스마트기기 탐지기</h1>
+        <p>주변 무선기기 · 숨겨진 카메라 탐지</p>
+      </div>
+    </div>
+    <div class="status-bar">
+      <div class="status-dot"></div>
+      <span id="last-scan-time">아직 스캔 안 함</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="tip">
+      <strong>탐지 방법:</strong> WiFi 신호 (숨겨진 카메라 대부분 WiFi 사용), Bluetooth 기기, 로컬 네트워크 연결 기기를 스캔합니다.
+      <strong>⚠️ 주의:</strong> 탐지율 향상을 위해 WiFi를 켜놓고, 가능하면 주변 WiFi 네트워크에 연결한 상태에서 사용하세요.
+    </div>
+
+    <div id="alert-banner" class="alert-banner hidden">
+      <span class="alert-icon">🚨</span>
+      <span id="alert-text"></span>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card card-high">
+        <div class="label">⚠️ 고위험 기기</div>
+        <div class="value" id="count-high">-</div>
+        <div class="sub">즉각 확인 필요</div>
+      </div>
+      <div class="summary-card card-wifi">
+        <div class="label">📶 WiFi 기기</div>
+        <div class="value" id="count-wifi">-</div>
+        <div class="sub">주변 무선 네트워크</div>
+      </div>
+      <div class="summary-card card-bt">
+        <div class="label">🔵 Bluetooth 기기</div>
+        <div class="value" id="count-bt">-</div>
+        <div class="sub">블루투스 기기</div>
+      </div>
+      <div class="summary-card card-net">
+        <div class="label">🌐 네트워크 기기</div>
+        <div class="value" id="count-net">-</div>
+        <div class="sub">같은 네트워크</div>
+      </div>
+    </div>
+
+    <div class="scan-controls">
+      <button class="btn btn-primary" id="btn-scan-all" onclick="scanAll()">
+        <span id="scan-icon">🔍</span>
+        전체 스캔
+      </button>
+      <button class="btn btn-secondary" id="btn-wifi" onclick="scanSingle('wifi')">📶 WiFi</button>
+      <button class="btn btn-secondary" id="btn-bt" onclick="scanSingle('bluetooth')">🔵 Bluetooth</button>
+      <button class="btn btn-secondary" id="btn-net" onclick="scanSingle('network')">🌐 네트워크</button>
+      <span class="scan-info" id="scan-info">버튼을 눌러 주변 기기를 스캔하세요</span>
+    </div>
+
+    <!-- WiFi Section -->
+    <div class="section" id="section-wifi">
+      <div class="section-header" onclick="toggleSection('wifi')">
+        <div class="section-icon icon-wifi">📶</div>
+        <div>
+          <div class="section-title">WiFi 네트워크</div>
+        </div>
+        <div class="section-count">
+          <span id="wifi-high-badge"></span>
+          <span id="wifi-count-label">-</span>
+          <span class="toggle-arrow open" id="arrow-wifi">▼</span>
+        </div>
+      </div>
+      <div class="section-body" id="body-wifi">
+        <div class="empty-state">
+          <div class="icon">📡</div>
+          <p>스캔 버튼을 눌러주세요</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bluetooth Section -->
+    <div class="section" id="section-bt">
+      <div class="section-header" onclick="toggleSection('bt')">
+        <div class="section-icon icon-bt">🔵</div>
+        <div>
+          <div class="section-title">Bluetooth 기기</div>
+        </div>
+        <div class="section-count">
+          <span id="bt-high-badge"></span>
+          <span id="bt-count-label">-</span>
+          <span class="toggle-arrow open" id="arrow-bt">▼</span>
+        </div>
+      </div>
+      <div class="section-body" id="body-bt">
+        <div class="empty-state">
+          <div class="icon">🔵</div>
+          <p>스캔 버튼을 눌러주세요</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Network Section -->
+    <div class="section" id="section-net">
+      <div class="section-header" onclick="toggleSection('net')">
+        <div class="section-icon icon-net">🌐</div>
+        <div>
+          <div class="section-title">네트워크 연결 기기</div>
+        </div>
+        <div class="section-count">
+          <span id="net-high-badge"></span>
+          <span id="net-count-label">-</span>
+          <span class="toggle-arrow open" id="arrow-net">▼</span>
+        </div>
+      </div>
+      <div class="section-body" id="body-net">
+        <div class="empty-state">
+          <div class="icon">🌐</div>
+          <p>스캔 버튼을 눌러주세요</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function toggleSection(id) {
+      const body = document.getElementById('body-' + id);
+      const arrow = document.getElementById('arrow-' + id);
+      body.classList.toggle('collapsed');
+      arrow.classList.toggle('open');
+    }
+
+    function getSignalBars(rssi) {
+      const val = parseInt(rssi) || -100;
+      const strength = val >= -50 ? 4 : val >= -65 ? 3 : val >= -75 ? 2 : 1;
+      const heights = [5, 8, 11, 14];
+      return `<span class="signal">${heights.map((h, i) =>
+        `<span class="signal-bar ${i < strength ? 'active' : ''}" style="height:${h}px"></span>`
+      ).join('')}</span>`;
+    }
+
+    function setScanningState(state) {
+      const btn = document.getElementById('btn-scan-all');
+      const icon = document.getElementById('scan-icon');
+      btn.disabled = state;
+      if (state) {
+        icon.outerHTML = '<span id="scan-icon" class="spinner"></span>';
+      } else {
+        document.getElementById('scan-icon').outerHTML = '<span id="scan-icon">🔍</span>';
+      }
+    }
+
+    function setSectionLoading(id) {
+      document.getElementById('body-' + id).innerHTML = `
+        <div class="scanning-wave">
+          <div class="wave-dot"></div>
+          <div class="wave-dot"></div>
+          <div class="wave-dot"></div>
+          <span>스캔 중...</span>
+        </div>`;
+    }
+
+    function renderWifi(data) {
+      const networks = data.networks || [];
+      const high = networks.filter(n => n.risk === 'HIGH').length;
+      document.getElementById('wifi-count-label').textContent = `${networks.length}개`;
+      document.getElementById('wifi-high-badge').innerHTML =
+        high > 0 ? `<span class="badge badge-high">⚠️ 위험 ${high}</span>` : '';
+      document.getElementById('count-wifi').textContent = networks.length;
+
+      if (networks.length === 0) {
+        document.getElementById('body-wifi').innerHTML = `
+          <div class="empty-state"><div class="icon">📡</div><p>탐지된 WiFi 네트워크 없음</p></div>`;
+        return;
+      }
+
+      const items = networks.map(n => `
+        <div class="device-item">
+          <div class="risk-indicator risk-${n.risk.toLowerCase()}"></div>
+          <div class="device-info">
+            <div class="device-name">${escHtml(n.ssid)}${getSignalBars(n.rssi)}</div>
+            <div class="device-meta">
+              <span>📍 ${escHtml(n.bssid)}</span>
+              <span>📡 Ch.${escHtml(n.channel)}</span>
+              <span>🔒 ${escHtml(n.security)}</span>
+              ${n.vendor !== '알 수 없음' ? `<span>🏭 ${escHtml(n.vendor)}</span>` : ''}
+            </div>
+            ${n.reasons.length > 0 ? `<div class="reasons">⚠️ ${n.reasons.join(' · ')}</div>` : ''}
+          </div>
+          <div class="device-risk">
+            <div class="risk-badge risk-badge-${n.risk}">${riskLabel(n.risk)}</div>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('body-wifi').innerHTML = `<div class="device-list">${items}</div>`;
+    }
+
+    function renderBluetooth(data) {
+      const devices = data.devices || [];
+      const high = devices.filter(d => d.risk === 'HIGH').length;
+      document.getElementById('bt-count-label').textContent = `${devices.length}개`;
+      document.getElementById('bt-high-badge').innerHTML =
+        high > 0 ? `<span class="badge badge-high">⚠️ 위험 ${high}</span>` : '';
+      document.getElementById('count-bt').textContent = devices.length;
+
+      if (devices.length === 0) {
+        document.getElementById('body-bt').innerHTML = `
+          <div class="empty-state"><div class="icon">🔵</div><p>탐지된 Bluetooth 기기 없음<br><small style="margin-top:6px;display:block">다른 기기가 검색 가능 상태여야 탐지됩니다</small></p></div>`;
+        return;
+      }
+
+      const items = devices.map(d => `
+        <div class="device-item">
+          <div class="risk-indicator risk-${d.risk.toLowerCase()}"></div>
+          <div class="device-info">
+            <div class="device-name">${escHtml(d.name)}</div>
+            <div class="device-meta">
+              <span>📍 ${escHtml(d.address)}</span>
+              <span>🔧 ${escHtml(d.type)}</span>
+              ${d.vendor ? `<span>🏭 ${escHtml(d.vendor)}</span>` : ''}
+            </div>
+            ${d.reasons.length > 0 ? `<div class="reasons">⚠️ ${d.reasons.join(' · ')}</div>` : ''}
+          </div>
+          <div class="device-risk">
+            <div class="risk-badge risk-badge-${d.risk}">${riskLabel(d.risk)}</div>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('body-bt').innerHTML = `<div class="device-list">${items}</div>`;
+    }
+
+    function renderNetwork(data) {
+      const devices = data.devices || [];
+      const high = devices.filter(d => d.risk === 'HIGH').length;
+      document.getElementById('net-count-label').textContent = `${devices.length}개`;
+      document.getElementById('net-high-badge').innerHTML =
+        high > 0 ? `<span class="badge badge-high">⚠️ 위험 ${high}</span>` : '';
+      document.getElementById('count-net').textContent = devices.length;
+
+      if (devices.length === 0) {
+        document.getElementById('body-net').innerHTML = `
+          <div class="empty-state"><div class="icon">🌐</div><p>같은 네트워크에 연결된 기기 없음<br><small style="margin-top:6px;display:block">WiFi에 연결된 상태에서 스캔하세요</small></p></div>`;
+        return;
+      }
+
+      const items = devices.map(d => `
+        <div class="device-item">
+          <div class="risk-indicator risk-${d.risk.toLowerCase()}"></div>
+          <div class="device-info">
+            <div class="device-name">${escHtml(d.hostname)}</div>
+            <div class="device-meta">
+              <span>🌐 ${escHtml(d.ip)}</span>
+              <span>📍 ${escHtml(d.mac)}</span>
+              ${d.vendor !== '알 수 없음' ? `<span>🏭 ${escHtml(d.vendor)}</span>` : ''}
+            </div>
+            ${d.reasons.length > 0 ? `<div class="reasons">⚠️ ${d.reasons.join(' · ')}</div>` : ''}
+          </div>
+          <div class="device-risk">
+            <div class="risk-badge risk-badge-${d.risk}">${riskLabel(d.risk)}</div>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('body-net').innerHTML = `<div class="device-list">${items}</div>`;
+    }
+
+    function riskLabel(r) {
+      return r === 'HIGH' ? '🔴 고위험' : r === 'MEDIUM' ? '🟡 주의' : '🟢 정상';
+    }
+
+    function escHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    async function scanAll() {
+      setScanningState(true);
+      document.getElementById('scan-info').textContent = '스캔 중...';
+      setSectionLoading('wifi');
+      setSectionLoading('bt');
+      setSectionLoading('net');
+
+      try {
+        const res = await fetch('/api/scan/all');
+        const data = await res.json();
+
+        if (data.wifi) renderWifi(data.wifi);
+        if (data.bluetooth) renderBluetooth(data.bluetooth);
+        if (data.network) renderNetwork(data.network);
+
+        const totalHigh = data.summary?.total_high_risk || 0;
+        document.getElementById('count-high').textContent = totalHigh;
+        document.getElementById('last-scan-time').textContent =
+          `마지막 스캔: ${data.summary?.scanned_at || '방금'}`;
+
+        const banner = document.getElementById('alert-banner');
+        if (totalHigh > 0) {
+          document.getElementById('alert-text').textContent =
+            `⚠️ 고위험 기기 ${totalHigh}개 발견! 아래 목록을 확인하고 의심스러운 기기를 주변에서 찾아보세요.`;
+          banner.classList.remove('hidden');
+        } else {
+          banner.classList.add('hidden');
+        }
+
+        document.getElementById('scan-info').textContent =
+          `스캔 완료 — ${new Date().toLocaleTimeString('ko-KR')}`;
+      } catch (e) {
+        document.getElementById('scan-info').textContent = '스캔 실패: ' + e.message;
+      } finally {
+        setScanningState(false);
+      }
+    }
+
+    async function scanSingle(type) {
+      const bodyId = type === 'bluetooth' ? 'bt' : type === 'network' ? 'net' : type;
+      setSectionLoading(bodyId);
+
+      try {
+        const res = await fetch('/api/scan/' + type);
+        const data = await res.json();
+        if (type === 'wifi') renderWifi(data);
+        else if (type === 'bluetooth') renderBluetooth(data);
+        else if (type === 'network') renderNetwork(data);
+      } catch (e) {
+        document.getElementById('body-' + bodyId).innerHTML =
+          `<div class="empty-state"><p>오류: ${escHtml(e.message)}</p></div>`;
+      }
+    }
+  </script>
+</body>
+</html>

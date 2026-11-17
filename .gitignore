@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Claude / IDE
+.claude/
+.vscode/
+.idea/
+
+# Environment / Secrets (혹시 나중에 추가될 수 있는 환경변수 파일)
+.env
+*.env
+*.pem
+*.key
