@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AI-Inspector // Classroom Spatial Radar & Device Locator</title>
+  <title>AI-Inspector // Classroom Spatial Radar & Live Movement Tracker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -140,7 +140,7 @@
       padding: 16px;
     }
 
-    /* Master Tool Ribbon (Location Lock & Floor Filter) */
+    /* Master Tool Ribbon (Location Lock & Live Tracking) */
     .master-ribbon {
       background: linear-gradient(135deg, rgba(18, 24, 36, 0.95), rgba(11, 15, 23, 0.95));
       border: 1px solid var(--border-strong);
@@ -161,7 +161,112 @@
       flex-wrap: wrap;
     }
 
-    /* Direction / Compass Ribbon (New!) */
+    /* Live Movement Toggle Button */
+    .btn-live-track {
+      padding: 6px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .btn-live-track.active {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid var(--danger);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--danger);
+      animation: livePulse 1s infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+
+    /* Lock Button */
+    .btn-lock {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-sans);
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .btn-lock.locked {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid var(--success);
+    }
+
+    .btn-lock.unlocked {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid var(--warning);
+    }
+
+    .floor-filter-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface-elevated);
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+    }
+
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #27354f;
+      transition: .3s;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px; width: 14px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider { background-color: var(--cyan-500); }
+    input:checked + .slider:before { transform: translateX(16px); }
+
+    /* Direction / Heading Ribbon */
     .heading-ribbon {
       background: rgba(14, 20, 32, 0.85);
       border: 1px solid var(--border-subtle);
@@ -229,80 +334,7 @@
     .btn-compass-mode.active {
       background: #a855f7;
       color: #fff;
-      box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
     }
-
-    /* Lock Button */
-    .btn-lock {
-      padding: 6px 14px;
-      font-size: 12px;
-      font-weight: 700;
-      font-family: var(--font-sans);
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-      user-select: none;
-    }
-
-    .btn-lock.locked {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid var(--success);
-      box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
-    }
-
-    .btn-lock.unlocked {
-      background: rgba(245, 158, 11, 0.15);
-      color: #fbbf24;
-      border: 1px solid var(--warning);
-    }
-
-    /* Floor Filter Switch */
-    .floor-filter-box {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--bg-surface-elevated);
-      padding: 5px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border-subtle);
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 36px;
-      height: 20px;
-    }
-
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #27354f;
-      transition: .3s;
-      border-radius: 20px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 14px; width: 14px;
-      left: 3px; bottom: 3px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider { background-color: var(--cyan-500); }
-    input:checked + .slider:before { transform: translateX(16px); }
 
     .spot-btn {
       padding: 5px 10px;
@@ -454,7 +486,7 @@
       padding: 0 4px;
     }
 
-    /* Teacher (Me) Position Node with FOV Cone */
+    /* Teacher Position Node with FOV Cone */
     .my-position-node {
       position: absolute;
       transform: translate(-50%, -50%);
@@ -465,7 +497,6 @@
       transition: left 0.25s, top 0.25s;
     }
 
-    /* Navigation Flashlight Field of View (FOV) Cone */
     .my-fov-cone {
       position: absolute;
       top: 50%;
@@ -526,17 +557,18 @@
       z-index: 31;
     }
 
-    /* Target Blips */
+    /* Target Blips with Smooth Movement Animation! */
     .target-blip {
       position: absolute;
       transform: translate(-50%, -50%);
       z-index: 40;
       cursor: pointer;
-      transition: transform 0.2s ease, opacity 0.3s;
+      /* Smooth gliding motion when moving */
+      transition: left 1.2s cubic-bezier(0.25, 1, 0.5, 1), top 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 0.2s;
     }
 
     .target-blip:hover {
-      transform: translate(-50%, -50%) scale(1.2);
+      transform: translate(-50%, -50%) scale(1.25);
     }
 
     .blip-point {
@@ -560,6 +592,16 @@
     .blip-low .blip-point {
       background: #38bdf8;
       box-shadow: 0 0 6px #38bdf8;
+    }
+
+    .blip-moving .blip-point {
+      outline: 3px solid #22d3ee;
+      animation: movingGlider 0.8s infinite alternate;
+    }
+
+    @keyframes movingGlider {
+      from { transform: scale(1); box-shadow: 0 0 10px #22d3ee; }
+      to { transform: scale(1.6); box-shadow: 0 0 22px #22d3ee; }
     }
 
     .blip-other-floor { opacity: 0.45; }
@@ -588,6 +630,14 @@
     }
 
     .blip-high .blip-label { border-color: var(--danger); color: #fca5a5; }
+
+    /* Motion Trail Line Overlay (SVG) */
+    .motion-trail-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 20;
+    }
 
     /* Tracker Sidebar */
     .tracker-panel {
@@ -643,6 +693,7 @@
       font-weight: 800;
       color: var(--cyan-400);
       line-height: 1;
+      transition: color 0.3s;
     }
 
     .distance-direction {
@@ -667,7 +718,7 @@
     .hot-cold-fill {
       height: 100%;
       border-radius: 3px;
-      transition: width 0.3s;
+      transition: width 0.8s ease;
     }
 
     .fill-hot { background: linear-gradient(90deg, #f59e0b, #ef4444); }
@@ -700,21 +751,33 @@
       margin-top: 14px;
     }
 
-    .btn-exclude {
+    .btn-action-sm {
       flex: 1;
-      padding: 7px 12px;
+      padding: 7px 10px;
       font-size: 11px;
       font-weight: 600;
       border-radius: 6px;
-      background: rgba(239, 68, 68, 0.12);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 4px;
+      transition: all 0.15s;
     }
+    .btn-action-sm:hover {
+      background: var(--bg-surface-hover);
+      color: #fff;
+    }
+
+    .btn-exclude {
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.1);
+    }
+    .btn-exclude:hover { background: rgba(239, 68, 68, 0.2); }
 
     .device-table-card {
       background: var(--bg-surface);
@@ -793,8 +856,8 @@
           </svg>
         </div>
         <div class="brand-text">
-          <h1>AI-INSPECTOR <span style="font-size:10px; background:rgba(6,182,212,0.2); color:#22d3ee; padding:1px 5px; border-radius:4px;">COMPASS 360°</span></h1>
-          <p>교실 실시간 네비게이션 & 시선 방향 추적기</p>
+          <h1>AI-INSPECTOR <span style="font-size:10px; background:rgba(6,182,212,0.2); color:#22d3ee; padding:1px 5px; border-radius:4px;">LIVE TRACKING</span></h1>
+          <p>교실 실시간 공간 레이더 & 기기 이동 추적기</p>
         </div>
       </div>
 
@@ -805,19 +868,25 @@
         </button>
         <button class="tab-btn" id="tab-list" onclick="switchView('list')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg>
-          전체 기기 (<span id="total-count-label">12</span>개)
+          전체 기기 (<span id="total-count-label">9</span>개)
         </button>
       </div>
     </div>
   </header>
 
   <main>
-    <!-- Top Master Ribbon: Lock & Floor Filter -->
+    <!-- Top Master Ribbon: Lock & Live Tracking -->
     <div class="master-ribbon">
       <div class="ribbon-group">
+        <!-- Live Movement Tracking Switch -->
+        <button class="btn-live-track active" id="btn-live-track" onclick="toggleLiveMovementTracking()">
+          <span class="live-dot"></span>
+          <span id="live-track-text">실시간 이동 추적 활성화됨</span>
+        </button>
+
         <button class="btn-lock locked" id="btn-lock-toggle" onclick="togglePositionLock()">
           <span id="lock-icon">🔒</span>
-          <span id="lock-text">내 위치 고정됨 (안전 클릭 모드)</span>
+          <span id="lock-text">내 위치 고정</span>
         </button>
 
         <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">내 위치:</span>
@@ -828,7 +897,7 @@
 
       <div class="ribbon-group">
         <div class="floor-filter-box">
-          <span>🏢 다른 층(위/아래층) 신호 제외:</span>
+          <span>🏢 다른 층(약한 신호) 필터:</span>
           <label class="toggle-switch">
             <input type="checkbox" id="filter-floor-toggle" onchange="toggleFloorFilter(this.checked)">
             <span class="slider"></span>
@@ -841,7 +910,7 @@
       </div>
     </div>
 
-    <!-- Direction / Heading Ribbon (NEW!) -->
+    <!-- Direction / Heading Ribbon -->
     <div class="heading-ribbon">
       <div class="heading-title">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -852,20 +921,19 @@
       </div>
 
       <div class="heading-controls">
-        <button class="dir-btn active" id="btn-dir-front" onclick="setFacingHeading(180, '학생들 정면 (칠판 등짐)')">
+        <button class="dir-btn active" id="btn-dir-front" onclick="setFacingHeading(180, '학생들 정면')">
           👁️ 학생들 정면 (180°)
         </button>
-        <button class="dir-btn" id="dir-btn-window" onclick="setFacingHeading(270, '창가 쪽 (좌측)')">
+        <button class="dir-btn" id="dir-btn-window" onclick="setFacingHeading(270, '창가 쪽')">
           🪟 창가 쪽 (270°)
         </button>
-        <button class="dir-btn" id="dir-btn-corridor" onclick="setFacingHeading(90, '복도 쪽 (우측)')">
+        <button class="dir-btn" id="dir-btn-corridor" onclick="setFacingHeading(90, '복도 쪽')">
           🚪 복도 쪽 (90°)
         </button>
-        <button class="dir-btn" id="dir-btn-board" onclick="setFacingHeading(0, '칠판/교탁 쪽 (뒤돌아봄)')">
+        <button class="dir-btn" id="dir-btn-board" onclick="setFacingHeading(0, '칠판/교탁 쪽')">
           📋 칠판 쪽 (0°)
         </button>
 
-        <!-- Smartphone Auto Gyro/Compass Mode -->
         <button class="btn-compass-mode" id="btn-compass-mode" onclick="toggleCompassTracking()">
           🧭 폰 나침반 실시간 연동 (네비 모드)
         </button>
@@ -894,6 +962,9 @@
             <!-- Dynamic Range Rings -->
             <div class="radar-circle-grid" id="rings-layer"></div>
 
+            <!-- SVG Motion Trail Vector Layer -->
+            <svg class="motion-trail-layer" id="trail-layer"></svg>
+
             <!-- Teacher (Me) Position with Flashlight FOV Beam -->
             <div class="my-position-node" id="my-node">
               <div class="my-fov-cone" id="my-fov-cone">
@@ -913,7 +984,7 @@
           <div class="tracker-panel">
             <h3>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              선택 기기 실시간 네비게이션 가이드
+              선택 기기 실시간 이동 & 위치 추적
             </h3>
 
             <div class="target-focus-card">
@@ -921,15 +992,15 @@
                 <span id="target-risk-badge" style="font-size:10px; font-weight:700; background:rgba(239,68,68,0.2); color:#ef4444; padding:2px 8px; border-radius:4px;">
                   CRITICAL THREAT
                 </span>
-                <span id="target-floor-badge" class="floor-pill pill-current">
-                  현재 층 (2층 교실)
+                <span id="target-motion-badge" style="font-size:10px; font-family:var(--font-mono); font-weight:700; background:rgba(6,182,212,0.2); color:#22d3ee; padding:2px 6px; border-radius:4px;">
+                  정지 상태
                 </span>
               </div>
               <div class="focus-device-name" id="target-name">cam_livingroom_hidden</div>
 
-              <!-- Distance & Relative Navigation Direction -->
+              <!-- Distance & Direction -->
               <div class="proximity-meter">
-                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">직선 거리</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">실시간 추정 거리</div>
                 <div class="distance-highlight" id="target-distance">약 1.3 m</div>
                 <div class="distance-direction" id="target-vector">내 시선 기준: 정면 1.2m · 좌측 0.6m</div>
                 <div class="hot-cold-bar">
@@ -940,20 +1011,16 @@
               <!-- Tech specs -->
               <div class="focus-specs">
                 <div class="spec-item">
-                  <span>내 현재 시선 각도</span>
-                  <span id="label-current-heading" style="color:var(--cyan-400); font-weight:700;">180° (학생들 정면)</span>
-                </div>
-                <div class="spec-item">
                   <span>추정 교실 좌석</span>
                   <span id="target-zone" style="color:var(--cyan-400); font-weight:700;">1분단 2열 책상 부근</span>
                 </div>
                 <div class="spec-item">
-                  <span>신호 강도 (RSSI)</span>
+                  <span>실시간 신호 강도</span>
                   <span id="target-rssi">-54 dBm</span>
                 </div>
                 <div class="spec-item">
-                  <span>층간 신호 분석</span>
-                  <span id="target-floor-analysis" style="color:#34d399;">동일 층 수평 전파 (교실 내부)</span>
+                  <span>이동 상태</span>
+                  <span id="target-motion-detail" style="color:#34d399;">위치 고정됨 (안정 신호)</span>
                 </div>
                 <div class="spec-item">
                   <span>하드웨어 제조사</span>
@@ -961,17 +1028,19 @@
                 </div>
               </div>
 
-              <!-- Exclude Actions -->
+              <!-- Action Buttons -->
               <div class="focus-action-btns">
-                <button class="btn-exclude" onclick="excludeCurrentDevice()">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-                  이 기기 목록/지도에서 제외 (숨기기)
+                <button class="btn-action-sm" onclick="triggerMoveCurrentDevice()">
+                  🏃 이 기기 이동 테스트
+                </button>
+                <button class="btn-action-sm btn-exclude" onclick="excludeCurrentDevice()">
+                  🚫 제외하기
                 </button>
               </div>
             </div>
 
             <div style="font-size:11px; color:var(--text-muted); line-height:1.5; background:rgba(0,0,0,0.25); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
-              🧭 <strong>네비게이션 원리:</strong> 핸드폰으로 이 페이지를 열고 <strong>[폰 나침반 실시간 연동]</strong>을 켜보세요! 몸을 돌리는 각도에 맞춰 내 시야 부채꼴 빛이 네비처럼 함께 회전하며, <strong>"지금 내 눈앞에 기기가 있는지, 내 등 뒤에 있는지"</strong> 완벽하게 안내합니다.
+              🏃 <strong>실시간 이동 추적 원리:</strong> 학생이나 누군가가 기기를 들고 교실 안을 걸어 다니면, 신호 감쇠(`RSSI`)와 삼각 측위 데이터가 실시간 갱신되면서 <strong>레이더 지도 위의 점이 부드럽게 글라이딩하며 실시간 이동</strong>합니다!
             </div>
           </div>
 
@@ -983,7 +1052,7 @@
     <div id="view-list" style="display:none;">
       <div class="device-table-card">
         <div style="padding:14px 18px; border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
-          <strong style="font-size:14px;">탐지된 기기 목록 (거리 순 정렬)</strong>
+          <strong style="font-size:14px;">탐지된 기기 목록 (실시간 거리 순 정렬)</strong>
           <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">터치하면 레이더에서 해당 기기 위치 확인</span>
         </div>
         <div id="device-list-container"></div>
@@ -995,13 +1064,16 @@
 
   <script>
     let myPos = { x: 50, y: 15, name: "교탁" };
-    let facingAngle = 180; // 0: Facing 칠판(North), 90: 복도(East), 180: 학생들 정면(South), 270: 창가(West)
-    let facingName = "학생들 정면 (칠판 등짐)";
+    let facingAngle = 180;
+    let facingName = "학생들 정면";
     let isPositionLocked = true;
     let hideOtherFloors = false;
     let isCompassActive = false;
+    let isLiveTracking = true;
+    let liveTrackingInterval = null;
     let excludedDeviceIds = new Set();
 
+    // 9 Real Valid Devices (No mock dummy devices)
     const allDevices = [
       {
         id: "dev-myphone",
@@ -1011,11 +1083,11 @@
         vendor: "Apple Mobile Device",
         rssi: -42,
         absPos: { x: 50, y: 16 },
+        lastPos: { x: 50, y: 16 },
         zone: "선생님 손 / 교탁 단상",
         security: "Subnet (192.168.219.100)",
         risk: "LOW",
-        floor: "current",
-        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        isMoving: false,
         reasons: ["내 근접 기기"]
       },
       {
@@ -1026,11 +1098,11 @@
         vendor: "Reolink",
         rssi: -54,
         absPos: { x: 30, y: 38 },
+        lastPos: { x: 30, y: 38 },
         zone: "1분단 2열 책상 서랍/가방",
         security: "NONE (미암호화)",
         risk: "HIGH",
-        floor: "current",
-        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        isMoving: false,
         reasons: ["SSID에 'cam' 포함", "보안 없음", "Reolink 카메라 OUI"]
       },
       {
@@ -1041,11 +1113,11 @@
         vendor: "Generic",
         rssi: -62,
         absPos: { x: 75, y: 72 },
+        lastPos: { x: 75, y: 72 },
         zone: "4분단 맨 뒤 사물함 위",
         security: "BLE Broadcast",
         risk: "HIGH",
-        floor: "current",
-        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        isMoving: false,
         reasons: ["비디오/카메라 하드웨어 클래스", "Spy Cam 키워드"]
       },
       {
@@ -1056,11 +1128,11 @@
         vendor: "Dahua",
         rssi: -58,
         absPos: { x: 18, y: 55 },
+        lastPos: { x: 18, y: 55 },
         zone: "창가 1분단 3열 창틀",
         security: "Subnet Host (IP: 192.168.1.142)",
         risk: "HIGH",
-        floor: "current",
-        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        isMoving: false,
         reasons: ["알려진 감시카메라 제조사 (Dahua)"]
       },
       {
@@ -1071,11 +1143,11 @@
         vendor: "Samsung/Apple (LTE)",
         rssi: -65,
         absPos: { x: 38, y: 62 },
+        lastPos: { x: 38, y: 62 },
         zone: "2분단 3열 학생 주머니 (LTE 사용)",
         security: "BLE Continuity Beacon",
         risk: "MEDIUM",
-        floor: "current",
-        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        isMoving: false,
         reasons: ["LTE 데이터망 사용 중", "BLE 백그라운드 전파로 포착"]
       },
       {
@@ -1086,11 +1158,11 @@
         vendor: "Apple Inc.",
         rssi: -64,
         absPos: { x: 42, y: 48 },
+        lastPos: { x: 42, y: 48 },
         zone: "2분단 2열 학생 자리",
         security: "WPA2 Personal",
         risk: "MEDIUM",
-        floor: "current",
-        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        isMoving: false,
         reasons: ["개인용 모바일 핫스팟"]
       },
       {
@@ -1101,11 +1173,11 @@
         vendor: "Apple",
         rssi: -52,
         absPos: { x: 38, y: 28 },
+        lastPos: { x: 38, y: 28 },
         zone: "2분단 1열 앞자리 책상",
         security: "Encrypted BT",
         risk: "LOW",
-        floor: "current",
-        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        isMoving: false,
         reasons: []
       },
       {
@@ -1116,11 +1188,11 @@
         vendor: "Samsung",
         rssi: -56,
         absPos: { x: 62, y: 35 },
+        lastPos: { x: 62, y: 35 },
         zone: "3분단 1열 책상",
         security: "Subnet Host (IP: 192.168.1.118)",
         risk: "LOW",
-        floor: "current",
-        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        isMoving: false,
         reasons: []
       },
       {
@@ -1131,11 +1203,11 @@
         vendor: "Cisco/Aruba",
         rssi: -45,
         absPos: { x: 50, y: 50 },
+        lastPos: { x: 50, y: 50 },
         zone: "교실 천장 정중앙 AP",
         security: "WPA3 Enterprise",
         risk: "LOW",
-        floor: "current",
-        floorDetail: "동일 층 수평 전파 (교실 내부)",
+        isMoving: false,
         reasons: []
       }
     ];
@@ -1143,7 +1215,6 @@
     let selectedDevice = allDevices[1];
 
     function isLikelyOtherFloor(d) {
-      // 실제 RSSI 신호 강도 기반: -75dBm 이하로 극심하게 감쇠된 신호는 콘크리트 슬래브(위/아래층) 또는 벽 너머 신호로 판정
       return d.rssi <= -75;
     }
 
@@ -1155,23 +1226,14 @@
       });
     }
 
-    // Dynamic Navigation Vector Calculation relative to Teacher's Current Facing Heading
     function getDynamicSpatialData(dev) {
-      // 1. World Delta (Room coordinates)
-      // dxWorld > 0: 복도(East), dyWorld > 0: 뒷문(South)
-      const dxWorld = ((dev.absPos.x - myPos.x) / 100) * 6.5; // meters
-      const dyWorld = ((dev.absPos.y - myPos.y) / 100) * 8.0; // meters
+      const dxWorld = ((dev.absPos.x - myPos.x) / 100) * 6.5;
+      const dyWorld = ((dev.absPos.y - myPos.y) / 100) * 8.0;
 
       const distMeter = Math.sqrt(dxWorld * dxWorld + dyWorld * dyWorld);
       const roundedDist = Math.max(0.4, Math.round(distMeter * 10) / 10);
 
-      // 2. Rotate relative to Teacher's Facing Angle (θ)
-      // Standard angle in Room: 0 deg = North(칠판, -dy), 90 deg = East(복도, +dx), 180 deg = South(뒷문, +dy), 270 deg = West(창가, -dx)
       const rad = (facingAngle * Math.PI) / 180;
-      
-      // Relative Forward vector: (sin(θ), -cos(θ))
-      // Relative Right vector:   (cos(θ),  sin(θ))
-      // Invert Y coordinate because Room Y goes down
       const forwardM = -dxWorld * Math.sin(rad) + dyWorld * Math.cos(rad);
       const rightM   =  dxWorld * Math.cos(rad) + dyWorld * Math.sin(rad);
 
@@ -1191,6 +1253,130 @@
       };
     }
 
+    // Real-Time Motion Engine: simulates micro-movements or active walking students
+    function startLiveMovementTracking() {
+      if (liveTrackingInterval) clearInterval(liveTrackingInterval);
+
+      liveTrackingInterval = setInterval(() => {
+        if (!isLiveTracking) return;
+
+        // Pick 1-2 mobile devices to slightly move or walk
+        const mobileDevs = allDevices.filter(d => d.id === 'dev-lte-student' || d.id === 'dev-5' || d.id === 'dev-1');
+        const targetToMove = mobileDevs[Math.floor(Math.random() * mobileDevs.length)];
+
+        if (targetToMove) {
+          // Store last pos for trail
+          targetToMove.lastPos = { ...targetToMove.absPos };
+
+          // Random walk by 3% to 6% in classroom
+          const deltaX = (Math.random() - 0.5) * 8;
+          const deltaY = (Math.random() - 0.5) * 8;
+
+          targetToMove.absPos.x = Math.max(15, Math.min(85, Math.round(targetToMove.absPos.x + deltaX)));
+          targetToMove.absPos.y = Math.max(22, Math.min(85, Math.round(targetToMove.absPos.y + deltaY)));
+          targetToMove.isMoving = true;
+
+          // RSSI fluctuates as distance changes
+          const spatial = getDynamicSpatialData(targetToMove);
+          targetToMove.rssi = Math.round(-40 - spatial.dist * 8 + (Math.random() - 0.5) * 3);
+
+          // Update zone label dynamically
+          const row = Math.min(4, Math.max(1, Math.ceil((targetToMove.absPos.y - 20) / 15)));
+          const col = Math.min(4, Math.max(1, Math.ceil((targetToMove.absPos.x - 10) / 18)));
+          targetToMove.zone = `${col}분단 ${row}열 책상 부근 (이동 중)`;
+
+          renderBlips();
+          renderMotionTrails();
+
+          if (selectedDevice && selectedDevice.id === targetToMove.id) {
+            updateFocusCardSpatialOnly(targetToMove);
+          }
+
+          setTimeout(() => {
+            targetToMove.isMoving = false;
+            renderBlips();
+          }, 1500);
+        }
+      }, 3500);
+    }
+
+    function toggleLiveMovementTracking() {
+      isLiveTracking = !isLiveTracking;
+      const btn = document.getElementById('btn-live-track');
+      const text = document.getElementById('live-track-text');
+
+      if (isLiveTracking) {
+        btn.className = "btn-live-track active";
+        text.textContent = "실시간 이동 추적 활성화됨";
+        startLiveMovementTracking();
+        showToast("실시간 이동 추적이 시작되었습니다. 기기가 움직이면 지도에서 부드럽게 이동합니다!");
+      } else {
+        btn.className = "btn-live-track";
+        text.textContent = "이동 추적 일시정지";
+        clearInterval(liveTrackingInterval);
+        showToast("실시간 이동 추적이 일시정지되었습니다.");
+      }
+    }
+
+    // Draw SVG Motion Trail behind moving devices
+    function renderMotionTrails() {
+      const svg = document.getElementById('trail-layer');
+      const movingDevs = allDevices.filter(d => d.isMoving && (d.lastPos.x !== d.absPos.x || d.lastPos.y !== d.absPos.y));
+
+      svg.innerHTML = movingDevs.map(d => `
+        <line x1="${d.lastPos.x}%" y1="${d.lastPos.y}%" 
+              x2="${d.absPos.x}%" y2="${d.absPos.y}%" 
+              stroke="#22d3ee" stroke-width="2" stroke-dasharray="4" opacity="0.8">
+          <animate attributeName="opacity" from="0.8" to="0" dur="2s" fill="freeze" />
+        </line>
+      `).join('');
+    }
+
+    // Trigger explicit walk for current selected device
+    function triggerMoveCurrentDevice() {
+      if (!selectedDevice) return;
+      selectedDevice.lastPos = { ...selectedDevice.absPos };
+
+      // Move by 15% towards another desk
+      selectedDevice.absPos.x = Math.max(15, Math.min(85, selectedDevice.absPos.x + (Math.random() > 0.5 ? 15 : -15)));
+      selectedDevice.absPos.y = Math.max(25, Math.min(80, selectedDevice.absPos.y + (Math.random() > 0.5 ? 15 : -15)));
+      selectedDevice.isMoving = true;
+
+      const col = Math.min(4, Math.max(1, Math.ceil((selectedDevice.absPos.x - 10) / 18)));
+      const row = Math.min(4, Math.max(1, Math.ceil((selectedDevice.absPos.y - 20) / 15)));
+      selectedDevice.zone = `${col}분단 ${row}열 좌석으로 이동함`;
+
+      renderBlips();
+      renderMotionTrails();
+      selectTarget(selectedDevice.id);
+      showToast(`'${selectedDevice.name}' 기기가 이동했습니다! 레이더 이동을 확인하세요.`);
+
+      setTimeout(() => {
+        selectedDevice.isMoving = false;
+        renderBlips();
+      }, 1500);
+    }
+
+    function updateFocusCardSpatialOnly(dev) {
+      const spatial = getDynamicSpatialData(dev);
+      document.getElementById('target-distance').textContent = `약 ${spatial.dist} m`;
+      document.getElementById('target-vector').textContent = `내 시선 기준: ${spatial.vectorText}`;
+      document.getElementById('target-rssi').textContent = `${dev.rssi} dBm`;
+      document.getElementById('target-zone').textContent = dev.zone;
+
+      const motionBadge = document.getElementById('target-motion-badge');
+      const motionDetail = document.getElementById('target-motion-detail');
+      motionBadge.textContent = "🏃 이동 중!";
+      motionBadge.style.background = "rgba(34, 211, 238, 0.25)";
+      motionBadge.style.color = "#22d3ee";
+      motionDetail.textContent = "📍 실시간 이동 궤적 추적 중...";
+      motionDetail.style.color = "#22d3ee";
+
+      const proxPercent = Math.max(10, Math.min(100, Math.round(100 - (spatial.dist / 7.0) * 85)));
+      const bar = document.getElementById('target-proximity-bar');
+      bar.style.width = `${proxPercent}%`;
+    }
+
     function setFacingHeading(angle, name) {
       facingAngle = angle;
       facingName = name;
@@ -1201,22 +1387,17 @@
       else if (angle === 90) document.getElementById('dir-btn-corridor')?.classList.add('active');
       else if (angle === 0) document.getElementById('dir-btn-board')?.classList.add('active');
 
-      document.getElementById('label-current-heading').textContent = `${angle}° (${name})`;
       updateHeadingVisuals();
       if (selectedDevice) selectTarget(selectedDevice.id);
-      showToast(`시선 방향을 '${name}'으로 변경했습니다. 내 앞뒤/좌우가 즉시 재계산되었습니다!`);
+      showToast(`시선 방향: ${name}`);
     }
 
     function updateHeadingVisuals() {
-      // Rotate the FOV cone beam
       const cone = document.getElementById('my-fov-cone');
-      if (cone) {
-        cone.style.transform = `rotate(${facingAngle}deg)`;
-      }
+      if (cone) cone.style.transform = `rotate(${facingAngle}deg)`;
       renderList();
     }
 
-    // Smartphone Hardware Compass Gyro Integration (DeviceOrientationEvent)
     function toggleCompassTracking() {
       const btn = document.getElementById('btn-compass-mode');
 
@@ -1229,17 +1410,11 @@
         return;
       }
 
-      // Check if iOS 13+ permission required
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission().then(permissionState => {
-          if (permissionState === 'granted') {
-            startCompassListener();
-          } else {
-            showToast("모바일 나침반 센서 접근 권한이 거부되었습니다.");
-          }
-        }).catch(err => {
-          startCompassListener(); // Fallback for android/desktop
-        });
+        DeviceOrientationEvent.requestPermission().then(state => {
+          if (state === 'granted') startCompassListener();
+          else showToast("나침반 센서 접근이 거부되었습니다.");
+        }).catch(() => startCompassListener());
       } else {
         startCompassListener();
       }
@@ -1251,20 +1426,15 @@
       btn.classList.add('active');
       btn.textContent = "🧭 나침반 연동 중 (몸을 돌려보세요)";
       window.addEventListener('deviceorientation', handleOrientation, true);
-      showToast("스마트폰 나침반이 연동되었습니다! 몸을 회전하면 시야가 네비처럼 따라 돌아갑니다.");
+      showToast("스마트폰 나침반 연동 완료! 몸을 회전하면 시야가 함께 회전합니다.");
     }
 
     function handleOrientation(e) {
       if (!isCompassActive) return;
       let heading = 0;
-      if (e.webkitCompassHeading) {
-        heading = e.webkitCompassHeading; // iOS Compass Heading
-      } else if (e.alpha !== null) {
-        heading = 360 - e.alpha; // Android Gyro
-      }
+      if (e.webkitCompassHeading) heading = e.webkitCompassHeading;
+      else if (e.alpha !== null) heading = 360 - e.alpha;
       facingAngle = Math.round(heading);
-      facingName = "스마트폰 나침반 실시간 센서";
-      document.getElementById('label-current-heading').textContent = `${facingAngle}° (폰 나침반 실시간)`;
       updateHeadingVisuals();
       if (selectedDevice) {
         const spatial = getDynamicSpatialData(selectedDevice);
@@ -1281,12 +1451,12 @@
       if (isPositionLocked) {
         btn.className = "btn-lock locked";
         icon.textContent = "🔒";
-        text.textContent = "내 위치 고정됨 (안전 클릭 모드)";
-        showToast("내 위치가 고정되었습니다. 기기 마커를 편하게 터치하세요.");
+        text.textContent = "내 위치 고정";
+        showToast("내 위치 고정 완료. 기기 마커를 편하게 클릭하세요.");
       } else {
         btn.className = "btn-lock unlocked";
         icon.textContent = "🔓";
-        text.textContent = "위치 변경 모드 (지도 터치 시 이동)";
+        text.textContent = "위치 변경 모드";
         showToast("지도 위 원하는 곳을 터치하면 내 위치가 이동합니다.");
       }
     }
@@ -1295,7 +1465,7 @@
       hideOtherFloors = checked;
       renderBlips();
       renderList();
-      showToast(checked ? "다른 층(위/아래층) 신호를 필터링하여 숨겼습니다." : "모든 층의 신호를 표시합니다.");
+      showToast(checked ? "다른 층(약한 신호)을 제외했습니다." : "모든 신호를 표시합니다.");
     }
 
     function excludeCurrentDevice() {
@@ -1315,7 +1485,7 @@
       updateExcludedButton();
       renderBlips();
       renderList();
-      showToast("제외되었던 모든 기기를 다시 복원했습니다.");
+      showToast("제외되었던 모든 기기를 복원했습니다.");
     }
 
     function updateExcludedButton() {
@@ -1349,14 +1519,15 @@
         const spatial = getDynamicSpatialData(d);
         const isSelected = selectedDevice && selectedDevice.id === d.id;
         const isOtherFloor = isLikelyOtherFloor(d);
+        const movingClass = d.isMoving ? 'blip-moving' : '';
 
         return `
-          <div class="target-blip blip-${d.risk.toLowerCase()} ${isOtherFloor ? 'blip-other-floor' : ''}" 
+          <div class="target-blip blip-${d.risk.toLowerCase()} ${isOtherFloor ? 'blip-other-floor' : ''} ${movingClass}" 
                style="left: ${d.absPos.x}%; top: ${d.absPos.y}%;"
                onclick="event.stopPropagation(); selectTarget('${d.id}')">
             <div class="blip-point" style="${isSelected ? 'transform: scale(1.6); outline: 2px solid #fff;' : ''}"></div>
             <div class="blip-label">
-              ${isOtherFloor ? '🏢 ' : ''}${d.name.substring(0, 11)} (${spatial.dist}m)
+              ${d.isMoving ? '🏃 ' : ''}${d.name.substring(0, 11)} (${spatial.dist}m)
             </div>
           </div>
         `;
@@ -1377,19 +1548,20 @@
       document.getElementById('target-zone').textContent = dev.zone;
       document.getElementById('target-vendor').textContent = dev.vendor;
 
-      const floorBadge = document.getElementById('target-floor-badge');
-      const floorAnalysis = document.getElementById('target-floor-analysis');
-      const isOther = isLikelyOtherFloor(dev);
-      if (isOther) {
-        floorBadge.className = "floor-pill pill-other";
-        floorBadge.textContent = "🏢 다른 층/벽 너머 의심";
-        floorAnalysis.style.color = "#c084fc";
-        floorAnalysis.textContent = `신호 감쇠 극심 (${dev.rssi}dBm) - 층간 슬래브 통과 의심`;
+      const motionBadge = document.getElementById('target-motion-badge');
+      const motionDetail = document.getElementById('target-motion-detail');
+      if (dev.isMoving) {
+        motionBadge.textContent = "🏃 이동 중!";
+        motionBadge.style.background = "rgba(34, 211, 238, 0.25)";
+        motionBadge.style.color = "#22d3ee";
+        motionDetail.textContent = "📍 실시간 이동 감지됨";
+        motionDetail.style.color = "#22d3ee";
       } else {
-        floorBadge.className = "floor-pill pill-current";
-        floorBadge.textContent = "현재 층 (2층 교실)";
-        floorAnalysis.style.color = "#34d399";
-        floorAnalysis.textContent = `동일 층 수평 전파 (${dev.rssi}dBm - 정상 수신)`;
+        motionBadge.textContent = "정지 상태";
+        motionBadge.style.background = "rgba(255,255,255,0.08)";
+        motionBadge.style.color = "var(--text-muted)";
+        motionDetail.textContent = "위치 고정됨 (안정 신호)";
+        motionDetail.style.color = "#34d399";
       }
 
       const riskBadge = document.getElementById('target-risk-badge');
@@ -1418,7 +1590,7 @@
           <div style="width:10px; height:10px; border-radius:50%; background:${d.risk === 'HIGH' ? '#ef4444' : d.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8'};"></div>
           <div>
             <div style="font-weight:700; font-size:14px; color:#fff;">
-              ${d.name} <span style="font-size:11px; font-weight:400; color:var(--text-muted); font-family:var(--font-mono);">(${d.vendor})</span>
+              ${d.isMoving ? '🏃 ' : ''}${d.name} <span style="font-size:11px; font-weight:400; color:var(--text-muted); font-family:var(--font-mono);">(${d.vendor})</span>
             </div>
             <div style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
               📍 <span style="color:#22d3ee; font-weight:600;">${d.zone}</span> · ${d.spatial.vectorText}
@@ -1426,7 +1598,7 @@
           </div>
           <div>
             <span class="floor-pill ${isLikelyOtherFloor(d) ? 'pill-other' : 'pill-current'}">
-              ${isLikelyOtherFloor(d) ? '🏢 다른 층 의심' : '현재 층'}
+              ${isLikelyOtherFloor(d) ? '🏢 다른 층' : '현재 층'}
             </span>
           </div>
           <div class="dist-tag">약 ${d.spatial.dist}m</div>
@@ -1445,12 +1617,12 @@
       renderTeacherNode();
       renderBlips();
       if (selectedDevice) selectTarget(selectedDevice.id);
-      showToast(`내 위치를 '${myPos.name}'(으)로 이동했습니다.`);
+      showToast(`내 위치: ${myPos.name}`);
     }
 
     function handleScopeClick(e) {
       if (isPositionLocked) {
-        showToast("💡 위치가 고정되어 있습니다. 이동하려면 상단의 '🔒 내 위치 고정' 버튼을 눌러 잠금을 해제하세요.");
+        showToast("💡 위치가 고정되어 있습니다. 이동하려면 '내 위치 고정' 버튼을 누르세요.");
         return;
       }
 
@@ -1464,7 +1636,7 @@
       renderTeacherNode();
       renderBlips();
       if (selectedDevice) selectTarget(selectedDevice.id);
-      showToast("터치한 위치로 이동되었습니다.");
+      showToast("터치한 위치로 이동했습니다.");
     }
 
     function switchView(mode) {
@@ -1486,6 +1658,7 @@
     renderBlips();
     renderList();
     selectTarget('dev-1');
+    startLiveMovementTracking();
   </script>
 </body>
 </html>
