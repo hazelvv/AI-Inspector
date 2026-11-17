@@ -767,6 +767,32 @@
     // Full 12 Devices (Wi-Fi, Bluetooth, Subnet ARP)
     const allDevices = [
       {
+        id: "dev-myphone",
+        name: "내 스마트폰 (Wi-Fi 활성 감지됨)",
+        type: "Apple iPhone (Wi-Fi Connected)",
+        category: "network",
+        vendor: "Apple Mobile Device",
+        rssi: -42,
+        absPos: { x: 50, y: 16 }, // 내 손안에 있음 (교탁 바로 앞)
+        zone: "선생님 본인 손 / 교탁 단상 위",
+        security: "Subnet Host (IP: 192.168.219.100)",
+        risk: "LOW",
+        reasons: ["Wi-Fi 연결된 스마트폰/태블릿 탐지됨", "내 근접 기기"]
+      },
+      {
+        id: "dev-lte-student",
+        name: "LTE 사용 학생 폰 (BLE 비콘 감지)",
+        type: "Mobile Phone (LTE Active / BLE Beacon)",
+        category: "bluetooth",
+        vendor: "Samsung/Apple (LTE)",
+        rssi: -65,
+        absPos: { x: 38, y: 62 }, // 2분단 3열 학생
+        zone: "2분단 3열 학생 주머니 (LTE 데이터 사용 중)",
+        security: "BLE Continuity Beacon",
+        risk: "MEDIUM",
+        reasons: ["LTE 데이터망 사용 중", "블루투스 BLE 백그라운드 전파로 위치 포착"]
+      },
+      {
         id: "dev-1",
         name: "cam_livingroom_hidden",
         type: "Wi-Fi IP Camera",
