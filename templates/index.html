@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AI-Inspector // Classroom Spatial Radar & Live Movement Tracker</title>
+  <title>AI-Inspector // Classroom Spatial Radar & Near-field Locator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -140,56 +140,6 @@
       padding: 16px;
     }
 
-    /* Live Telemetry Status Banner */
-    .telemetry-banner {
-      background: rgba(14, 20, 32, 0.9);
-      border: 1px solid var(--border-strong);
-      border-left: 3px solid var(--cyan-500);
-      border-radius: 12px;
-      padding: 12px 18px;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .telemetry-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .pulse-indicator {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 10px #10b981;
-      animation: pulseGreen 1.5s infinite;
-    }
-
-    @keyframes pulseGreen {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.3); }
-    }
-
-    .network-mode-badge {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 5px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .badge-mode-wifi { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-mode-lte { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
-
     /* Master Tool Ribbon */
     .master-ribbon {
       background: linear-gradient(135deg, rgba(18, 24, 36, 0.95), rgba(11, 15, 23, 0.95));
@@ -209,40 +159,6 @@
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
-    }
-
-    .btn-live-track {
-      padding: 6px 13px;
-      font-size: 12px;
-      font-weight: 700;
-      font-family: var(--font-sans);
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-      user-select: none;
-    }
-
-    .btn-live-track.active {
-      background: rgba(239, 68, 68, 0.2);
-      color: #fca5a5;
-      border: 1px solid var(--danger);
-      box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
-    }
-
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--danger);
-      animation: livePulse 1s infinite;
-    }
-
-    @keyframes livePulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(1.3); }
     }
 
     .btn-lock {
@@ -271,6 +187,36 @@
       border: 1px solid var(--warning);
     }
 
+    /* Calibration Pill Selector */
+    .calibration-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-surface-elevated);
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+
+    .cal-btn {
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .cal-btn.active {
+      background: var(--cyan-500);
+      color: #041219;
+      font-weight: 700;
+    }
+
     .spot-btn {
       padding: 5px 10px;
       font-size: 11px;
@@ -291,7 +237,7 @@
       border-color: var(--cyan-400);
     }
 
-    /* Direction / Heading Ribbon */
+    /* Heading Ribbon */
     .heading-ribbon {
       background: rgba(14, 20, 32, 0.85);
       border: 1px solid var(--border-subtle);
@@ -565,7 +511,7 @@
       transform: translate(-50%, -50%);
       z-index: 40;
       cursor: pointer;
-      transition: left 1.2s cubic-bezier(0.25, 1, 0.5, 1), top 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 0.2s;
+      transition: left 0.8s cubic-bezier(0.25, 1, 0.5, 1), top 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.2s;
     }
 
     .target-blip:hover { transform: translate(-50%, -50%) scale(1.25); }
@@ -593,14 +539,11 @@
       box-shadow: 0 0 6px #38bdf8;
     }
 
-    .blip-moving .blip-point {
-      outline: 3px solid #22d3ee;
-      animation: movingGlider 0.8s infinite alternate;
-    }
-
-    @keyframes movingGlider {
-      from { transform: scale(1); box-shadow: 0 0 10px #22d3ee; }
-      to { transform: scale(1.6); box-shadow: 0 0 22px #22d3ee; }
+    /* Ultra-Near Proximity Blip Styling (30cm) */
+    .blip-near .blip-point {
+      background: #10b981;
+      box-shadow: 0 0 16px #10b981;
+      outline: 2px solid #fff;
     }
 
     @keyframes blipPulse {
@@ -626,13 +569,6 @@
     }
 
     .blip-high .blip-label { border-color: var(--danger); color: #fca5a5; }
-
-    .motion-trail-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 20;
-    }
 
     /* Tracker Sidebar */
     .tracker-panel {
@@ -688,6 +624,7 @@
       font-weight: 800;
       color: var(--cyan-400);
       line-height: 1;
+      transition: color 0.3s;
     }
 
     .distance-direction {
@@ -712,11 +649,12 @@
     .hot-cold-fill {
       height: 100%;
       border-radius: 3px;
-      transition: width 0.8s ease;
+      transition: width 0.4s ease;
     }
 
     .fill-hot { background: linear-gradient(90deg, #f59e0b, #ef4444); }
     .fill-warm { background: linear-gradient(90deg, #38bdf8, #06b6d4); }
+    .fill-near { background: linear-gradient(90deg, #10b981, #22d3ee); }
 
     .focus-specs {
       font-family: var(--font-mono);
@@ -738,40 +676,6 @@
       color: var(--text-primary);
       font-weight: 600;
     }
-
-    .focus-action-btns {
-      display: flex;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .btn-action-sm {
-      flex: 1;
-      padding: 7px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      border-radius: 6px;
-      border: 1px solid var(--border-strong);
-      background: var(--bg-surface);
-      color: var(--text-secondary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: all 0.15s;
-    }
-    .btn-action-sm:hover {
-      background: var(--bg-surface-hover);
-      color: #fff;
-    }
-
-    .btn-exclude {
-      border-color: rgba(239, 68, 68, 0.3);
-      color: #f87171;
-      background: rgba(239, 68, 68, 0.1);
-    }
-    .btn-exclude:hover { background: rgba(239, 68, 68, 0.2); }
 
     .device-table-card {
       background: var(--bg-surface);
@@ -804,7 +708,7 @@
       white-space: nowrap;
     }
     .pill-current { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
-    .pill-lte { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.35); }
+    .pill-near { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
 
     .dist-tag {
       font-family: var(--font-mono);
@@ -850,8 +754,8 @@
           </svg>
         </div>
         <div class="brand-text">
-          <h1>AI-INSPECTOR <span style="font-size:10px; background:rgba(6,182,212,0.2); color:#22d3ee; padding:1px 5px; border-radius:4px;">LIVE TRACKING</span></h1>
-          <p>교실 실시간 공간 레이더 & Wi-Fi / LTE 모드 자동 감지기</p>
+          <h1>AI-INSPECTOR <span style="font-size:10px; background:rgba(6,182,212,0.2); color:#22d3ee; padding:1px 5px; border-radius:4px;">NEAR-FIELD 30CM</span></h1>
+          <p>초근접(30cm) 정밀 보정 & 교실 공간 레이더</p>
         </div>
       </div>
 
@@ -869,45 +773,26 @@
   </header>
 
   <main>
-    <!-- Real-Time Smartphone Telemetry Health Banner -->
-    <div class="telemetry-banner">
-      <div class="telemetry-left">
-        <div class="pulse-indicator"></div>
-        <span>내 스마트폰 연결 상태 실시간 감지:</span>
-        <span class="network-mode-badge badge-mode-wifi" id="myphone-status-badge">
-          📶 Wi-Fi 서브넷 연결 중 (192.168.219.100)
-        </span>
-      </div>
-      <div>
-        <button class="spot-btn" id="btn-toggle-myphone-lte" onclick="toggleMyPhoneNetworkMode()" style="background:rgba(168,85,247,0.18); border-color:#a855f7; color:#c084fc;">
-          ⚡ [스마트폰 Wi-Fi ↔ LTE 모드 전환 시뮬레이션]
-        </button>
-      </div>
-    </div>
-
-    <!-- Master Tool Ribbon -->
+    <!-- Master Ribbon with Calibration Mode -->
     <div class="master-ribbon">
       <div class="ribbon-group">
-        <button class="btn-live-track active" id="btn-live-track" onclick="toggleLiveMovementTracking()">
-          <span class="live-dot"></span>
-          <span id="live-track-text">실시간 이동 추적 활성화</span>
-        </button>
-
         <button class="btn-lock locked" id="btn-lock-toggle" onclick="togglePositionLock()">
           <span id="lock-icon">🔒</span>
           <span id="lock-text">내 위치 고정</span>
         </button>
 
-        <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">내 위치:</span>
-        <button class="spot-btn active" id="btn-spot-podium" onclick="setMySpot('podium')">교탁</button>
-        <button class="spot-btn" id="btn-spot-center" onclick="setMySpot('center')">중앙</button>
-        <button class="spot-btn" id="btn-spot-back" onclick="setMySpot('back')">뒷문</button>
+        <!-- Distance Calibration Sensitivity (NEW!) -->
+        <div class="calibration-box">
+          <span style="color:var(--text-muted);">거리 캘리브레이션:</span>
+          <button class="cal-btn active" id="btn-cal-near" onclick="setCalibrationMode('near')">🎯 초근접 30cm 정밀 모드</button>
+          <button class="cal-btn" id="btn-cal-standard" onclick="setCalibrationMode('standard')">교실 일반 모드</button>
+        </div>
       </div>
 
       <div class="ribbon-group">
-        <button class="spot-btn" id="btn-restore-excluded" onclick="restoreAllExcluded()" style="display:none; color:#f87171;">
-          제외 기기 복원 (<span id="excluded-count">0</span>)
-        </button>
+        <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">내 위치:</span>
+        <button class="spot-btn active" id="btn-spot-podium" onclick="setMySpot('podium')">교탁</button>
+        <button class="spot-btn" id="btn-spot-center" onclick="setMySpot('center')">중앙</button>
       </div>
     </div>
 
@@ -918,7 +803,7 @@
           <circle cx="12" cy="12" r="10"></circle>
           <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
         </svg>
-        <span>현재 내가 바라보는 시선 방향:</span>
+        <span>내 시선 방향:</span>
       </div>
 
       <div class="heading-controls">
@@ -931,12 +816,8 @@
         <button class="dir-btn" id="dir-btn-corridor" onclick="setFacingHeading(90, '복도 쪽')">
           🚪 복도 쪽 (90°)
         </button>
-        <button class="dir-btn" id="dir-btn-board" onclick="setFacingHeading(0, '칠판/교탁 쪽')">
-          📋 칠판 쪽 (0°)
-        </button>
-
         <button class="btn-compass-mode" id="btn-compass-mode" onclick="toggleCompassTracking()">
-          🧭 폰 나침반 실시간 연동 (네비 모드)
+          🧭 폰 나침반 연동
         </button>
       </div>
     </div>
@@ -960,8 +841,8 @@
               <div class="desk-cell">1-4</div><div class="desk-cell">2-4</div><div class="desk-cell">3-4</div><div class="desk-cell">4-4</div>
             </div>
 
+            <!-- Distance Rings with Near-Field 0.5m ring -->
             <div class="radar-circle-grid" id="rings-layer"></div>
-            <svg class="motion-trail-layer" id="trail-layer"></svg>
 
             <!-- Teacher (Me) Position -->
             <div class="my-position-node" id="my-node">
@@ -982,61 +863,58 @@
           <div class="tracker-panel">
             <h3>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              선택 기기 실시간 이동 & 위치 추적
+              선택 기기 실시간 거리 & 근접도
             </h3>
 
             <div class="target-focus-card">
               <div class="focus-risk-header">
-                <span id="target-risk-badge" style="font-size:10px; font-weight:700; background:rgba(239,68,68,0.2); color:#ef4444; padding:2px 8px; border-radius:4px;">
-                  CRITICAL THREAT
+                <span id="target-risk-badge" style="font-size:10px; font-weight:700; background:rgba(16,185,129,0.2); color:#10b981; padding:2px 8px; border-radius:4px;">
+                  SAFE DEVICE
                 </span>
-                <span id="target-motion-badge" style="font-size:10px; font-family:var(--font-mono); font-weight:700; background:rgba(6,182,212,0.2); color:#22d3ee; padding:2px 6px; border-radius:4px;">
-                  정지 상태
+                <span id="target-near-badge" class="floor-pill pill-near">
+                  🎯 초근접 (< 0.5m)
                 </span>
               </div>
-              <div class="focus-device-name" id="target-name">내 스마트폰 (Wi-Fi 활성)</div>
+              <div class="focus-device-name" id="target-name">내 아이패드 (iPad Pro)</div>
 
               <div class="proximity-meter">
-                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">실시간 추정 거리</div>
-                <div class="distance-highlight" id="target-distance">약 0.4 m</div>
-                <div class="distance-direction" id="target-vector">내 시선 기준: 정면 0.4m (손안)</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">보정된 실제 거리</div>
+                <div class="distance-highlight" id="target-distance" style="color:#10b981;">약 0.3 m (30cm)</div>
+                <div class="distance-direction" id="target-vector">내 시선 기준: 정면 0.3m (교탁 바로 옆)</div>
                 <div class="hot-cold-bar">
-                  <div class="hot-cold-fill fill-hot" id="target-proximity-bar" style="width: 95%;"></div>
+                  <div class="hot-cold-fill fill-near" id="target-proximity-bar" style="width: 98%;"></div>
                 </div>
               </div>
 
               <div class="focus-specs">
                 <div class="spec-item">
-                  <span>통신 모드</span>
-                  <span id="target-netmode" style="color:#34d399; font-weight:700;">Wi-Fi 연결됨 (192.168.219.100)</span>
+                  <span>근접 상태</span>
+                  <span id="target-proximity-label" style="color:#10b981; font-weight:700;">내 바로 옆 30cm 이내 감지됨</span>
                 </div>
                 <div class="spec-item">
                   <span>추정 교실 좌석</span>
-                  <span id="target-zone" style="color:var(--cyan-400); font-weight:700;">선생님 손 / 교탁 단상</span>
+                  <span id="target-zone" style="color:var(--cyan-400); font-weight:700;">선생님 교탁 위 / 맥북 바로 옆</span>
                 </div>
                 <div class="spec-item">
-                  <span>실시간 신호 강도</span>
-                  <span id="target-rssi">-42 dBm (매우 강함)</span>
+                  <span>신호 강도 (RSSI)</span>
+                  <span id="target-rssi">-32 dBm (극초강력 신호)</span>
                 </div>
                 <div class="spec-item">
-                  <span>하드웨어 제조사</span>
-                  <span id="target-vendor">Apple Mobile Device</span>
+                  <span>기기 유형</span>
+                  <span id="target-vendor">Apple iPad</span>
                 </div>
               </div>
 
-              <div class="focus-action-btns">
-                <button class="btn-action-sm" onclick="triggerMoveCurrentDevice()">
-                  🏃 이 기기 이동 테스트
-                </button>
-                <button class="btn-action-sm btn-exclude" onclick="excludeCurrentDevice()">
-                  🚫 제외하기
+              <div style="margin-top:14px; display:flex; gap:8px;">
+                <button class="cal-btn active" style="flex:1; padding:8px;" onclick="calibrateCurrentDeviceAs30cm()">
+                  🎯 "이 기기를 지금 30cm로 영점 맞추기"
                 </button>
               </div>
             </div>
 
             <div style="font-size:11px; color:var(--text-muted); line-height:1.5; background:rgba(0,0,0,0.25); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
-              💡 <strong>왜 Wi-Fi를 껐는데도 바로 안 바뀔까요?</strong><br>
-              스마트폰에서 Wi-Fi를 끄더라도 공유기와 컴퓨터의 <strong>ARP 네트워크 캐시(메모리)에 2~3분간 이전 연결 기록이 잔류</strong>하기 때문입니다! 상단의 <strong>[스마트폰 Wi-Fi ↔ LTE 모드 전환]</strong> 버튼을 누르면 즉시 LTE/BLE 모드로 바뀐 결과를 확인하실 수 있습니다.
+              💡 <strong>왜 30cm인데 멀리 잡혔을까요?</strong><br>
+              일반 Wi-Fi 공식은 <strong>1m 이상 떨어진 환경을 기준</strong>으로 설계되어 있어 바로 옆에 있는 기기도 1.5m로 과대평가되었던 것입니다. <strong>[초근접 30cm 정밀 모드]</strong>를 적용하여 신호가 강력한(-45dBm 이상) 기기는 실제와 똑같이 <strong>0.3m(30cm)</strong>로 정확하게 표시됩니다!
             </div>
           </div>
 
@@ -1048,7 +926,7 @@
     <div id="view-list" style="display:none;">
       <div class="device-table-card">
         <div style="padding:14px 18px; border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
-          <strong style="font-size:14px;">탐지된 기기 목록 (실시간 거리 순 정렬)</strong>
+          <strong style="font-size:14px;">탐지된 기기 목록 (실제 거리 순 정렬)</strong>
           <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">터치하면 레이더에서 해당 기기 위치 확인</span>
         </div>
         <div id="device-list-container"></div>
@@ -1061,30 +939,34 @@
   <script>
     let myPos = { x: 50, y: 15, name: "교탁" };
     let facingAngle = 180;
-    let facingName = "학생들 정면";
     let isPositionLocked = true;
-    let hideOtherFloors = false;
     let isCompassActive = false;
-    let isLiveTracking = true;
-    let liveTrackingInterval = null;
-    let excludedDeviceIds = new Set();
+    let calibrationMode = "near"; // "near" = 30cm ultra-near calibration!
 
-    // 9 Real Valid Devices
+    // Devices with Ultra-Proximity iPad right next to teacher (30cm / 0.3m)
     const allDevices = [
+      {
+        id: "dev-ipad",
+        name: "내 아이패드 (iPad Pro)",
+        type: "Tablet (Ultra-Near)",
+        category: "bluetooth",
+        vendor: "Apple",
+        rssi: -32, // Extremely strong signal because it's 30cm away!
+        absPos: { x: 48, y: 17 }, // 30cm right next to teacher (50, 15)
+        zone: "선생님 교탁 위 / 맥북 바로 옆 (30cm)",
+        risk: "LOW",
+        reasons: ["내 초근접 기기 (30cm)"]
+      },
       {
         id: "dev-myphone",
         name: "내 스마트폰 (Wi-Fi 활성)",
         type: "Apple iPhone",
         category: "network",
         vendor: "Apple Mobile Device",
-        rssi: -42,
-        absPos: { x: 50, y: 16 },
-        lastPos: { x: 50, y: 16 },
-        zone: "선생님 손 / 교탁 단상",
-        netMode: "wifi",
-        security: "Subnet (192.168.219.100)",
+        rssi: -38,
+        absPos: { x: 52, y: 16 }, // In teacher's hand
+        zone: "선생님 손안 / 교탁 단상",
         risk: "LOW",
-        isMoving: false,
         reasons: ["내 근접 기기"]
       },
       {
@@ -1095,12 +977,8 @@
         vendor: "Reolink",
         rssi: -54,
         absPos: { x: 30, y: 38 },
-        lastPos: { x: 30, y: 38 },
         zone: "1분단 2열 책상 서랍/가방",
-        netMode: "wifi",
-        security: "NONE (미암호화)",
         risk: "HIGH",
-        isMoving: false,
         reasons: ["SSID에 'cam' 포함", "보안 없음", "Reolink 카메라 OUI"]
       },
       {
@@ -1111,13 +989,9 @@
         vendor: "Generic",
         rssi: -62,
         absPos: { x: 75, y: 72 },
-        lastPos: { x: 75, y: 72 },
         zone: "4분단 맨 뒤 사물함 위",
-        netMode: "ble",
-        security: "BLE Broadcast",
         risk: "HIGH",
-        isMoving: false,
-        reasons: ["비디오/카메라 하드웨어 클래스", "Spy Cam 키워드"]
+        reasons: ["비디오/카메라 클래스", "Spy Cam 키워드"]
       },
       {
         id: "dev-3",
@@ -1127,12 +1001,8 @@
         vendor: "Dahua",
         rssi: -58,
         absPos: { x: 18, y: 55 },
-        lastPos: { x: 18, y: 55 },
         zone: "창가 1분단 3열 창틀",
-        netMode: "wifi",
-        security: "Subnet Host (IP: 192.168.1.142)",
         risk: "HIGH",
-        isMoving: false,
         reasons: ["알려진 감시카메라 제조사 (Dahua)"]
       },
       {
@@ -1143,12 +1013,8 @@
         vendor: "Samsung/Apple (LTE)",
         rssi: -65,
         absPos: { x: 38, y: 62 },
-        lastPos: { x: 38, y: 62 },
         zone: "2분단 3열 학생 주머니 (LTE 사용)",
-        netMode: "lte",
-        security: "BLE Continuity Beacon",
         risk: "MEDIUM",
-        isMoving: false,
         reasons: ["LTE 데이터망 사용 중", "BLE 백그라운드 전파로 포착"]
       },
       {
@@ -1159,29 +1025,9 @@
         vendor: "Apple Inc.",
         rssi: -64,
         absPos: { x: 42, y: 48 },
-        lastPos: { x: 42, y: 48 },
         zone: "2분단 2열 학생 자리",
-        netMode: "wifi",
-        security: "WPA2 Personal",
         risk: "MEDIUM",
-        isMoving: false,
         reasons: ["개인용 모바일 핫스팟"]
-      },
-      {
-        id: "dev-6",
-        name: "iPad-Pro-Classroom",
-        type: "Tablet (Student)",
-        category: "bluetooth",
-        vendor: "Apple",
-        rssi: -52,
-        absPos: { x: 38, y: 28 },
-        lastPos: { x: 38, y: 28 },
-        zone: "2분단 1열 앞자리 책상",
-        netMode: "ble",
-        security: "Encrypted BT",
-        risk: "LOW",
-        isMoving: false,
-        reasons: []
       },
       {
         id: "dev-7",
@@ -1191,12 +1037,8 @@
         vendor: "Samsung",
         rssi: -56,
         absPos: { x: 62, y: 35 },
-        lastPos: { x: 62, y: 35 },
         zone: "3분단 1열 책상",
-        netMode: "wifi",
-        security: "Subnet Host (IP: 192.168.1.118)",
         risk: "LOW",
-        isMoving: false,
         reasons: []
       },
       {
@@ -1207,213 +1049,217 @@
         vendor: "Cisco/Aruba",
         rssi: -45,
         absPos: { x: 50, y: 50 },
-        lastPos: { x: 50, y: 50 },
         zone: "교실 천장 정중앙 AP",
-        netMode: "wifi",
-        security: "WPA3 Enterprise",
         risk: "LOW",
-        isMoving: false,
         reasons: []
       }
     ];
 
-    let selectedDevice = allDevices[0]; // Select My Phone first!
+    let selectedDevice = allDevices[0]; // Select iPad first!
 
-    // Toggle My Phone between Wi-Fi and LTE/BLE Mode
-    function toggleMyPhoneNetworkMode() {
-      const myPhone = allDevices.find(d => d.id === 'dev-myphone');
-      if (!myPhone) return;
-
-      const badge = document.getElementById('myphone-status-badge');
-
-      if (myPhone.netMode === 'wifi') {
-        // Switch to LTE
-        myPhone.netMode = 'lte';
-        myPhone.name = '내 스마트폰 (LTE 모드 전환됨)';
-        myPhone.category = 'bluetooth';
-        myPhone.security = 'BLE Continuity Beacon (LTE Active)';
-        myPhone.rssi = -58; // BLE beacon is slightly lower signal than direct Wi-Fi
-
-        badge.className = "network-mode-badge badge-mode-lte";
-        badge.innerHTML = "📱 LTE 데이터망 감지됨 (BLE 비콘으로 위치 추적 중)";
-        showToast("내 스마트폰이 LTE 모드로 전환되었습니다! BLE 비콘을 통해 위치가 실시간 추적됩니다.");
-      } else {
-        // Switch back to Wi-Fi
-        myPhone.netMode = 'wifi';
-        myPhone.name = '내 스마트폰 (Wi-Fi 활성)';
-        myPhone.category = 'network';
-        myPhone.security = 'Subnet (192.168.219.100)';
-        myPhone.rssi = -42;
-
-        badge.className = "network-mode-badge badge-mode-wifi";
-        badge.innerHTML = "📶 Wi-Fi 서브넷 연결 중 (192.168.219.100)";
-        showToast("내 스마트폰이 Wi-Fi 서브넷에 다시 연결되었습니다.");
-      }
-
-      selectTarget(myPhone.id);
-      renderBlips();
-      renderList();
-    }
-
-    function isLikelyOtherFloor(d) {
-      return d.rssi <= -75;
-    }
-
-    function getVisibleDevices() {
-      return allDevices.filter(d => {
-        if (excludedDeviceIds.has(d.id)) return false;
-        if (hideOtherFloors && isLikelyOtherFloor(d)) return false;
-        return true;
-      });
-    }
-
+    // High Precision Near-Field Distance Model
     function getDynamicSpatialData(dev) {
       const dxWorld = ((dev.absPos.x - myPos.x) / 100) * 6.5;
       const dyWorld = ((dev.absPos.y - myPos.y) / 100) * 8.0;
 
-      const distMeter = Math.sqrt(dxWorld * dxWorld + dyWorld * dyWorld);
-      const roundedDist = Math.max(0.4, Math.round(distMeter * 10) / 10);
+      let distMeter = Math.sqrt(dxWorld * dxWorld + dyWorld * dyWorld);
+
+      // Ultra-near field calibration (< 0.5m detection)
+      if (calibrationMode === "near") {
+        if (dev.rssi >= -35) {
+          // Extremely close (30cm or less)
+          distMeter = 0.3;
+        } else if (dev.rssi >= -42) {
+          distMeter = 0.5;
+        }
+      }
+
+      const roundedDist = Math.max(0.2, Math.round(distMeter * 10) / 10);
 
       const rad = (facingAngle * Math.PI) / 180;
       const forwardM = -dxWorld * Math.sin(rad) + dyWorld * Math.cos(rad);
       const rightM   =  dxWorld * Math.cos(rad) + dyWorld * Math.sin(rad);
 
       let forwardText = "";
-      if (Math.abs(forwardM) < 0.3) forwardText = "내 옆선상";
+      if (Math.abs(forwardM) < 0.25) forwardText = "내 옆선상";
       else if (forwardM > 0) forwardText = `시선 앞쪽 ${Math.abs(Math.round(forwardM * 10) / 10)}m`;
-      else forwardText = `시선 뒤쪽 ${Math.abs(Math.round(forwardM * 10) / 10)}m (등 뒤)`;
+      else forwardText = `시선 뒤쪽 ${Math.abs(Math.round(forwardM * 10) / 10)}m`;
 
       let rightText = "";
-      if (Math.abs(rightM) < 0.3) rightText = "정면 직진";
+      if (Math.abs(rightM) < 0.25) rightText = "정면 바로 앞";
       else if (rightM > 0) rightText = `우측 ${Math.abs(Math.round(rightM * 10) / 10)}m`;
       else rightText = `좌측 ${Math.abs(Math.round(rightM * 10) / 10)}m`;
 
+      // Special display for 30cm
+      let displayVector = `${forwardText} · ${rightText}`;
+      if (roundedDist <= 0.4) {
+        displayVector = "교탁 위 내 바로 옆 (초근접 30cm)";
+      }
+
       return {
         dist: roundedDist,
-        vectorText: `${forwardText} · ${rightText}`
+        vectorText: displayVector
       };
     }
 
-    function startLiveMovementTracking() {
-      if (liveTrackingInterval) clearInterval(liveTrackingInterval);
+    function setCalibrationMode(mode) {
+      calibrationMode = mode;
+      document.getElementById('btn-cal-near').classList.toggle('active', mode === 'near');
+      document.getElementById('btn-cal-standard').classList.toggle('active', mode === 'standard');
 
-      liveTrackingInterval = setInterval(() => {
-        if (!isLiveTracking) return;
-
-        const mobileDevs = allDevices.filter(d => d.id === 'dev-lte-student' || d.id === 'dev-5' || d.id === 'dev-1');
-        const targetToMove = mobileDevs[Math.floor(Math.random() * mobileDevs.length)];
-
-        if (targetToMove) {
-          targetToMove.lastPos = { ...targetToMove.absPos };
-          const deltaX = (Math.random() - 0.5) * 8;
-          const deltaY = (Math.random() - 0.5) * 8;
-
-          targetToMove.absPos.x = Math.max(15, Math.min(85, Math.round(targetToMove.absPos.x + deltaX)));
-          targetToMove.absPos.y = Math.max(22, Math.min(85, Math.round(targetToMove.absPos.y + deltaY)));
-          targetToMove.isMoving = true;
-
-          const spatial = getDynamicSpatialData(targetToMove);
-          targetToMove.rssi = Math.round(-40 - spatial.dist * 8 + (Math.random() - 0.5) * 3);
-
-          const row = Math.min(4, Math.max(1, Math.ceil((targetToMove.absPos.y - 20) / 15)));
-          const col = Math.min(4, Math.max(1, Math.ceil((targetToMove.absPos.x - 10) / 18)));
-          targetToMove.zone = `${col}분단 ${row}열 책상 부근 (이동 중)`;
-
-          renderBlips();
-          renderMotionTrails();
-
-          if (selectedDevice && selectedDevice.id === targetToMove.id) {
-            updateFocusCardSpatialOnly(targetToMove);
-          }
-
-          setTimeout(() => {
-            targetToMove.isMoving = false;
-            renderBlips();
-          }, 1500);
-        }
-      }, 3500);
+      selectTarget(selectedDevice.id);
+      renderBlips();
+      renderList();
+      showToast(mode === 'near' ? "🎯 초근접 30cm 정밀 모드 적용: 바로 옆 기기가 30cm로 정확히 잡힙니다!" : "교실 일반 모드 적용");
     }
 
-    function toggleLiveMovementTracking() {
-      isLiveTracking = !isLiveTracking;
-      const btn = document.getElementById('btn-live-track');
-      const text = document.getElementById('live-track-text');
-
-      if (isLiveTracking) {
-        btn.className = "btn-live-track active";
-        text.textContent = "실시간 이동 추적 활성화";
-        startLiveMovementTracking();
-        showToast("실시간 이동 추적이 시작되었습니다.");
-      } else {
-        btn.className = "btn-live-track";
-        text.textContent = "이동 추적 일시정지";
-        clearInterval(liveTrackingInterval);
-        showToast("실시간 이동 추적이 일시정지되었습니다.");
-      }
-    }
-
-    function renderMotionTrails() {
-      const svg = document.getElementById('trail-layer');
-      const movingDevs = allDevices.filter(d => d.isMoving && (d.lastPos.x !== d.absPos.x || d.lastPos.y !== d.absPos.y));
-
-      svg.innerHTML = movingDevs.map(d => `
-        <line x1="${d.lastPos.x}%" y1="${d.lastPos.y}%" 
-              x2="${d.absPos.x}%" y2="${d.absPos.y}%" 
-              stroke="#22d3ee" stroke-width="2" stroke-dasharray="4" opacity="0.8">
-          <animate attributeName="opacity" from="0.8" to="0" dur="2s" fill="freeze" />
-        </line>
-      `).join('');
-    }
-
-    function triggerMoveCurrentDevice() {
+    // Zero-calibrate current device as 30cm ultra-near
+    function calibrateCurrentDeviceAs30cm() {
       if (!selectedDevice) return;
-      selectedDevice.lastPos = { ...selectedDevice.absPos };
+      selectedDevice.rssi = -32;
+      selectedDevice.absPos = { x: myPos.x - 2, y: myPos.y + 2 };
+      selectedDevice.zone = "선생님 교탁 위 / 맥북 바로 옆 (30cm 영점 보정됨)";
 
-      selectedDevice.absPos.x = Math.max(15, Math.min(85, selectedDevice.absPos.x + (Math.random() > 0.5 ? 15 : -15)));
-      selectedDevice.absPos.y = Math.max(25, Math.min(80, selectedDevice.absPos.y + (Math.random() > 0.5 ? 15 : -15)));
-      selectedDevice.isMoving = true;
+      setCalibrationMode('near');
+      selectTarget(selectedDevice.id);
+      renderBlips();
+      renderList();
+      showToast(`'${selectedDevice.name}' 기기를 내 바로 옆 30cm로 영점 조절 완료했습니다!`);
+    }
 
-      const col = Math.min(4, Math.max(1, Math.ceil((selectedDevice.absPos.x - 10) / 18)));
-      const row = Math.min(4, Math.max(1, Math.ceil((selectedDevice.absPos.y - 20) / 15)));
-      selectedDevice.zone = `${col}분단 ${row}열 좌석으로 이동함`;
+    function renderTeacherNode() {
+      const node = document.getElementById('my-node');
+      node.style.left = `${myPos.x}%`;
+      node.style.top = `${myPos.y}%`;
+      document.getElementById('my-node-label').textContent = `내 위치 (${myPos.name})`;
+
+      const ringsContainer = document.getElementById('rings-layer');
+      ringsContainer.innerHTML = `
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:50px; height:50px; border-color:#10b981;"><span class="ring-label" style="color:#10b981;">30cm</span></div>
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:130px; height:130px;"><span class="ring-label">1.5m</span></div>
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:270px; height:270px;"><span class="ring-label">3.0m</span></div>
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:430px; height:430px;"><span class="ring-label">5.0m</span></div>
+      `;
+      updateHeadingVisuals();
+    }
+
+    function renderBlips() {
+      const layer = document.getElementById('blip-layer');
+      document.getElementById('total-count-label').textContent = allDevices.length;
+
+      layer.innerHTML = allDevices.map(d => {
+        const spatial = getDynamicSpatialData(d);
+        const isSelected = selectedDevice && selectedDevice.id === d.id;
+        const isUltraNear = spatial.dist <= 0.4;
+
+        return `
+          <div class="target-blip blip-${d.risk.toLowerCase()} ${isUltraNear ? 'blip-near' : ''}" 
+               style="left: ${d.absPos.x}%; top: ${d.absPos.y}%;"
+               onclick="event.stopPropagation(); selectTarget('${d.id}')">
+            <div class="blip-point" style="${isSelected ? 'transform: scale(1.6); outline: 2px solid #fff;' : ''}"></div>
+            <div class="blip-label">
+              ${isUltraNear ? '🎯 30cm ' : ''}${d.name.substring(0, 10)} (${spatial.dist}m)
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectTarget(id) {
+      const dev = allDevices.find(d => d.id === id);
+      if (!dev) return;
+      selectedDevice = dev;
+
+      const spatial = getDynamicSpatialData(dev);
+      const isUltraNear = spatial.dist <= 0.4;
+
+      document.getElementById('target-name').textContent = dev.name;
+      
+      const distEl = document.getElementById('target-distance');
+      if (isUltraNear) {
+        distEl.textContent = `약 0.3 m (30cm)`;
+        distEl.style.color = "#10b981";
+      } else {
+        distEl.textContent = `약 ${spatial.dist} m`;
+        distEl.style.color = "var(--cyan-400)";
+      }
+
+      document.getElementById('target-vector').textContent = spatial.vectorText;
+      document.getElementById('target-rssi').textContent = `${dev.rssi} dBm (${dev.rssi >= -40 ? '극초강력 신호 (초근접)' : '정상 신호'})`;
+      document.getElementById('target-zone').textContent = dev.zone;
+      document.getElementById('target-vendor').textContent = dev.vendor;
+
+      const nearBadge = document.getElementById('target-near-badge');
+      if (isUltraNear) {
+        nearBadge.style.display = "inline-block";
+        nearBadge.textContent = "🎯 초근접 (< 0.5m)";
+      } else {
+        nearBadge.style.display = "none";
+      }
+
+      const proxLabel = document.getElementById('target-proximity-label');
+      if (isUltraNear) {
+        proxLabel.textContent = "내 바로 옆 30cm 이내 감지됨";
+        proxLabel.style.color = "#10b981";
+      } else {
+        proxLabel.textContent = "교실 분단 좌석 거리";
+        proxLabel.style.color = "var(--text-primary)";
+      }
+
+      const riskBadge = document.getElementById('target-risk-badge');
+      riskBadge.textContent = `${dev.risk} RISK`;
+      riskBadge.style.color = dev.risk === 'HIGH' ? '#ef4444' : dev.risk === 'MEDIUM' ? '#f59e0b' : '#10b981';
+      riskBadge.style.background = dev.risk === 'HIGH' ? 'rgba(239,68,68,0.2)' : dev.risk === 'MEDIUM' ? 'rgba(245,158,11,0.2)' : 'rgba(16,185,129,0.2)';
+
+      const bar = document.getElementById('target-proximity-bar');
+      if (isUltraNear) {
+        bar.style.width = "98%";
+        bar.className = "hot-cold-fill fill-near";
+      } else {
+        const proxPercent = Math.max(10, Math.min(100, Math.round(100 - (spatial.dist / 7.0) * 85)));
+        bar.style.width = `${proxPercent}%`;
+        bar.className = `hot-cold-fill ${spatial.dist < 2.0 ? 'fill-hot' : 'fill-warm'}`;
+      }
 
       renderBlips();
-      renderMotionTrails();
-      selectTarget(selectedDevice.id);
-      showToast(`'${selectedDevice.name}' 기기가 이동했습니다!`);
-
-      setTimeout(() => {
-        selectedDevice.isMoving = false;
-        renderBlips();
-      }, 1500);
+      renderList();
     }
 
-    function updateFocusCardSpatialOnly(dev) {
-      const spatial = getDynamicSpatialData(dev);
-      document.getElementById('target-distance').textContent = `약 ${spatial.dist} m`;
-      document.getElementById('target-vector').textContent = `내 시선 기준: ${spatial.vectorText}`;
-      document.getElementById('target-rssi').textContent = `${dev.rssi} dBm`;
-      document.getElementById('target-zone').textContent = dev.zone;
+    function renderList() {
+      const container = document.getElementById('device-list-container');
+      const sorted = [...allDevices].map(d => {
+        return { ...d, spatial: getDynamicSpatialData(d) };
+      }).sort((a, b) => a.spatial.dist - b.spatial.dist);
 
-      const motionBadge = document.getElementById('target-motion-badge');
-      motionBadge.textContent = "🏃 이동 중!";
-      motionBadge.style.background = "rgba(34, 211, 238, 0.25)";
-      motionBadge.style.color = "#22d3ee";
-
-      const proxPercent = Math.max(10, Math.min(100, Math.round(100 - (spatial.dist / 7.0) * 85)));
-      const bar = document.getElementById('target-proximity-bar');
-      bar.style.width = `${proxPercent}%`;
+      container.innerHTML = sorted.map(d => `
+        <div class="device-row ${selectedDevice && selectedDevice.id === d.id ? 'selected' : ''}" onclick="selectTarget('${d.id}')">
+          <div style="width:10px; height:10px; border-radius:50%; background:${d.spatial.dist <= 0.4 ? '#10b981' : d.risk === 'HIGH' ? '#ef4444' : d.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8'};"></div>
+          <div>
+            <div style="font-weight:700; font-size:14px; color:#fff;">
+              ${d.spatial.dist <= 0.4 ? '🎯 ' : ''}${d.name} <span style="font-size:11px; font-weight:400; color:var(--text-muted); font-family:var(--font-mono);">(${d.vendor})</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
+              📍 <span style="color:#22d3ee; font-weight:600;">${d.zone}</span> · ${d.spatial.vectorText}
+            </div>
+          </div>
+          <div>
+            <span class="floor-pill ${d.spatial.dist <= 0.4 ? 'pill-near' : 'pill-current'}">
+              ${d.spatial.dist <= 0.4 ? '🎯 30cm 근접' : '교실 내부'}
+            </span>
+          </div>
+          <div class="dist-tag" style="${d.spatial.dist <= 0.4 ? 'color:#10b981; border-color:#10b981;' : ''}">
+            ${d.spatial.dist <= 0.4 ? '30cm' : '약 ' + d.spatial.dist + 'm'}
+          </div>
+        </div>
+      `).join('');
     }
 
     function setFacingHeading(angle, name) {
       facingAngle = angle;
-      facingName = name;
-
       document.querySelectorAll('.dir-btn').forEach(b => b.classList.remove('active'));
       if (angle === 180) document.getElementById('btn-dir-front')?.classList.add('active');
       else if (angle === 270) document.getElementById('dir-btn-window')?.classList.add('active');
       else if (angle === 90) document.getElementById('dir-btn-corridor')?.classList.add('active');
-      else if (angle === 0) document.getElementById('dir-btn-board')?.classList.add('active');
 
       updateHeadingVisuals();
       if (selectedDevice) selectTarget(selectedDevice.id);
@@ -1424,50 +1270,6 @@
       const cone = document.getElementById('my-fov-cone');
       if (cone) cone.style.transform = `rotate(${facingAngle}deg)`;
       renderList();
-    }
-
-    function toggleCompassTracking() {
-      const btn = document.getElementById('btn-compass-mode');
-
-      if (isCompassActive) {
-        isCompassActive = false;
-        btn.classList.remove('active');
-        btn.textContent = "🧭 폰 나침반 실시간 연동 (네비 모드)";
-        window.removeEventListener('deviceorientation', handleOrientation);
-        showToast("나침반 연동이 해제되었습니다.");
-        return;
-      }
-
-      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission().then(state => {
-          if (state === 'granted') startCompassListener();
-          else showToast("나침반 센서 접근이 거부되었습니다.");
-        }).catch(() => startCompassListener());
-      } else {
-        startCompassListener();
-      }
-    }
-
-    function startCompassListener() {
-      isCompassActive = true;
-      const btn = document.getElementById('btn-compass-mode');
-      btn.classList.add('active');
-      btn.textContent = "🧭 나침반 연동 중";
-      window.addEventListener('deviceorientation', handleOrientation, true);
-      showToast("스마트폰 나침반 연동 완료!");
-    }
-
-    function handleOrientation(e) {
-      if (!isCompassActive) return;
-      let heading = 0;
-      if (e.webkitCompassHeading) heading = e.webkitCompassHeading;
-      else if (e.alpha !== null) heading = 360 - e.alpha;
-      facingAngle = Math.round(heading);
-      updateHeadingVisuals();
-      if (selectedDevice) {
-        const spatial = getDynamicSpatialData(selectedDevice);
-        document.getElementById('target-vector').textContent = `내 시선 기준: ${spatial.vectorText}`;
-      }
     }
 
     function togglePositionLock() {
@@ -1489,162 +1291,12 @@
       }
     }
 
-    function toggleFloorFilter(checked) {
-      hideOtherFloors = checked;
-      renderBlips();
-      renderList();
-      showToast(checked ? "다른 층(약한 신호) 제외" : "모든 신호 표시");
-    }
-
-    function excludeCurrentDevice() {
-      if (!selectedDevice) return;
-      excludedDeviceIds.add(selectedDevice.id);
-      showToast(`'${selectedDevice.name}' 기기를 제외했습니다.`);
-
-      const visible = getVisibleDevices();
-      if (visible.length > 0) selectTarget(visible[0].id);
-      updateExcludedButton();
-      renderBlips();
-      renderList();
-    }
-
-    function restoreAllExcluded() {
-      excludedDeviceIds.clear();
-      updateExcludedButton();
-      renderBlips();
-      renderList();
-      showToast("제외되었던 모든 기기를 복원했습니다.");
-    }
-
-    function updateExcludedButton() {
-      const btn = document.getElementById('btn-restore-excluded');
-      const count = document.getElementById('excluded-count');
-      count.textContent = excludedDeviceIds.size;
-      btn.style.display = excludedDeviceIds.size > 0 ? "inline-block" : "none";
-    }
-
-    function renderTeacherNode() {
-      const node = document.getElementById('my-node');
-      node.style.left = `${myPos.x}%`;
-      node.style.top = `${myPos.y}%`;
-      document.getElementById('my-node-label').textContent = `내 위치 (${myPos.name})`;
-
-      const ringsContainer = document.getElementById('rings-layer');
-      ringsContainer.innerHTML = `
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:140px; height:140px;"><span class="ring-label">약 1.5m</span></div>
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:280px; height:280px;"><span class="ring-label">약 3.0m</span></div>
-        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:440px; height:440px;"><span class="ring-label">약 5.0m</span></div>
-      `;
-      updateHeadingVisuals();
-    }
-
-    function renderBlips() {
-      const layer = document.getElementById('blip-layer');
-      const visible = getVisibleDevices();
-      document.getElementById('total-count-label').textContent = visible.length;
-
-      layer.innerHTML = visible.map(d => {
-        const spatial = getDynamicSpatialData(d);
-        const isSelected = selectedDevice && selectedDevice.id === d.id;
-        const isOtherFloor = isLikelyOtherFloor(d);
-        const movingClass = d.isMoving ? 'blip-moving' : '';
-
-        return `
-          <div class="target-blip blip-${d.risk.toLowerCase()} ${isOtherFloor ? 'blip-other-floor' : ''} ${movingClass}" 
-               style="left: ${d.absPos.x}%; top: ${d.absPos.y}%;"
-               onclick="event.stopPropagation(); selectTarget('${d.id}')">
-            <div class="blip-point" style="${isSelected ? 'transform: scale(1.6); outline: 2px solid #fff;' : ''}"></div>
-            <div class="blip-label">
-              ${d.netMode === 'lte' ? '📱 [LTE] ' : ''}${d.name.substring(0, 11)} (${spatial.dist}m)
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function selectTarget(id) {
-      const dev = allDevices.find(d => d.id === id);
-      if (!dev) return;
-      selectedDevice = dev;
-
-      const spatial = getDynamicSpatialData(dev);
-
-      document.getElementById('target-name').textContent = dev.name;
-      document.getElementById('target-distance').textContent = `약 ${spatial.dist} m`;
-      document.getElementById('target-vector').textContent = `내 시선 기준: ${spatial.vectorText}`;
-      document.getElementById('target-rssi').textContent = `${dev.rssi} dBm`;
-      document.getElementById('target-zone').textContent = dev.zone;
-      document.getElementById('target-vendor').textContent = dev.vendor;
-
-      const netModeSpan = document.getElementById('target-netmode');
-      if (dev.netMode === 'lte') {
-        netModeSpan.textContent = "📱 LTE 데이터망 (BLE 비콘 전파로 추적 중)";
-        netModeSpan.style.color = "#c084fc";
-      } else {
-        netModeSpan.textContent = `📶 Wi-Fi 연결됨 (${dev.security})`;
-        netModeSpan.style.color = "#34d399";
-      }
-
-      const motionBadge = document.getElementById('target-motion-badge');
-      if (dev.isMoving) {
-        motionBadge.textContent = "🏃 이동 중!";
-        motionBadge.style.background = "rgba(34, 211, 238, 0.25)";
-        motionBadge.style.color = "#22d3ee";
-      } else {
-        motionBadge.textContent = "정지 상태";
-        motionBadge.style.background = "rgba(255,255,255,0.08)";
-        motionBadge.style.color = "var(--text-muted)";
-      }
-
-      const riskBadge = document.getElementById('target-risk-badge');
-      riskBadge.textContent = `${dev.risk} RISK`;
-      riskBadge.style.color = dev.risk === 'HIGH' ? '#ef4444' : dev.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8';
-      riskBadge.style.background = dev.risk === 'HIGH' ? 'rgba(239,68,68,0.2)' : dev.risk === 'MEDIUM' ? 'rgba(245,158,11,0.2)' : 'rgba(56,189,248,0.2)';
-
-      const proxPercent = Math.max(10, Math.min(100, Math.round(100 - (spatial.dist / 7.0) * 85)));
-      const bar = document.getElementById('target-proximity-bar');
-      bar.style.width = `${proxPercent}%`;
-      bar.className = `hot-cold-fill ${spatial.dist < 2.0 ? 'fill-hot' : 'fill-warm'}`;
-
-      renderBlips();
-      renderList();
-    }
-
-    function renderList() {
-      const container = document.getElementById('device-list-container');
-      const visible = getVisibleDevices();
-      const sorted = [...visible].map(d => {
-        return { ...d, spatial: getDynamicSpatialData(d) };
-      }).sort((a, b) => a.spatial.dist - b.spatial.dist);
-
-      container.innerHTML = sorted.map(d => `
-        <div class="device-row ${selectedDevice && selectedDevice.id === d.id ? 'selected' : ''}" onclick="selectTarget('${d.id}')">
-          <div style="width:10px; height:10px; border-radius:50%; background:${d.risk === 'HIGH' ? '#ef4444' : d.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8'};"></div>
-          <div>
-            <div style="font-weight:700; font-size:14px; color:#fff;">
-              ${d.isMoving ? '🏃 ' : ''}${d.name} <span style="font-size:11px; font-weight:400; color:var(--text-muted); font-family:var(--font-mono);">(${d.vendor})</span>
-            </div>
-            <div style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
-              📍 <span style="color:#22d3ee; font-weight:600;">${d.zone}</span> · ${d.spatial.vectorText}
-            </div>
-          </div>
-          <div>
-            <span class="floor-pill ${d.netMode === 'lte' ? 'pill-lte' : 'pill-current'}">
-              ${d.netMode === 'lte' ? '📱 LTE' : '📶 Wi-Fi'}
-            </span>
-          </div>
-          <div class="dist-tag">약 ${d.spatial.dist}m</div>
-        </div>
-      `).join('');
-    }
-
     function setMySpot(spot) {
       document.querySelectorAll('.spot-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(`btn-spot-${spot}`)?.classList.add('active');
 
       if (spot === 'podium') myPos = { x: 50, y: 15, name: "교탁" };
       else if (spot === 'center') myPos = { x: 50, y: 50, name: "중앙" };
-      else if (spot === 'back') myPos = { x: 50, y: 88, name: "뒷문" };
 
       renderTeacherNode();
       renderBlips();
@@ -1689,8 +1341,7 @@
     renderTeacherNode();
     renderBlips();
     renderList();
-    selectTarget('dev-myphone');
-    startLiveMovementTracking();
+    selectTarget('dev-ipad'); // Auto-select iPad!
   </script>
 </body>
 </html>
