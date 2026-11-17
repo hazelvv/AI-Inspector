@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>🏛️ 시험 본부(HQ) 실시간 통합 관제 시스템</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-space: #050b14;
+      --bg-surface: #0a1322;
+      --bg-card: rgba(13, 22, 38, 0.85);
+      --border-subtle: rgba(34, 211, 238, 0.15);
+      --border-strong: rgba(34, 211, 238, 0.35);
+      --cyan-400: #22d3ee;
+      --cyan-500: #06b6d4;
+      --cyan-glow: 0 0 20px rgba(6, 182, 212, 0.35);
+      --danger: #ef4444;
+      --danger-glow: 0 0 25px rgba(239, 68, 68, 0.5);
+      --warning: #f59e0b;
+      --success: #10b981;
+      --text-primary: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-display: 'Chakra Petch', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-space);
+      background-image: 
+        radial-gradient(ellipse at 50% 0%, rgba(6, 182, 212, 0.08) 0%, transparent 65%),
+        linear-gradient(180deg, #050b14 0%, #03070d 100%);
+      color: var(--text-primary);
+      font-family: 'Noto Sans KR', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      padding-bottom: 40px;
+    }
+
+    /* 상단 고정 헤더 (모바일 친화) */
+    .hq-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(7, 13, 24, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--cyan-400);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-nav-mode {
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid var(--cyan-500);
+      color: var(--cyan-400);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-nav-mode:hover {
+      background: var(--cyan-500);
+      color: #041219;
+    }
+
+    /* 본문 레이아웃 */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* 실시간 시험 기본 정보 띠 배너 */
+    .exam-banner-card {
+      background: linear-gradient(135deg, rgba(13, 22, 38, 0.95), rgba(8, 15, 28, 0.95));
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .exam-info-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .exam-school-name {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .exam-name-heading {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .exam-code-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px dashed var(--cyan-400);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--cyan-400);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .exam-code-badge:active {
+      transform: scale(0.97);
+    }
+
+    /* 모바일 탭 네비게이션 */
+    .tab-nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .tab-nav::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 90px;
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: rgba(6, 182, 212, 0.18);
+      border-color: var(--cyan-400);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(6, 182, 212, 0.25);
+    }
+
+    /* KPI 요약 카드 그리드 (모바일 2열 / 데스크탑 4열) */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    @media (min-width: 768px) {
+      .kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .kpi-card.danger {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.08);
+    }
+    .kpi-card.danger .kpi-value {
+      color: var(--danger);
+      text-shadow: var(--danger-glow);
+    }
+
+    .kpi-card.warning {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .kpi-card.warning .kpi-value {
+      color: var(--warning);
+    }
+
+    .kpi-card.success .kpi-value {
+      color: var(--success);
+    }
+
+    /* 고사실 실시간 통합 관제 카드 그리드 */
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--cyan-400);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 640px) {
+      .rooms-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (min-width: 1024px) {
+      .rooms-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .room-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, border-color 0.2s;
+    }
+
+    .room-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .room-card.status-danger {
+      border-color: var(--danger);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+      animation: dangerPulse 2s infinite ease-in-out;
+    }
+    @keyframes dangerPulse {
+      0%, 100% { border-color: rgba(239, 68, 68, 0.8); }
+      50% { border-color: rgba(239, 68, 68, 0.3); }
+    }
+
+    .room-card.status-warning {
+      border-color: var(--warning);
+    }
+
+    .room-card.status-normal {
+      border-color: var(--border-subtle);
+    }
+
+    .room-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .room-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .room-status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 4px 8px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-badge-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .status-badge-warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .status-badge-normal {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .room-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: rgba(4, 9, 16, 0.5);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .room-meta-item strong {
+      color: #f1f5f9;
+      font-family: var(--font-mono);
+    }
+
+    .alert-banner {
+      background: rgba(239, 68, 68, 0.12);
+      border-left: 3px solid var(--danger);
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #fca5a5;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .room-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .btn-action-dispatch {
+      flex: 1;
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 3px 12px rgba(239, 68, 68, 0.3);
+      transition: all 0.15s;
+    }
+    .btn-action-dispatch:active {
+      transform: scale(0.97);
+    }
+
+    .btn-action-view {
+      background: rgba(34, 211, 238, 0.12);
+      color: var(--cyan-400);
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--cyan-500);
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    /* 순회 출동 로그 리스트 */
+    .dispatch-log-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .log-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 13px;
+    }
+    .log-item:last-child { border-bottom: none; }
+
+    /* 모달 & 토스트 (모바일 바텀 시트) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 9, 16, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    @media (min-width: 640px) {
+      .modal-backdrop {
+        align-items: center;
+      }
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-sheet {
+      background: #0d1524;
+      border-top: 1px solid var(--border-strong);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 520px;
+      padding: 24px 20px;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
+      transform: translateY(100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @media (min-width: 640px) {
+      .modal-sheet {
+        border-radius: 16px;
+        border: 1px solid var(--border-strong);
+        transform: translateY(20px);
+      }
+    }
+    .modal-backdrop.open .modal-sheet {
+      transform: translateY(0);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .form-input {
+      width: 100%;
+      background: rgba(18, 24, 38, 0.9);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      padding: 12px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(6, 182, 212, 0.95);
+      color: #041219;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 18px;
+      border-radius: 30px;
+      box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 300;
+      white-space: nowrap;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 모바일 최적화 상단 헤더 -->
+  <header class="hq-header">
+    <div class="brand-group">
+      <div class="brand-icon">🏛️</div>
+      <div>
+        <div class="brand-title">EXAM HQ <span>COMMAND</span></div>
+        <div class="brand-subtitle">시험 본부 총괄 통합 관제</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="/" class="btn-nav-mode">
+        <span>👨‍🏫 감독관 레이더</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- 현재 시험 띠 배너 -->
+    <div class="exam-banner-card">
+      <div class="exam-info-details">
+        <span class="exam-school-name" id="banner-school">🏫 한국고등학교 · 시험 본부석</span>
+        <h1 class="exam-name-heading" id="banner-title">2026학년도 1학기 중간고사</h1>
+      </div>
+      <div class="exam-code-badge" onclick="copyExamCode()" title="클릭하여 코드 복사">
+        <span>🔑 시험 코드:</span>
+        <span id="banner-code">EXAM-7892</span>
+        <span style="font-size:12px;">📋 복사</span>
+      </div>
+    </div>
+
+    <!-- 모바일 탭 네비게이션 -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchFilter('ALL', this)">🏛️ 전체 고사실</button>
+      <button class="tab-btn" onclick="switchFilter('DANGER', this)">🚨 긴급 경보 (<span id="tab-danger-count">1</span>)</button>
+      <button class="tab-btn" onclick="openCreateExamModal()">➕ 새 시험 생성</button>
+      <button class="tab-btn" onclick="scrollToDispatches()">📜 출동 일지</button>
+    </div>
+
+    <!-- KPI 요약 카드 그리드 -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">총 고사실</div>
+        <div class="kpi-value" id="kpi-total-rooms">5</div>
+      </div>
+      <div class="kpi-card success">
+        <div class="kpi-label">정상 진행</div>
+        <div class="kpi-value" id="kpi-normal-rooms">3</div>
+      </div>
+      <div class="kpi-card warning">
+        <div class="kpi-label">주의 교실</div>
+        <div class="kpi-value" id="kpi-warning-rooms">1</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="kpi-label">긴급 경보</div>
+        <div class="kpi-value" id="kpi-danger-rooms">1</div>
+      </div>
+    </div>
+
+    <!-- 전체 고사실 실시간 카드 그리드 -->
+    <div class="section-title">
+      <span>📡 고사실별 실시간 RF 신호 현황</span>
+      <span style="font-size:11px; font-family:var(--font-mono); color:var(--text-muted);" id="refresh-ticker">● 2초 주기 자동 갱신</span>
+    </div>
+
+    <div class="rooms-grid" id="rooms-grid-container">
+      <!-- JavaScript로 동적 렌더링 -->
+    </div>
+
+    <!-- 순회 감독관 출동 일지 -->
+    <div class="section-title" id="dispatch-section-title" style="margin-top:16px;">
+      <span>🚨 복도 순회 감독관 긴급 출동 일지</span>
+    </div>
+
+    <div class="dispatch-log-card">
+      <div id="dispatch-list-container">
+        <!-- 동적 렌더링 -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 새 시험 생성 모달 -->
+  <div class="modal-backdrop" id="modal-create-exam">
+    <div class="modal-sheet">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="color:var(--cyan-400); font-size:17px; font-weight:800;">➕ 새 시험 생성 및 코드 발급</h3>
+        <button onclick="closeCreateExamModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label>학교 / 시험 기관명</label>
+        <input type="text" id="new-school-name" class="form-input" value="한국고등학교">
+      </div>
+      <div class="form-group">
+        <label>시험 명칭</label>
+        <input type="text" id="new-exam-title" class="form-input" value="2026학년도 1학기 기말고사">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button onclick="closeCreateExamModal()" style="flex:1; background:rgba(255,255,255,0.08); border:none; border-radius:8px; color:#fff; padding:12px; font-weight:700; cursor:pointer;">취소</button>
+        <button onclick="submitNewExam()" style="flex:2; background:linear-gradient(135deg, #06b6d4, #0284c7); border:none; border-radius:8px; color:#041219; padding:12px; font-weight:800; cursor:pointer;">발급 & 즉시 적용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 순회 감독관 출동 모달 -->
+  <div class="modal-backdrop" id="modal-dispatch">
+    <div class="modal-sheet">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 style="color:#ef4444; font-size:17px; font-weight:800;">🚨 순회 감독관 긴급 출동 지시</h3>
+        <button onclick="closeDispatchModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+
+      <input type="hidden" id="dispatch-target-room-id">
+      <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:12px; margin-bottom:14px;">
+        <div style="font-weight:700; color:#fff; font-size:15px;" id="dispatch-room-label">제 3고사실</div>
+        <div style="font-size:12px; color:#fca5a5; margin-top:4px;" id="dispatch-alert-preview">🚨 3행 2열 결시자 좌석에서 스마트폰 신호 포착!</div>
+      </div>
+
+      <div class="form-group">
+        <label>출동 지시 내용 및 전달 사항</label>
+        <input type="text" id="dispatch-reason" class="form-input" value="결시자 좌석 부근 RF 신호 확인 및 스마트기기 소지 여부 정밀 확인 요망">
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:20px;">
+        <button onclick="closeDispatchModal()" style="flex:1; background:rgba(255,255,255,0.08); border:none; border-radius:8px; color:#fff; padding:12px; font-weight:700; cursor:pointer;">취소</button>
+        <button onclick="confirmDispatch()" style="flex:2; background:linear-gradient(135deg, #ef4444, #b91c1c); border:none; border-radius:8px; color:#fff; padding:12px; font-weight:800; cursor:pointer;">🚀 즉시 출동 지시</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let currentFilter = 'ALL';
+    let hqData = null;
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    async function fetchHqOverview() {
+      try {
+        const res = await fetch('/api/admin/overview');
+        const data = await res.json();
+        hqData = data;
+        renderDashboard(data);
+      } catch (e) {
+        console.error("HQ data fetch error:", e);
+      }
+    }
+
+    function renderDashboard(data) {
+      if (!data) return;
+
+      // 상단 배너 정보
+      document.getElementById('banner-school').textContent = `🏫 ${data.exam.school} · 시험 본부석`;
+      document.getElementById('banner-title').textContent = data.exam.title;
+      document.getElementById('banner-code').textContent = data.exam.code;
+
+      // KPI 수치
+      document.getElementById('kpi-total-rooms').textContent = data.metrics.total_rooms;
+      document.getElementById('kpi-normal-rooms').textContent = data.metrics.normal_rooms;
+      document.getElementById('kpi-warning-rooms').textContent = data.metrics.warning_rooms;
+      document.getElementById('kpi-danger-rooms').textContent = data.metrics.danger_rooms;
+      document.getElementById('tab-danger-count').textContent = data.metrics.danger_rooms;
+
+      // 고사실 그리드 렌더링
+      const container = document.getElementById('rooms-grid-container');
+      const filtered = data.rooms.filter(r => {
+        if (currentFilter === 'DANGER') return r.status === 'DANGER';
+        return true;
+      });
+
+      container.innerHTML = filtered.map(r => {
+        const isDanger = r.status === 'DANGER';
+        const isWarning = r.status === 'WARNING';
+        const statusClass = isDanger ? 'status-danger' : isWarning ? 'status-warning' : 'status-normal';
+        const badgeClass = isDanger ? 'status-badge-danger' : isWarning ? 'status-badge-warning' : 'status-badge-normal';
+        const statusLabel = isDanger ? '🚨 긴급 경보' : isWarning ? '⚠️ 주의 관제' : '🟢 정상 운영';
+
+        return `
+          <div class="room-card ${statusClass}">
+            <div class="room-card-header">
+              <div class="room-name">${r.name}</div>
+              <div class="room-status-badge ${badgeClass}">${statusLabel}</div>
+            </div>
+
+            <div class="room-meta">
+              <div class="room-meta-item">담당: <strong>${r.proctor}</strong></div>
+              <div class="room-meta-item">응시: <strong>${r.students} / ${r.total_seats}석</strong></div>
+              <div class="room-meta-item">결시석: <strong>${r.absent_seats.length > 0 ? r.absent_seats.join(', ') : '없음'}</strong></div>
+              <div class="room-meta-item">신호 감지: <strong style="${r.detected_count > 0 ? 'color:#ef4444;' : ''}">${r.detected_count} 건</strong></div>
+            </div>
+
+            ${r.last_alert ? `
+              <div class="alert-banner">
+                ${r.last_alert}
+              </div>
+            ` : ''}
+
+            <div class="room-actions">
+              ${isDanger ? `
+                <button class="btn-action-dispatch" onclick="openDispatchModal('${r.id}', '${r.name}', '${r.last_alert}')">
+                  🚨 순회관 출동 지시
+                </button>
+              ` : `
+                <button class="btn-action-dispatch" style="background:rgba(255,255,255,0.08); box-shadow:none;" onclick="openDispatchModal('${r.id}', '${r.name}', '정기 순회 점검')">
+                  📋 순회 점검 요청
+                </button>
+              `}
+              <a href="/?room=${r.id}" class="btn-action-view">
+                👁️ 레이더
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 순회 출동 일지 렌더링
+      const logContainer = document.getElementById('dispatch-list-container');
+      if (data.dispatches && data.dispatches.length > 0) {
+        logContainer.innerHTML = data.dispatches.map(d => `
+          <div class="log-item">
+            <div>
+              <div style="font-weight:700; color:#fff;">[${d.room_name}] ${d.reason}</div>
+              <div style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">시간: ${d.time}</div>
+            </div>
+            <div style="font-size:12px; font-weight:700; color:#f87171;">
+              ${d.status}
+            </div>
+          </div>
+        `).join('');
+      } else {
+        logContainer.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:13px;">현재 진행 중인 순회 출동 내역이 없습니다.</div>`;
+      }
+    }
+
+    function switchFilter(type, el) {
+      currentFilter = type;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      if (hqData) renderDashboard(hqData);
+    }
+
+    function copyExamCode() {
+      const code = document.getElementById('banner-code').textContent;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(() => {
+          showToast(`📋 시험 코드 [${code}]가 복사되었습니다!`);
+        });
+      } else {
+        showToast(`시험 코드: ${code}`);
+      }
+    }
+
+    function openCreateExamModal() {
+      document.getElementById('modal-create-exam').classList.add('open');
+    }
+    function closeCreateExamModal() {
+      document.getElementById('modal-create-exam').classList.remove('open');
+    }
+
+    async function submitNewExam() {
+      const school = document.getElementById('new-school-name').value.trim();
+      const title = document.getElementById('new-exam-title').value.trim();
+
+      try {
+        const res = await fetch('/api/admin/exams/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ school, title })
+        });
+        const data = await res.json();
+        if (data.success) {
+          closeCreateExamModal();
+          showToast(`🎉 새 시험 코드 [${data.exam.code}]가 발급되었습니다!`);
+          fetchHqOverview();
+        }
+      } catch (e) {
+        showToast('시험 생성 실패');
+      }
+    }
+
+    function openDispatchModal(roomId, roomName, alertText) {
+      document.getElementById('dispatch-target-room-id').value = roomId;
+      document.getElementById('dispatch-room-label').textContent = roomName;
+      document.getElementById('dispatch-alert-preview').textContent = alertText || '순회 점검 요청';
+      document.getElementById('modal-dispatch').classList.add('open');
+      if (navigator.vibrate) navigator.vibrate(100);
+    }
+    function closeDispatchModal() {
+      document.getElementById('modal-dispatch').classList.remove('open');
+    }
+
+    async function confirmDispatch() {
+      const roomId = document.getElementById('dispatch-target-room-id').value;
+      const reason = document.getElementById('dispatch-reason').value;
+
+      try {
+        const res = await fetch('/api/admin/dispatch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ room_id: roomId, reason: reason })
+        });
+        const data = await res.json();
+        if (data.success) {
+          closeDispatchModal();
+          if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+          showToast(`🚀 [${data.dispatch.room_name}] 순회 감독관 출동 지시 완료!`);
+          fetchHqOverview();
+        }
+      } catch (e) {
+        showToast('출동 지시 오류 발생');
+      }
+    }
+
+    function scrollToDispatches() {
+      document.getElementById('dispatch-section-title').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Init & Polling
+    fetchHqOverview();
+    setInterval(fetchHqOverview, 2500);
+  </script>
+</body>
+</html>
