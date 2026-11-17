@@ -1187,14 +1187,24 @@
       // 3. Other Bluetooth devices (Watch, AirPods, TV, etc.)
       btDevs.forEach((d, idx) => {
         if (d.name && (d.name.includes("iPad") || d.name.includes("iPhone"))) return; // already handled
-        let absPos = userMovedPositions[`dev-bt-${idx}`] || getStablePos(d.address || d.name, 25 + (idx * 17) % 60, 35 + (idx * 23) % 55);
+        const posKey = d.name || d.address || `dev-bt-${idx}`;
+        let absPos = userMovedPositions[posKey] || userMovedPositions[`dev-bt-${idx}`];
         let zone = "교실 내";
-        if (d.name.includes("TV")) {
-          zone = "교실 전면 TV 디스플레이";
-          absPos = userMovedPositions[`dev-bt-${idx}`] || { x: 50, y: 22 };
-        } else if (d.name.includes("AirPods") || d.name.includes("Watch")) {
-          zone = "선생님 소지품 (교탁)";
-          absPos = userMovedPositions[`dev-bt-${idx}`] || { x: myPos.x + 2, y: myPos.y + 1 };
+
+        if (!absPos) {
+          if (d.name && d.name.includes("TV")) {
+            zone = "교실 전면 TV 디스플레이";
+            absPos = { x: 50, y: 22 };
+          } else if (d.name && d.name.includes("Watch")) {
+            // Apple Watch: placed 4.0 meters away as requested!
+            zone = "3분단 뒤편 좌석 (약 4.0m 거리)";
+            absPos = { x: 68, y: 65 };
+          } else if (d.name && d.name.includes("AirPods")) {
+            zone = "1분단 1열 책상 (약 1.5m 거리)";
+            absPos = { x: 35, y: 32 };
+          } else {
+            absPos = getStablePos(d.address || d.name, 25 + (idx * 17) % 60, 35 + (idx * 23) % 55);
+          }
         }
 
         newList.push({
@@ -1203,7 +1213,7 @@
           type: d.type || "Bluetooth 기기",
           category: "bluetooth",
           vendor: d.vendor || "알 수 없음",
-          rssi: d.name.includes("TV") ? -58 : -68,
+          rssi: d.name && d.name.includes("Watch") ? -72 : (d.name && d.name.includes("TV") ? -58 : -68),
           absPos: absPos,
           zone: zone,
           risk: d.risk || "LOW",
@@ -1381,12 +1391,15 @@
       if (dev) {
         dev.absPos = { x, y };
         userMovedPositions[draggingDevId] = { x, y };
+        if (dev.name) userMovedPositions[dev.name] = { x, y };
         
         const sp = getDynamicSpatialData(dev);
         if (dev.id === "dev-myphone") {
           dev.zone = `이동 중 (${sp.dist}m 거리 · LTE 전파)`;
         } else if (dev.id === "dev-ipad") {
           dev.zone = (sp.dist <= 0.4) ? "선생님 교탁 위 / 맥북 바로 옆 (30cm)" : `이동 위치 (${sp.dist}m 거리)`;
+        } else if (dev.name && dev.name.includes("Watch")) {
+          dev.zone = `애플워치 위치 (${sp.dist}m 거리)`;
         }
 
         renderBlips();
@@ -1424,6 +1437,7 @@
 
       selectedDevice.absPos = { x: targetX, y: targetY };
       userMovedPositions[selectedDevice.id] = { x: targetX, y: targetY };
+      if (selectedDevice.name) userMovedPositions[selectedDevice.name] = { x: targetX, y: targetY };
       selectedDevice.zone = zoneText;
 
       renderBlips();
