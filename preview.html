@@ -765,6 +765,170 @@
       z-index: 200;
     }
     .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* 모달 대화상자 & 진입 화면 스타일 */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 9, 16, 0.88);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      background: #0d1524;
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 580px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(6,182,212,0.15);
+      padding: 24px;
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+      color: var(--text-primary);
+    }
+    .modal-backdrop.open .modal-card {
+      transform: translateY(0);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #22d3ee;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+    }
+    .form-input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(18, 24, 38, 0.9);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+    .form-input:focus {
+      border-color: var(--cyan-400);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+    }
+    .grid-preview-box {
+      background: rgba(4, 9, 16, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 10px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .interactive-desk-grid {
+      display: grid;
+      gap: 5px;
+      margin-top: 6px;
+      user-select: none;
+    }
+    .interactive-desk-cell {
+      width: 32px;
+      height: 24px;
+      border: 1px dashed rgba(6, 182, 212, 0.5);
+      background: rgba(6, 182, 212, 0.06);
+      color: #22d3ee;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .interactive-desk-cell:hover {
+      background: rgba(6, 182, 212, 0.25);
+      border-color: var(--cyan-400);
+      transform: scale(1.08);
+    }
+    .interactive-desk-cell.disabled {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      text-decoration: line-through;
+    }
+    .btn-primary-glow {
+      background: linear-gradient(135deg, #06b6d4, #0284c7);
+      color: #041219;
+      font-weight: 800;
+      font-size: 13px;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35);
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary-glow:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    .exam-badge-strip {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 8px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .exam-badge-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+    .exam-badge-item strong {
+      color: #22d3ee;
+    }
   </style>
 </head>
 <body>
@@ -791,11 +955,169 @@
         </button>
         <button class="tab-btn" id="tab-list" onclick="switchView('list')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg>
-          전체 기기 (<span id="total-count-label">9</span>개)
+          전체 기기 (<span id="total-count-label">0</span>개)
+        </button>
+        <button class="tab-btn" id="tab-exam-setup" onclick="openExamModal()" style="border-color: rgba(6,182,212,0.4); color: #22d3ee;">
+          ⚙️ 시험장 환경설정
         </button>
       </div>
     </div>
   </header>
+
+  <!-- Exam Session Ribbon Banner -->
+  <div class="exam-badge-strip" id="exam-badge-bar">
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+      <div class="exam-badge-item">
+        <span style="color:var(--text-muted);">🏫 학교/기관:</span>
+        <strong id="badge-school-name">한국고등학교</strong>
+      </div>
+      <div class="exam-badge-item">
+        <span style="color:var(--text-muted);">📝 시험명:</span>
+        <strong id="badge-exam-title">2026학년도 1학기 중간고사</strong>
+      </div>
+      <div class="exam-badge-item">
+        <span style="color:var(--text-muted);">🚪 시험실:</span>
+        <strong id="badge-room-name">제 3고사실 (3-2반)</strong>
+      </div>
+      <div class="exam-badge-item">
+        <span style="color:var(--text-muted);">🔑 시험 코드:</span>
+        <span style="background:rgba(6,182,212,0.2); color:#22d3ee; font-weight:800; padding:2px 8px; border-radius:4px;" id="badge-exam-code">EXAM-7892</span>
+      </div>
+      <div class="exam-badge-item">
+        <span style="color:var(--text-muted);">🪑 좌석 배치:</span>
+        <strong id="badge-matrix-info">5행 × 6열 (총 30석)</strong>
+      </div>
+    </div>
+    <div>
+      <button onclick="openExamModal()" style="background:rgba(18,24,36,0.9); border:1px solid var(--border-strong); color:#22d3ee; font-size:11px; font-weight:700; padding:5px 12px; border-radius:6px; cursor:pointer;">
+        ✏️ 설정 변경 / 다른 시험 코드
+      </button>
+    </div>
+  </div>
+
+  <!-- Exam Setup & Code Modal -->
+  <div class="modal-backdrop" id="exam-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>시험장 정보 & 책상 행렬(Matrix) 설정</span>
+        </div>
+        <button onclick="closeExamModal()" style="background:none; border:none; color:var(--text-muted); font-size:18px; cursor:pointer;">✕</button>
+      </div>
+
+      <!-- Mode Switch Pills -->
+      <div style="display:flex; gap:8px; margin-bottom:16px; background:rgba(4,9,16,0.5); padding:4px; border-radius:8px; border:1px solid var(--border-subtle);">
+        <button id="tab-mode-proctor" onclick="setModalTab('proctor')" style="flex:1; padding:7px; font-size:12px; font-weight:700; border:none; border-radius:6px; cursor:pointer; background:var(--cyan-500); color:#041219;">
+          🔑 시험장 감독관 (코드 입력)
+        </button>
+        <button id="tab-mode-admin" onclick="setModalTab('admin')" style="flex:1; padding:7px; font-size:12px; font-weight:600; border:none; border-radius:6px; cursor:pointer; background:transparent; color:var(--text-secondary);">
+          ⚙️ 관리자 본부 (새 시험 코드 생성)
+        </button>
+      </div>
+
+      <!-- Proctor Mode View -->
+      <div id="view-mode-proctor">
+        <div class="form-group" style="background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.3); border-radius:8px; padding:12px;">
+          <label style="color:#22d3ee;">🔑 시험 코드 번호 입력 (본부에서 공지받은 코드):</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="input-search-code" class="form-input" placeholder="예: EXAM-7892 또는 KOR-2026" style="font-weight:700; letter-spacing:0.08em; text-transform:uppercase;" value="EXAM-7892">
+            <button onclick="loadExamByCode()" style="background:linear-gradient(135deg, #06b6d4, #0284c7); border:none; color:#041219; font-weight:800; padding:0 16px; border-radius:8px; cursor:pointer; white-space:nowrap;">
+              🔍 조회 & 연동
+            </button>
+          </div>
+          <div style="font-size:10px; color:var(--text-muted); margin-top:5px;">
+            💡 코드를 입력하면 해당 시험의 학교명, 시험명, 표준 책상 배열이 자동 동기화됩니다.
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>🏫 학교 / 기관명:</label>
+            <input type="text" id="proctor-school" class="form-input" value="한국고등학교" readonly style="opacity:0.85;">
+          </div>
+          <div class="form-group">
+            <label>📝 시험명:</label>
+            <input type="text" id="proctor-exam-title" class="form-input" value="2026학년도 1학기 중간고사" readonly style="opacity:0.85;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>🚪 내 교실 (고사실 번호):</label>
+          <input type="text" id="proctor-room" class="form-input" value="제 3고사실 (3-2반)">
+        </div>
+      </div>
+
+      <!-- Admin Mode View -->
+      <div id="view-mode-admin" style="display:none;">
+        <div style="background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.3); border-radius:8px; padding:12px; margin-bottom:14px;">
+          <div style="font-size:12px; font-weight:700; color:#c084fc; margin-bottom:4px;">🏢 관리자 본부 시험 생성기</div>
+          <div style="font-size:10px; color:var(--text-muted);">새 시험을 등록하면 모든 고사실 감독관이 접속할 수 있는 고유 코드가 즉시 발급됩니다.</div>
+        </div>
+
+        <div class="form-group">
+          <label>🏫 학교 / 기관명 입력:</label>
+          <input type="text" id="admin-school" class="form-input" placeholder="예: 서울대학교, 한국고등학교">
+        </div>
+        <div class="form-group">
+          <label>📝 오늘 시험명 입력:</label>
+          <input type="text" id="admin-exam-title" class="form-input" placeholder="예: 2026학년도 1학기 기말고사">
+        </div>
+        <button onclick="generateNewExamCode()" style="width:100%; padding:10px; background:linear-gradient(135deg, #a855f7, #7c3aed); border:none; border-radius:8px; color:#fff; font-weight:800; cursor:pointer; margin-bottom:14px;">
+          🎲 새 시험 코드 생성 및 등록
+        </button>
+      </div>
+
+      <!-- Desk Matrix Setting Section (Common) -->
+      <div style="border-top:1px solid var(--border-subtle); padding-top:14px; margin-top:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-size:12px; font-weight:700; color:var(--cyan-400); display:flex; align-items:center; gap:6px;">
+            🪑 책상 배열 행렬 (Matrix) 설정
+          </span>
+          <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">
+            클릭하여 <span style="color:#f87171;">결시자/빈책상</span> 토글 ✕
+          </span>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>세로 줄 수 (행 / Rows):</label>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="number" id="matrix-rows" class="form-input" min="2" max="10" value="5" onchange="renderDeskPreview()">
+              <span style="font-size:12px; color:var(--text-muted);">행</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>가로 분단 수 (열 / Columns):</label>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="number" id="matrix-cols" class="form-input" min="2" max="10" value="6" onchange="renderDeskPreview()">
+              <span style="font-size:12px; color:var(--text-muted);">열</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Desk Matrix Preview -->
+        <div class="grid-preview-box">
+          <div style="font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-bottom:6px;">
+            [ 정면 TV / 칠판 방향 ]
+          </div>
+          <div id="interactive-desk-grid" class="interactive-desk-grid"></div>
+          <div style="font-size:10px; color:var(--cyan-400); font-family:var(--font-mono); margin-top:8px;" id="matrix-summary-text">
+            총 30석 (응시: 30명, 결시: 0명)
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:18px;">
+        <button onclick="closeExamModal()" style="background:var(--bg-surface-elevated); border:1px solid var(--border-strong); color:var(--text-secondary); padding:9px 16px; border-radius:8px; cursor:pointer;">
+          닫기
+        </button>
+        <button onclick="applyExamConfiguration()" class="btn-primary-glow">
+          ✓ 시험장 설정 적용 및 레이더 반영
+        </button>
+      </div>
+    </div>
+  </div>
 
   <main>
     <!-- Real-time Live Hardware Scanner Status Banner -->
@@ -939,12 +1261,7 @@
               ➡️ 오른쪽 구역
             </div>
 
-            <div class="desks-grid-overlay" style="opacity:0.15;">
-              <div class="desk-cell">좌-1</div><div class="desk-cell">중-1</div><div class="desk-cell">우-1</div><div class="desk-cell">벽-1</div>
-              <div class="desk-cell">좌-2</div><div class="desk-cell">중-2</div><div class="desk-cell">우-2</div><div class="desk-cell">벽-2</div>
-              <div class="desk-cell">좌-3</div><div class="desk-cell">중-3</div><div class="desk-cell">우-3</div><div class="desk-cell">벽-3</div>
-              <div class="desk-cell">좌-4</div><div class="desk-cell">중-4</div><div class="desk-cell">우-4</div><div class="desk-cell">벽-4</div>
-            </div>
+            <div class="desks-grid-overlay" id="radar-desks-grid" style="opacity:0.25;"></div>
 
             <!-- Distance Rings with Near-Field 0.5m ring -->
             <div class="radar-circle-grid" id="rings-layer"></div>
@@ -1598,7 +1915,17 @@
 
       document.getElementById('target-vector').textContent = spatial.vectorText;
       document.getElementById('target-rssi').textContent = `${dev.rssi} dBm (${dev.rssi >= -40 ? '극초강력 신호 (초근접)' : '정상 신호'})`;
-      document.getElementById('target-zone').textContent = dev.zone;
+      
+      const seat = (typeof getClosestSeat === 'function' && dev.absPos) ? getClosestSeat(dev.absPos) : null;
+      const zoneEl = document.getElementById('target-zone');
+      if (seat && seat.isBlank) {
+        zoneEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">🚨 ${seat.label} [결시석 전파 감지!]</span>`;
+      } else if (seat) {
+        zoneEl.innerHTML = `<span style="color:#22d3ee; font-weight:700;">🪑 ${seat.label}</span> <span style="font-size:10px; color:var(--text-muted);">(${dev.zone})</span>`;
+      } else {
+        zoneEl.textContent = dev.zone;
+      }
+
       document.getElementById('target-vendor').textContent = dev.vendor;
 
       const nearBadge = document.getElementById('target-near-badge');
@@ -1655,7 +1982,10 @@
         return { ...d, spatial: getDynamicSpatialData(d) };
       }).sort((a, b) => a.spatial.dist - b.spatial.dist);
 
-      container.innerHTML = sorted.map(d => `
+      container.innerHTML = sorted.map(d => {
+        const seat = (typeof getClosestSeat === 'function' && d.absPos) ? getClosestSeat(d.absPos) : null;
+        const seatInfo = seat ? (seat.isBlank ? `🚨 ${seat.seatKey}번 결시석!` : `🪑 ${seat.seatKey}번 좌석`) : d.zone;
+        return `
         <div class="device-row ${selectedDevice && selectedDevice.id === d.id ? 'selected' : ''}" onclick="selectTarget('${d.id}')">
           <div style="width:10px; height:10px; border-radius:50%; background:${d.spatial.dist <= 0.4 ? '#10b981' : d.risk === 'HIGH' ? '#ef4444' : d.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8'};"></div>
           <div>
@@ -1663,19 +1993,20 @@
               ${d.spatial.dist <= 0.4 ? '🎯 ' : ''}${d.name} <span style="font-size:11px; font-weight:400; color:var(--text-muted); font-family:var(--font-mono);">(${d.vendor})</span>
             </div>
             <div style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
-              📍 <span style="color:#22d3ee; font-weight:600;">${d.zone}</span> · ${d.spatial.vectorText}
+              📍 <span style="color:${seat && seat.isBlank ? '#f87171' : '#22d3ee'}; font-weight:600;">${seatInfo}</span> · ${d.spatial.vectorText}
             </div>
           </div>
           <div>
-            <span class="floor-pill ${d.spatial.dist <= 0.4 ? 'pill-near' : 'pill-current'}">
-              ${d.spatial.dist <= 0.4 ? '🎯 30cm 근접' : '교실 내부'}
+            <span class="floor-pill ${seat && seat.isBlank ? 'pill-alert' : d.spatial.dist <= 0.4 ? 'pill-near' : 'pill-current'}" style="${seat && seat.isBlank ? 'background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.5);' : ''}">
+              ${seat && seat.isBlank ? '🚨 결시석 전파' : d.spatial.dist <= 0.4 ? '🎯 30cm 근접' : '교실 내부'}
             </span>
           </div>
           <div class="dist-tag" style="${d.spatial.dist <= 0.4 ? 'color:#10b981; border-color:#10b981;' : ''}">
             ${d.spatial.dist <= 0.4 ? '30cm' : '약 ' + d.spatial.dist + 'm'}
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function setFacingHeading(angle, name) {
@@ -1774,7 +2105,281 @@
       }, { passive: false });
     }
 
+    // ==========================================
+    // 📚 시험 세션 & 책상 행렬(Matrix) 관리 시스템
+    // ==========================================
+    const DEFAULT_EXAM_PRESETS = {
+      "EXAM-7892": {
+        code: "EXAM-7892",
+        school: "한국고등학교",
+        title: "2026학년도 1학기 중간고사",
+        room: "제 3고사실 (3-2반)",
+        rows: 5,
+        cols: 6,
+        disabledSeats: ["3-2"] // 3행 2열 결시자 예시
+      },
+      "CSAT-2026": {
+        code: "CSAT-2026",
+        school: "대학수학능력시험 평가원",
+        title: "2026학년도 대학수학능력시험",
+        room: "제 1시험장 (본관 201호)",
+        rows: 4,
+        cols: 7,
+        disabledSeats: []
+      },
+      "CERT-9001": {
+        code: "CERT-9001",
+        school: "한국산업인력공단",
+        title: "국가기술자격 1회 실기시험",
+        room: "CBT 4실습실",
+        rows: 4,
+        cols: 5,
+        disabledSeats: ["2-4"]
+      }
+    };
+
+    let currentExamSession = {
+      code: "EXAM-7892",
+      school: "한국고등학교",
+      title: "2026학년도 1학기 중간고사",
+      room: "제 3고사실 (3-2반)",
+      rows: 5,
+      cols: 6,
+      disabledSeats: new Set(["3-2"])
+    };
+
+    function openExamModal() {
+      document.getElementById('exam-modal')?.classList.add('open');
+      renderDeskPreview();
+    }
+
+    function closeExamModal() {
+      document.getElementById('exam-modal')?.classList.remove('open');
+    }
+
+    function setModalTab(tab) {
+      const isProctor = tab === 'proctor';
+      document.getElementById('view-mode-proctor').style.display = isProctor ? 'block' : 'none';
+      document.getElementById('view-mode-admin').style.display = isProctor ? 'none' : 'block';
+
+      const tabP = document.getElementById('tab-mode-proctor');
+      const tabA = document.getElementById('tab-mode-admin');
+      if (isProctor) {
+        tabP.style.background = 'var(--cyan-500)';
+        tabP.style.color = '#041219';
+        tabP.style.fontWeight = '700';
+        tabA.style.background = 'transparent';
+        tabA.style.color = 'var(--text-secondary)';
+      } else {
+        tabA.style.background = '#a855f7';
+        tabA.style.color = '#fff';
+        tabA.style.fontWeight = '700';
+        tabP.style.background = 'transparent';
+        tabP.style.color = 'var(--text-secondary)';
+      }
+    }
+
+    function loadExamByCode() {
+      const codeInput = document.getElementById('input-search-code').value.trim().toUpperCase();
+      if (!codeInput) {
+        showToast("⚠️ 시험 코드를 입력해 주세요.");
+        return;
+      }
+
+      // 로컬 스토리지 확인 또는 프리셋 확인
+      let saved = null;
+      try {
+        const stored = localStorage.getItem('EXAM_' + codeInput);
+        if (stored) saved = JSON.parse(stored);
+      } catch (e) {}
+
+      if (!saved && DEFAULT_EXAM_PRESETS[codeInput]) {
+        saved = DEFAULT_EXAM_PRESETS[codeInput];
+      }
+
+      if (saved) {
+        document.getElementById('proctor-school').value = saved.school;
+        document.getElementById('proctor-exam-title').value = saved.title;
+        document.getElementById('proctor-room').value = saved.room || "제 1고사실";
+        document.getElementById('matrix-rows').value = saved.rows || 5;
+        document.getElementById('matrix-cols').value = saved.cols || 6;
+        currentExamSession.disabledSeats = new Set(saved.disabledSeats || []);
+
+        renderDeskPreview();
+        showToast(`✅ 시험 코드 [${codeInput}] 동기화 완료!`);
+      } else {
+        // 프리셋에 없으면 기본 생성 템플릿으로 제공
+        document.getElementById('proctor-school').value = "등록 시험장 (" + codeInput + ")";
+        document.getElementById('proctor-exam-title').value = "공식 정기 평가 시험";
+        document.getElementById('proctor-room').value = "제 1시험실";
+        renderDeskPreview();
+        showToast(`💡 신규 시험 코드 [${codeInput}]로 초기화되었습니다.`);
+      }
+    }
+
+    function generateNewExamCode() {
+      const school = document.getElementById('admin-school').value.trim() || "한국중고등학교";
+      const title = document.getElementById('admin-exam-title').value.trim() || "2026학년도 정기 평가";
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      const newCode = `EXAM-${randomNum}`;
+
+      const examData = {
+        code: newCode,
+        school: school,
+        title: title,
+        room: "제 1고사실",
+        rows: parseInt(document.getElementById('matrix-rows').value) || 5,
+        cols: parseInt(document.getElementById('matrix-cols').value) || 6,
+        disabledSeats: []
+      };
+
+      try {
+        localStorage.setItem('EXAM_' + newCode, JSON.stringify(examData));
+      } catch (e) {}
+
+      DEFAULT_EXAM_PRESETS[newCode] = examData;
+
+      // 폼에 반영 후 감독관 모드로 자동 전환
+      document.getElementById('input-search-code').value = newCode;
+      setModalTab('proctor');
+      loadExamByCode();
+      showToast(`🎉 새 시험 코드 [${newCode}]가 발급되었습니다!`);
+    }
+
+    function renderDeskPreview() {
+      const rows = Math.max(1, Math.min(10, parseInt(document.getElementById('matrix-rows').value) || 5));
+      const cols = Math.max(1, Math.min(10, parseInt(document.getElementById('matrix-cols').value) || 6));
+      const grid = document.getElementById('interactive-desk-grid');
+      if (!grid) return;
+
+      grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+      let html = '';
+      let activeCount = 0;
+      let disabledCount = 0;
+
+      for (let r = 1; r <= rows; r++) {
+        for (let c = 1; c <= cols; c++) {
+          const seatKey = `${r}-${c}`;
+          const isDisabled = currentExamSession.disabledSeats.has(seatKey);
+          if (isDisabled) disabledCount++;
+          else activeCount++;
+
+          html += `
+            <div class="interactive-desk-cell ${isDisabled ? 'disabled' : ''}" 
+                 onclick="toggleSeatDisabled('${seatKey}')" 
+                 title="좌석 ${r}행 ${c}열 (${isDisabled ? '결시/빈책상' : '응시중'})">
+              ${isDisabled ? '✕' : `${r}-${c}`}
+            </div>
+          `;
+        }
+      }
+
+      grid.innerHTML = html;
+      const summary = document.getElementById('matrix-summary-text');
+      if (summary) {
+        summary.textContent = `총 ${rows * cols}석 (응시: ${activeCount}명, 결시/빈자리: ${disabledCount}명)`;
+      }
+    }
+
+    function toggleSeatDisabled(seatKey) {
+      if (currentExamSession.disabledSeats.has(seatKey)) {
+        currentExamSession.disabledSeats.delete(seatKey);
+      } else {
+        currentExamSession.disabledSeats.add(seatKey);
+      }
+      renderDeskPreview();
+    }
+
+    function applyExamConfiguration() {
+      const rows = Math.max(1, Math.min(10, parseInt(document.getElementById('matrix-rows').value) || 5));
+      const cols = Math.max(1, Math.min(10, parseInt(document.getElementById('matrix-cols').value) || 6));
+      const school = document.getElementById('proctor-school').value.trim() || "한국고등학교";
+      const title = document.getElementById('proctor-exam-title').value.trim() || "2026학년도 1학기 중간고사";
+      const room = document.getElementById('proctor-room').value.trim() || "제 3고사실";
+      const code = document.getElementById('input-search-code').value.trim().toUpperCase() || "EXAM-7892";
+
+      currentExamSession = {
+        code: code,
+        school: school,
+        title: title,
+        room: room,
+        rows: rows,
+        cols: cols,
+        disabledSeats: new Set(currentExamSession.disabledSeats)
+      };
+
+      // 상단 배지 바 업데이트
+      document.getElementById('badge-school-name').textContent = school;
+      document.getElementById('badge-exam-title').textContent = title;
+      document.getElementById('badge-room-name').textContent = room;
+      document.getElementById('badge-exam-code').textContent = code;
+      document.getElementById('badge-matrix-info').textContent = `${rows}행 × ${cols}열 (총 ${rows * cols}석, 결시: ${currentExamSession.disabledSeats.size}석)`;
+
+      // 레이더 위 책상 그리드 렌더링
+      renderRadarDesksOverlay(rows, cols);
+
+      closeExamModal();
+      showToast(`🏫 [${school}] ${room} 설정이 레이더에 반영되었습니다!`);
+    }
+
+    // 2D 레이더 화면에 실제 시험장 책상 행렬(Matrix) 오버레이 동적 렌더링
+    function renderRadarDesksOverlay(rows, cols) {
+      const grid = document.getElementById('radar-desks-grid');
+      if (!grid) return;
+
+      grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+      let html = '';
+      for (let r = 1; r <= rows; r++) {
+        for (let c = 1; c <= cols; c++) {
+          const seatKey = `${r}-${c}`;
+          const isDisabled = currentExamSession.disabledSeats.has(seatKey);
+          html += `
+            <div class="desk-cell" style="${isDisabled ? 'border-color:rgba(239,68,68,0.4); color:#f87171; background:rgba(239,68,68,0.06);' : ''}">
+              ${isDisabled ? `${r}-${c}(결시)` : `${r}-${c}`}
+            </div>
+          `;
+        }
+      }
+      grid.innerHTML = html;
+    }
+
+    // 기기 좌표를 시험장 책상(Row-Col)으로 지능형 매핑하는 함수
+    function getClosestSeat(absPos) {
+      // 책상 영역: left 14%~86% (width 72%), top 26%~84% (height 58%)
+      const minX = 14, maxX = 86;
+      const minY = 26, maxY = 84;
+
+      if (absPos.x < minX || absPos.x > maxX || absPos.y < minY || absPos.y > maxY) {
+        return null; // 책상 영역 외곽 (교탁, 복도, 창가)
+      }
+
+      const rows = currentExamSession.rows || 5;
+      const cols = currentExamSession.cols || 6;
+
+      const colWidth = (maxX - minX) / cols;
+      const rowHeight = (maxY - minY) / rows;
+
+      const c = Math.min(cols, Math.max(1, Math.floor((absPos.x - minX) / colWidth) + 1));
+      const r = Math.min(rows, Math.max(1, Math.floor((absPos.y - minY) / rowHeight) + 1));
+
+      const seatKey = `${r}-${c}`;
+      const isBlank = currentExamSession.disabledSeats.has(seatKey);
+
+      return {
+        row: r,
+        col: c,
+        seatKey: seatKey,
+        isBlank: isBlank,
+        label: `${r}행 ${c}열 좌석` + (isBlank ? ' (결시석/빈책상)' : '')
+      };
+    }
+
     // Init
+    applyExamConfiguration();
     renderTeacherNode();
     renderBlips();
     renderList();
