@@ -238,9 +238,13 @@ def scan_bluetooth():
         for name, info in not_connected_section.items():
             paired_history.append(_parse_bt_device(name, info, is_connected=False))
 
+    # 3. 스마트 TV 및 영상 디스플레이 장비 분리 (TV는 블루투스 오디오 상시 연결이 아니므로 별도 감지 목록으로 제공)
+    smart_tvs = [d for d in paired_history if "tv" in d["name"].lower() or "display" in d["type"].lower()]
+
     return {
         "devices": devices, # 현재 실제 연결된 기기
-        "paired_history": paired_history, # 과거 페어링 기록 (오프라인)
+        "smart_tvs": smart_tvs, # 탐지된 스마트 TV 디스플레이 기기
+        "paired_history": paired_history, # 일반 과거 페어링 기록 (오프라인)
         "count": len(devices),
         "history_count": len(paired_history),
         "scanned_at": datetime.now().strftime("%H:%M:%S"),
@@ -421,6 +425,7 @@ def full_scan():
         items = data.get("networks") or data.get("devices") or []
         total_high += sum(1 for item in items if item.get("risk") == "HIGH")
 
+    results["smart_tvs"] = results.get("bluetooth", {}).get("smart_tvs", [])
     results["summary"] = {
         "total_high_risk": total_high,
         "scanned_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

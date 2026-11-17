@@ -1050,18 +1050,13 @@
 
               <!-- Target TV IP Selector -->
               <div style="margin-bottom:12px;">
-                <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px;">제어 대상 기기 IP 선택:</label>
+                <label style="font-size:11px; color:var(--text-muted); display:block; margin-bottom:4px;">제어 대상 기기 선택 (스캔 결과 자동 반영):</label>
                 <div style="display:flex; gap:6px;">
                   <select id="tv-ip-select" style="flex:1; background:rgba(18,24,36,0.9); border:1px solid var(--border-strong); color:var(--text-primary); padding:6px 10px; border-radius:6px; font-family:var(--font-mono); font-size:11px;">
-                    <option value="192.168.219.100">192.168.219.100 (스마트 기기)</option>
-                    <option value="192.168.219.103">192.168.219.103 (iPad / 디스플레이)</option>
-                    <option value="192.168.219.21">192.168.219.21 (네트워크 호스트)</option>
-                    <option value="192.168.219.101">192.168.219.101 (네트워크 기기)</option>
-                    <option value="192.168.219.102">192.168.219.102 (네트워크 기기)</option>
-                    <option value="192.168.219.104">192.168.219.104 (네트워크 기기)</option>
-                    <option value="192.168.219.106">192.168.219.106 (네트워크 기기)</option>
+                    <option value="">스캔 중... (잠시 대기)</option>
                   </select>
                 </div>
+                <div id="tv-name-badge" style="display:none; margin-top:6px; font-size:11px; font-weight:700; color:#c084fc; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); padding:4px 10px; border-radius:6px; font-family:var(--font-mono);"></div>
               </div>
 
               <!-- Channel & Volume Quick Controls -->
@@ -1332,17 +1327,65 @@
 
       allDevices = newList;
 
-      // Update TV IP selector dropdown with real detected IPs
+      // Update TV IP selector dropdown with real detected IPs + TV names from Bluetooth
       const tvSelect = document.getElementById('tv-ip-select');
-      if (tvSelect && netDevs.length > 0) {
+      const tvNameBadge = document.getElementById('tv-name-badge');
+      if (tvSelect) {
         const curVal = tvSelect.value;
-        tvSelect.innerHTML = netDevs.map(d => {
-          let label = `${d.ip} (${d.vendor || '네트워크 호스트'})`;
-          if (d.ip === '192.168.219.1') label = `${d.ip} (공유기/AP)`;
-          else if (d.ip === '192.168.219.103') label = `${d.ip} (iPad / 스마트 디스플레이)`;
-          return `<option value="${d.ip}">${label}</option>`;
-        }).join('');
-        if (curVal && netDevs.some(d => d.ip === curVal)) tvSelect.value = curVal;
+
+        // 1. Bluetooth에서 탐지된 TV 이름 목록 (paired_history에서 TV만 추출)
+        const btTvs = (data.smart_tvs) || [];
+
+        // TV 주소 → 이름 매핑
+        // (블루투스 MAC과 네트워크 IP는 다를 수 있으므로 이름을 IP별 주석으로 활용)
+        const tvNames = btTvs.map(tv => tv.name).filter(Boolean);
+
+        // 2. 네트워크 기기 목록으로 드롭다운 구성 (TV 이름 힌트 포함)
+        if (netDevs.length > 0) {
+          tvSelect.innerHTML = netDevs.map((d, i) => {
+            let icon = '🖧';
+            let label = '';
+            const isGateway = d.ip === '192.168.219.1';
+            const isAppleMobile = d.vendor && d.vendor.includes('Apple Mobile');
+
+            if (isGateway) {
+              icon = '📡';
+              label = `${d.ip}  — 공유기 / Wi-Fi AP`;
+            } else if (isAppleMobile) {
+              icon = '📱';
+              label = `${d.ip}  — Apple 스마트기기`;
+            } else {
+              // 첫 번째 비-게이트웨이 비-Apple 기기에 TV 이름 힌트 붙이기
+              const tvHint = tvNames[0] ? `  ← ${tvNames[0]}` : '';
+              icon = tvNames.length > 0 && i === 1 ? '📺' : '🖥';
+              label = `${d.ip}${tvHint}`;
+            }
+            return `<option value="${d.ip}">${icon} ${label}</option>`;
+          }).join('');
+
+          if (curVal && netDevs.some(d => d.ip === curVal)) {
+            tvSelect.value = curVal;
+          }
+        }
+
+        // 3. TV 이름 배지 표시 (블루투스에서 감지된 TV 이름 강조)
+        if (tvNameBadge) {
+          if (tvNames.length > 0) {
+            tvNameBadge.style.display = 'block';
+            tvNameBadge.textContent = `📺 블루투스 감지 TV: ${tvNames.join(' / ')}`;
+          } else {
+            tvNameBadge.style.display = 'none';
+          }
+        }
+
+        // 4. TV IP 선택 변경 시 배지 업데이트
+        tvSelect.onchange = () => {
+          const selectedOpt = tvSelect.options[tvSelect.selectedIndex];
+          if (tvNameBadge && selectedOpt) {
+            tvNameBadge.style.display = 'block';
+            tvNameBadge.textContent = `🎯 제어 대상: ${selectedOpt.text.trim()}`;
+          }
+        };
       }
 
       // 선택 유지 또는 첫 번째 기기 선택
