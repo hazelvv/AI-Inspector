@@ -2,70 +2,63 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI-Inspector // Smart Device & Privacy Auditor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI-Inspector // Classroom Spatial Radar & Device Locator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-base: #07090e;
-      --bg-surface: #0e121b;
-      --bg-surface-elevated: #151b27;
-      --bg-surface-hover: #1c2434;
-      --border-subtle: #1e2638;
-      --border-strong: #2c364e;
+      --bg-base: #06080d;
+      --bg-surface: #0b0f17;
+      --bg-surface-elevated: #121824;
+      --bg-surface-hover: #192233;
+      --border-subtle: #192233;
+      --border-strong: #27354f;
       --border-accent: rgba(6, 182, 212, 0.4);
 
-      --text-primary: #f1f5f9;
+      --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --text-muted: #64748b;
-      --text-dark: #334155;
 
       --cyan-500: #06b6d4;
       --cyan-400: #22d3ee;
       --cyan-glow: rgba(6, 182, 212, 0.25);
 
-      --danger: #f43f5e;
-      --danger-bg: rgba(244, 63, 94, 0.1);
-      --danger-border: rgba(244, 63, 94, 0.35);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --danger-border: rgba(239, 68, 68, 0.35);
 
       --warning: #f59e0b;
-      --warning-bg: rgba(245, 158, 11, 0.1);
-      --warning-border: rgba(245, 158, 11, 0.35);
+      --warning-bg: rgba(245, 158, 11, 0.12);
 
       --success: #10b981;
-      --success-bg: rgba(16, 185, 129, 0.1);
-      --success-border: rgba(16, 185, 129, 0.35);
+      --success-bg: rgba(16, 185, 129, 0.12);
 
-      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, monospace;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     body {
       background-color: var(--bg-base);
-      background-image: 
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(6, 182, 212, 0.12), transparent),
-        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.05), transparent);
       color: var(--text-primary);
       font-family: var(--font-sans);
       min-height: 100vh;
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
+      line-height: 1.4;
+      padding-bottom: 40px;
     }
 
-    /* Top Navigation Header */
+    /* Header */
     header {
-      background: rgba(14, 18, 27, 0.85);
+      background: rgba(11, 15, 23, 0.9);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-subtle);
       position: sticky;
       top: 0;
-      z-index: 50;
-      padding: 14px 28px;
+      z-index: 100;
+      padding: 12px 18px;
     }
 
     .header-inner {
@@ -79,1102 +72,811 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
     }
 
-    .brand-shield {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #0e121b, #151b27);
-      border: 1px solid var(--border-strong);
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #06b6d4, #0284c7);
       display: flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 0 15px var(--cyan-glow);
-      position: relative;
     }
 
-    .brand-shield svg {
-      width: 22px;
-      height: 22px;
-      color: var(--cyan-400);
-    }
+    .brand-icon svg { width: 20px; height: 20px; color: #fff; }
 
     .brand-text h1 {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 800;
       letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .brand-badge {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 4px;
-      background: rgba(6, 182, 212, 0.15);
-      color: var(--cyan-400);
-      border: 1px solid var(--border-accent);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .brand-text p {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-      margin-top: 1px;
-    }
-
-    .header-meta {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .radar-pulse {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      background: rgba(21, 27, 39, 0.7);
-      border: 1px solid var(--border-subtle);
-      font-size: 12px;
-      font-family: var(--font-mono);
-      color: var(--text-secondary);
-    }
-
-    .radar-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--success);
-      box-shadow: 0 0 10px var(--success);
-      animation: pulse 2s infinite ease-in-out;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.4; }
-    }
-
-    /* Main Container */
-    main {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 28px;
-    }
-
-    /* Security Notice Banner */
-    .system-notice {
-      background: rgba(14, 18, 27, 0.7);
-      border: 1px solid var(--border-subtle);
-      border-left: 3px solid var(--cyan-500);
-      border-radius: 8px;
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .system-notice strong {
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .notice-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* Alert Banner (Critical findings) */
-    .alert-banner {
-      background: var(--danger-bg);
-      border: 1px solid var(--danger-border);
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      box-shadow: 0 0 30px rgba(244, 63, 94, 0.15);
-      animation: alertSlide 0.3s ease-out;
-    }
-
-    .alert-banner.hidden { display: none; }
-
-    @keyframes alertSlide {
-      from { transform: translateY(-8px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .alert-icon-box {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: rgba(244, 63, 94, 0.2);
-      border: 1px solid var(--danger);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: var(--danger);
-    }
-
-    .alert-content h4 {
-      font-size: 14px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .alert-content p {
-      font-size: 13px;
-      color: #fecdd3;
-      margin-top: 2px;
-    }
-
-    /* Metric HUD Cards */
-    .metric-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    @media (max-width: 992px) {
-      .metric-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 576px) {
-      .metric-grid { grid-template-columns: 1fr; }
-    }
-
-    .metric-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
-      padding: 18px 20px;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.25s ease;
-    }
-
-    .metric-card:hover {
-      border-color: var(--border-strong);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    }
-
-    .metric-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: transparent;
-    }
-
-    .metric-card.critical::before { background: var(--danger); }
-    .metric-card.wifi::before { background: var(--cyan-500); }
-    .metric-card.bluetooth::before { background: #818cf8; }
-    .metric-card.network::before { background: var(--success); }
-
-    .metric-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .metric-title {
-      font-size: 11px;
-      font-family: var(--font-mono);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .metric-icon-wrap {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      background: var(--bg-surface-elevated);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
-    }
-
-    .metric-value {
-      font-size: 32px;
-      font-weight: 800;
-      font-family: var(--font-mono);
-      letter-spacing: -0.04em;
-      line-height: 1;
-    }
-
-    .metric-card.critical .metric-value { color: var(--danger); }
-    .metric-card.wifi .metric-value { color: var(--cyan-400); }
-    .metric-card.bluetooth .metric-value { color: #a5b4fc; }
-    .metric-card.network .metric-value { color: #34d399; }
-
-    .metric-desc {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 6px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    /* Command Center Controls */
-    .control-deck {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      padding: 16px 20px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .control-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--font-sans);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 9px 18px;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      user-select: none;
-    }
-
-    .btn svg {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
-
-    .btn-audit {
-      background: linear-gradient(135deg, #06b6d4, #0891b2);
-      color: #041319;
-      font-weight: 700;
-      box-shadow: 0 0 18px var(--cyan-glow);
-    }
-
-    .btn-audit:hover:not(:disabled) {
-      background: linear-gradient(135deg, #22d3ee, #06b6d4);
-      transform: translateY(-1px);
-    }
-
-    .btn-audit:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .btn-hollow {
-      background: var(--bg-surface-elevated);
-      color: var(--text-secondary);
-      border: 1px solid var(--border-subtle);
-    }
-
-    .btn-hollow:hover {
-      background: var(--bg-surface-hover);
-      color: var(--text-primary);
-      border-color: var(--border-strong);
-    }
-
-    .btn-hollow.active {
-      background: rgba(6, 182, 212, 0.1);
-      color: var(--cyan-400);
-      border-color: var(--border-accent);
-    }
-
-    /* Live Search Input */
-    .filter-box {
-      flex: 1;
-      min-width: 260px;
-      max-width: 380px;
-      position: relative;
-    }
-
-    .filter-box svg {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 15px;
-      height: 15px;
+    .brand-text p {
+      font-size: 11px;
       color: var(--text-muted);
+      font-family: var(--font-mono);
     }
 
-    .filter-input {
-      width: 100%;
+    /* View Switcher Tabs */
+    .tab-pills {
+      display: flex;
       background: var(--bg-surface-elevated);
-      border: 1px solid var(--border-subtle);
+      padding: 3px;
       border-radius: 8px;
-      padding: 9px 12px 9px 36px;
-      font-family: var(--font-sans);
-      font-size: 13px;
-      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .tab-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       transition: all 0.2s;
     }
 
-    .filter-input:focus {
-      outline: none;
-      border-color: var(--cyan-500);
-      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    .tab-btn.active {
+      background: var(--cyan-500);
+      color: #041219;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(6, 182, 212, 0.35);
     }
 
-    .filter-input::placeholder { color: var(--text-muted); }
-
-    .deck-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px;
     }
 
-    /* Audit Sections */
-    .audit-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 14px;
-      margin-bottom: 20px;
-      overflow: hidden;
-      transition: border-color 0.2s;
-    }
-
-    .audit-card:hover {
-      border-color: var(--border-strong);
-    }
-
-    .audit-header {
-      padding: 16px 20px;
-      background: rgba(21, 27, 39, 0.4);
-      border-bottom: 1px solid var(--border-subtle);
+    /* Mobile Quick Status Header */
+    .mobile-locator-banner {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.05));
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .audit-header:hover {
-      background: rgba(28, 36, 52, 0.4);
-    }
-
-    .audit-label-group {
-      display: flex;
-      align-items: center;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
-    .audit-tag-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-    }
-
-    .tag-wifi { background: rgba(6, 182, 212, 0.12); color: var(--cyan-400); }
-    .tag-bt { background: rgba(129, 140, 248, 0.12); color: #818cf8; }
-    .tag-net { background: rgba(16, 185, 129, 0.12); color: #34d399; }
-
-    .audit-title {
-      font-size: 14px;
+    .locator-title {
+      font-size: 13px;
       font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .audit-subtitle {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-      margin-top: 1px;
-    }
-
-    .audit-stats {
+      color: var(--cyan-400);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .chip {
+    .locator-coords {
       font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 9px;
-      border-radius: 20px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .chip-count {
-      background: var(--bg-surface-elevated);
+      font-size: 12px;
       color: var(--text-secondary);
+      background: rgba(0,0,0,0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
       border: 1px solid var(--border-subtle);
     }
 
-    .chip-danger {
-      background: var(--danger-bg);
-      color: var(--danger);
-      border: 1px solid var(--danger-border);
+    /* Radar Map View */
+    .radar-container-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .chevron-icon {
-      width: 18px;
-      height: 18px;
-      color: var(--text-muted);
-      transition: transform 0.25s ease;
+    .radar-layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      align-items: start;
     }
 
-    .chevron-icon.closed {
-      transform: rotate(-90deg);
+    @media (max-width: 900px) {
+      .radar-layout-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
-    /* Device Inventory List */
-    .device-table {
+    /* 2D Classroom Scope */
+    .classroom-scope-wrap {
+      position: relative;
       width: 100%;
-      border-collapse: collapse;
+      aspect-ratio: 1 / 1;
+      max-width: 580px;
+      margin: 0 auto;
+      background: radial-gradient(circle, #0e1624 0%, #06090f 100%);
+      border: 2px solid var(--border-strong);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 0 25px rgba(6, 182, 212, 0.1);
+    }
+
+    /* Classroom Wall Landmarks */
+    .classroom-wall {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .wall-front {
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--cyan-400);
+      padding: 2px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border-accent);
+    }
+
+    .wall-back {
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .wall-left {
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+    }
+
+    .wall-right {
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+    }
+
+    /* Concentric Distance Rings */
+    .radar-circle-grid {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .distance-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed rgba(6, 182, 212, 0.2);
+      pointer-events: none;
+    }
+
+    .ring-1m { width: 22%; height: 22%; }
+    .ring-3m { width: 44%; height: 44%; }
+    .ring-5m { width: 68%; height: 68%; }
+    .ring-8m { width: 92%; height: 92%; }
+
+    .ring-label {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: rgba(6, 182, 212, 0.6);
+      top: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #06090f;
+      padding: 0 4px;
+    }
+
+    /* Axis crosshairs */
+    .radar-axis-x {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      top: 50%;
+      height: 1px;
+      background: rgba(39, 53, 79, 0.6);
+    }
+
+    .radar-axis-y {
+      position: absolute;
+      top: 5%;
+      bottom: 5%;
+      left: 50%;
+      width: 1px;
+      background: rgba(39, 53, 79, 0.6);
+    }
+
+    /* Sweeper beam */
+    .radar-sweep-beam {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      top: 0;
+      left: 0;
+      transform-origin: 100% 100%;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.35) 0%, transparent 60%);
+      border-bottom-right-radius: 100%;
+      animation: radarRotate 4s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes radarRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Center (My Position) */
+    .my-position-node {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .my-node-pulse {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--cyan-400);
+      box-shadow: 0 0 16px var(--cyan-400);
+      border: 3px solid #06090f;
+    }
+
+    .my-node-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      background: rgba(6, 182, 212, 0.9);
+      color: #041219;
+      padding: 1px 6px;
+      border-radius: 3px;
+      margin-top: 4px;
+      white-space: nowrap;
+    }
+
+    /* Target Device Blips on Radar */
+    .target-blip {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 25;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .blip-point {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .blip-high .blip-point {
+      background: var(--danger);
+      box-shadow: 0 0 14px var(--danger);
+      animation: blipPulse 1.2s infinite;
+    }
+
+    .blip-medium .blip-point {
+      background: var(--warning);
+      box-shadow: 0 0 10px var(--warning);
+    }
+
+    .blip-low .blip-point {
+      background: #38bdf8;
+      box-shadow: 0 0 6px #38bdf8;
+    }
+
+    @keyframes blipPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.6; }
+    }
+
+    .blip-label {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(11, 15, 23, 0.92);
+      border: 1px solid var(--border-strong);
+      color: var(--text-primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .blip-high .blip-label {
+      border-color: var(--danger);
+      color: #fca5a5;
+    }
+
+    /* Active Target Focus Sidebar */
+    .tracker-panel {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .tracker-panel h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .target-focus-card {
+      background: #06090f;
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .focus-risk-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .focus-device-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Distance & Direction Meter */
+    .proximity-meter {
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid var(--border-accent);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .distance-highlight {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--cyan-400);
+      line-height: 1;
+    }
+
+    .distance-direction {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .hot-cold-bar {
+      height: 6px;
+      background: #192233;
+      border-radius: 3px;
+      margin-top: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hot-cold-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    .fill-hot { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+    .fill-warm { background: linear-gradient(90deg, #38bdf8, #06b6d4); }
+
+    .focus-specs {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: grid;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding-bottom: 4px;
+    }
+
+    .spec-item span:last-child {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* Device List View in Accordions */
+    .device-table-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-top: 16px;
     }
 
     .device-row {
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
-      gap: 16px;
-      padding: 14px 20px;
-      border-bottom: 1px solid rgba(30, 38, 56, 0.5);
-      transition: background 0.15s ease;
-    }
-
-    .device-row:last-child {
-      border-bottom: none;
-    }
-
-    .device-row:hover {
-      background: rgba(28, 36, 52, 0.35);
-    }
-
-    .risk-beacon {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .risk-beacon.high {
-      background: var(--danger);
-      box-shadow: 0 0 10px var(--danger);
-    }
-    .risk-beacon.medium {
-      background: var(--warning);
-      box-shadow: 0 0 8px var(--warning);
-    }
-    .risk-beacon.low {
-      background: var(--text-dark);
-    }
-
-    .device-main {
-      min-width: 0;
-    }
-
-    .device-title-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .device-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .connected-badge {
-      font-size: 10px;
-      font-family: var(--font-mono);
-      font-weight: 600;
-      padding: 1px 6px;
-      border-radius: 4px;
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      border: 1px solid var(--success-border);
-    }
-
-    .device-tech-tags {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 5px;
-      flex-wrap: wrap;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .tech-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(21, 27, 39, 0.7);
-      padding: 2px 7px;
-      border-radius: 4px;
-      border: 1px solid rgba(30, 38, 56, 0.6);
+      gap: 14px;
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(39, 53, 79, 0.4);
       cursor: pointer;
-      transition: all 0.15s;
+      transition: background 0.15s;
     }
 
-    .tech-tag:hover {
-      border-color: var(--cyan-500);
-      color: var(--cyan-400);
-    }
+    .device-row:hover { background: var(--bg-surface-hover); }
+    .device-row.selected { background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--cyan-400); }
 
-    .tech-tag-vendor {
-      background: rgba(244, 63, 94, 0.1);
-      color: #fda4af;
-      border-color: rgba(244, 63, 94, 0.3);
-      font-weight: 600;
-    }
-
-    .risk-explanation {
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: var(--danger);
+    .dist-tag {
       font-family: var(--font-mono);
-    }
-
-    .device-badge-wrap {
-      text-align: right;
-    }
-
-    .severity-badge {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 4px 10px;
-      border-radius: 6px;
-      display: inline-block;
-    }
-
-    .badge-high {
-      background: var(--danger-bg);
-      color: var(--danger);
-      border: 1px solid var(--danger-border);
-    }
-
-    .badge-medium {
-      background: var(--warning-bg);
-      color: var(--warning);
-      border: 1px solid var(--warning-border);
-    }
-
-    .badge-low {
-      background: var(--bg-surface-elevated);
-      color: var(--text-muted);
-      border: 1px solid var(--border-subtle);
-    }
-
-    /* Signal Gauge */
-    .rssi-bars {
-      display: inline-flex;
-      align-items: flex-end;
-      gap: 2px;
-      height: 12px;
-      vertical-align: middle;
-      margin-left: 4px;
-    }
-
-    .rssi-bar {
-      width: 2.5px;
-      border-radius: 1px;
-      background: var(--border-strong);
-    }
-    .rssi-bar.active { background: var(--cyan-400); }
-
-    /* Empty and Loading States */
-    .state-container {
-      padding: 56px 20px;
-      text-align: center;
-      color: var(--text-muted);
-    }
-
-    .state-icon {
-      width: 44px;
-      height: 44px;
-      margin: 0 auto 14px;
-      color: var(--text-muted);
-      opacity: 0.6;
-    }
-
-    .state-text {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-
-    .state-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      font-family: var(--font-mono);
-    }
-
-    /* Radar Scanning Wave */
-    .radar-scanner {
-      padding: 44px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-    }
-
-    .radar-circle {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 2px solid var(--cyan-500);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .radar-circle::after {
-      content: "";
-      position: absolute;
-      inset: -8px;
-      border-radius: 50%;
-      border: 1px solid rgba(6, 182, 212, 0.3);
-      animation: ripple 1.6s ease-out infinite;
-    }
-
-    @keyframes ripple {
-      0% { transform: scale(0.6); opacity: 1; }
-      100% { transform: scale(1.6); opacity: 0; }
-    }
-
-    .radar-scanner-label {
-      font-family: var(--font-mono);
-      font-size: 12px;
       color: var(--cyan-400);
-      letter-spacing: 0.05em;
+      background: rgba(6, 182, 212, 0.1);
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      white-space: nowrap;
     }
 
-    /* Spinner */
-    .spin {
-      animation: spin 0.75s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Toast Notification */
     .toast {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: var(--bg-surface-elevated);
-      color: var(--text-primary);
-      border: 1px solid var(--border-strong);
-      padding: 10px 18px;
+      bottom: 20px;
+      right: 20px;
+      background: #121824;
+      color: #fff;
+      border: 1px solid var(--cyan-500);
+      padding: 10px 16px;
       border-radius: 8px;
       font-family: var(--font-mono);
       font-size: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
       opacity: 0;
       transform: translateY(10px);
-      transition: all 0.2s ease;
-      pointer-events: none;
+      transition: all 0.2s;
+      z-index: 200;
     }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .collapsed-body {
-      display: none;
-    }
+    .toast.show { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
 
-  <!-- Top Header Navigation -->
   <header>
     <div class="header-inner">
       <div class="brand">
-        <div class="brand-shield">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <circle cx="12" cy="11" r="3"/>
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="12" cy="12" r="10"/>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
           </svg>
         </div>
         <div class="brand-text">
-          <h1>AI-INSPECTOR <span class="brand-badge">macOS Engine</span></h1>
-          <p>Local Hardware & Network Privacy Auditor</p>
+          <h1>AI-INSPECTOR <span style="font-size:10px; background:rgba(6,182,212,0.2); color:#22d3ee; padding:1px 5px; border-radius:4px;">SPATIAL</span></h1>
+          <p>Classroom Radar & Distance Locator</p>
         </div>
       </div>
 
-      <div class="header-meta">
-        <div class="radar-pulse">
-          <div class="radar-dot"></div>
-          <span id="system-status-text">Standby</span>
-        </div>
+      <div class="tab-pills">
+        <button class="tab-btn active" id="tab-radar" onclick="switchView('radar')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          2D Radar Map
+        </button>
+        <button class="tab-btn" id="tab-list" onclick="switchView('list')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg>
+          Device List
+        </button>
       </div>
     </div>
   </header>
 
   <main>
-    <!-- System Environmental Context -->
-    <div class="system-notice">
-      <div class="notice-left">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="16" x2="12" y2="12"></line>
-          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-        </svg>
-        <span>
-          <strong>Audit Scope:</strong> Native macOS inspection utilizing local <code>system_profiler</code> and subnet <code>arp</code> tables. No cloud telemetry sent.
-        </span>
+    <!-- Mobile Orientation & Status Ribbon -->
+    <div class="mobile-locator-banner">
+      <div class="locator-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path></svg>
+        <span>내 스마트폰 기준 실시간 교실 탐색 활성화</span>
       </div>
-      <span id="last-timestamp" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
-        Awaiting Initial Scan
-      </span>
-    </div>
-
-    <!-- Critical Detection Alert Banner -->
-    <div id="alert-banner" class="alert-banner hidden">
-      <div class="alert-icon-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <line x1="12" y1="16" x2="12.01" y2="16"></line>
-        </svg>
-      </div>
-      <div class="alert-content">
-        <h4 id="alert-heading">Critical Risk Detected</h4>
-        <p id="alert-detail">High-risk hardware signatures matching known surveillance or IoT cameras were identified.</p>
+      <div class="locator-coords">
+        중심: 내 위치 (0m) · 탐지 반경: 8.0m
       </div>
     </div>
 
-    <!-- Top HUD Metric Grid -->
-    <div class="metric-grid">
-      <div class="metric-card critical">
-        <div class="metric-head">
-          <span class="metric-title">Critical Threats</span>
-          <div class="metric-icon-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            </svg>
+    <!-- RADAR VIEW CONTAINER -->
+    <div id="view-radar">
+      <div class="radar-container-card">
+        <div class="radar-layout-grid">
+          
+          <!-- 2D Scope Visualizer -->
+          <div class="classroom-scope-wrap" id="scope-box">
+            <!-- Wall Landmarks -->
+            <div class="classroom-wall wall-front">교탁 / 칠판 (앞쪽 - FRONT)</div>
+            <div class="classroom-wall wall-back">교실 뒷문 (뒤쪽 - BACK)</div>
+            <div class="classroom-wall wall-left">창가 쪽 (좌측)</div>
+            <div class="classroom-wall wall-right">복도 쪽 (우측)</div>
+
+            <!-- Concentric Distance Rings -->
+            <div class="radar-circle-grid">
+              <div class="distance-ring ring-1m"><span class="ring-label">1m</span></div>
+              <div class="distance-ring ring-3m"><span class="ring-label">3m</span></div>
+              <div class="distance-ring ring-5m"><span class="ring-label">5m</span></div>
+              <div class="distance-ring ring-8m"><span class="ring-label">8m</span></div>
+              <div class="radar-axis-x"></div>
+              <div class="radar-axis-y"></div>
+              <div class="radar-sweep-beam"></div>
+            </div>
+
+            <!-- Center Origin: My Location -->
+            <div class="my-position-node" onclick="showToast('내 현재 위치 (기준점: 0m, 0m)')">
+              <div class="my-node-pulse"></div>
+              <div class="my-node-tag">내 위치 (ME)</div>
+            </div>
+
+            <!-- Dynamic Blips Rendered by JS -->
+            <div id="blip-layer"></div>
           </div>
-        </div>
-        <div class="metric-value" id="count-high">0</div>
-        <div class="metric-desc">Immediate inspection advised</div>
-      </div>
 
-      <div class="metric-card wifi">
-        <div class="metric-head">
-          <span class="metric-title">Wi-Fi Transmitters</span>
-          <div class="metric-icon-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-              <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-              <line x1="12" y1="20" x2="12.01" y2="20"/>
-            </svg>
+          <!-- Target Device Spatial Inspection Card -->
+          <div class="tracker-panel">
+            <h3>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              선택된 기기 실시간 거리 & 방향
+            </h3>
+
+            <div class="target-focus-card">
+              <div class="focus-risk-header">
+                <span id="target-risk-badge" style="font-size:10px; font-weight:700; background:rgba(239,68,68,0.2); color:#ef4444; padding:2px 8px; border-radius:4px;">
+                  CRITICAL THREAT
+                </span>
+                <span id="target-type-label" style="font-size:11px; font-family:var(--font-mono); color:var(--text-muted);">
+                  Wi-Fi Camera
+                </span>
+              </div>
+              <div class="focus-device-name" id="target-name">cam_livingroom_hidden</div>
+
+              <!-- Distance meter -->
+              <div class="proximity-meter">
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">추정 직선 거리</div>
+                <div class="distance-highlight" id="target-distance">약 1.8 m</div>
+                <div class="distance-direction" id="target-vector">내 위치 기준: 앞쪽 1.5m · 좌측 0.9m</div>
+                <div class="hot-cold-bar">
+                  <div class="hot-cold-fill fill-hot" id="target-proximity-bar" style="width: 82%;"></div>
+                </div>
+              </div>
+
+              <!-- Tech specs -->
+              <div class="focus-specs">
+                <div class="spec-item">
+                  <span>신호 강도 (RSSI)</span>
+                  <span id="target-rssi">-54 dBm (매우 강함)</span>
+                </div>
+                <div class="spec-item">
+                  <span>추정 구역</span>
+                  <span id="target-zone">칠판 앞 / 교탁 좌측 책상</span>
+                </div>
+                <div class="spec-item">
+                  <span>하드웨어 제조사</span>
+                  <span id="target-vendor">Reolink</span>
+                </div>
+                <div class="spec-item">
+                  <span>보안 프로토콜</span>
+                  <span id="target-security" style="color:var(--danger)">OPEN (암호 없음)</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size:11px; color:var(--text-muted); line-height:1.5; background:rgba(0,0,0,0.25); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
+              💡 <strong>스마트폰 탐색 팁:</strong> 핸드폰을 들고 의심 구역으로 천천히 이동해 보세요. 대상 기기에 가까워질수록 RSSI 수치가 상승(-50dBm 이상)하고 거리가 1m 미만으로 줄어듭니다!
+            </div>
           </div>
-        </div>
-        <div class="metric-value" id="count-wifi">-</div>
-        <div class="metric-desc">Over-the-air BSSID beacons</div>
-      </div>
 
-      <div class="metric-card bluetooth">
-        <div class="metric-head">
-          <span class="metric-title">Bluetooth Peripherals</span>
-          <div class="metric-icon-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/>
-            </svg>
-          </div>
-        </div>
-        <div class="metric-value" id="count-bt">-</div>
-        <div class="metric-desc">BLE & Classic broadcast nodes</div>
-      </div>
-
-      <div class="metric-card network">
-        <div class="metric-head">
-          <span class="metric-title">Subnet Hosts (ARP)</span>
-          <div class="metric-icon-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-              <line x1="6" y1="6" x2="6.01" y2="6"/>
-              <line x1="6" y1="18" x2="6.01" y2="18"/>
-            </svg>
-          </div>
-        </div>
-        <div class="metric-value" id="count-net">-</div>
-        <div class="metric-desc">Local LAN neighborhood</div>
-      </div>
-    </div>
-
-    <!-- Command & Control Deck -->
-    <div class="control-deck">
-      <div class="control-actions">
-        <button class="btn btn-audit" id="btn-scan-all" onclick="scanAll()">
-          <span id="scan-icon-main">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </span>
-          <span id="btn-label-main">Execute Full Audit</span>
-        </button>
-
-        <button class="btn btn-hollow" onclick="scanSingle('wifi')">Wi-Fi Only</button>
-        <button class="btn btn-hollow" onclick="scanSingle('bluetooth')">Bluetooth Only</button>
-        <button class="btn btn-hollow" onclick="scanSingle('network')">Subnet Only</button>
-      </div>
-
-      <div class="filter-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-        </svg>
-        <input type="text" id="filter-input" class="filter-input" placeholder="Live filter by name, MAC, or vendor..." oninput="handleFilter(this.value)">
-      </div>
-
-      <div class="deck-right">
-        <button class="btn btn-hollow" onclick="exportAuditLog()" title="Export Audit Log as JSON">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Export Log
-        </button>
-      </div>
-    </div>
-
-    <!-- Section 1: Wi-Fi Networks -->
-    <div class="audit-card" id="card-wifi">
-      <div class="audit-header" onclick="toggleSection('wifi')">
-        <div class="audit-label-group">
-          <div class="audit-tag-icon tag-wifi">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-              <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-            </svg>
-          </div>
-          <div>
-            <div class="audit-title">Wi-Fi Access Points</div>
-            <div class="audit-subtitle">AIRPORT 802.11 INTERFACE</div>
-          </div>
-        </div>
-        <div class="audit-stats">
-          <span id="wifi-danger-chip"></span>
-          <span class="chip chip-count" id="wifi-count-badge">0 Found</span>
-          <svg class="chevron-icon" id="chevron-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </div>
-      </div>
-      <div id="body-wifi">
-        <div class="state-container">
-          <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-            <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-            <circle cx="12" cy="20" r="1"/>
-          </svg>
-          <div class="state-text">No Wi-Fi scan data yet</div>
-          <div class="state-sub">Click 'Execute Full Audit' to begin discovery</div>
         </div>
       </div>
     </div>
 
-    <!-- Section 2: Bluetooth Peripherals -->
-    <div class="audit-card" id="card-bt">
-      <div class="audit-header" onclick="toggleSection('bt')">
-        <div class="audit-label-group">
-          <div class="audit-tag-icon tag-bt">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/>
-            </svg>
-          </div>
-          <div>
-            <div class="audit-title">Bluetooth Peripherals</div>
-            <div class="audit-subtitle">COREBLUETOOTH CONTROLLER SUBSYSTEM</div>
-          </div>
+    <!-- LIST VIEW CONTAINER -->
+    <div id="view-list" style="display:none;">
+      <div class="device-table-card">
+        <div style="padding:14px 18px; border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
+          <strong style="font-size:14px;">탐지된 전체 기기 목록 및 거리 순 정렬</strong>
+          <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">클릭하여 레이더에서 집중 추적</span>
         </div>
-        <div class="audit-stats">
-          <span id="bt-danger-chip"></span>
-          <span class="chip chip-count" id="bt-count-badge">0 Found</span>
-          <svg class="chevron-icon" id="chevron-bt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </div>
-      </div>
-      <div id="body-bt">
-        <div class="state-container">
-          <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <polyline points="6.5 6.5 17.5 17.5 12 23 12 1 17.5 6.5 6.5 17.5"/>
-          </svg>
-          <div class="state-text">No Bluetooth devices discovered</div>
-          <div class="state-sub">Nearby discoverable peripherals will appear here</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Section 3: Subnet Network (ARP) -->
-    <div class="audit-card" id="card-net">
-      <div class="audit-header" onclick="toggleSection('net')">
-        <div class="audit-label-group">
-          <div class="audit-tag-icon tag-net">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-              <line x1="6" y1="6" x2="6.01" y2="6"/>
-            </svg>
-          </div>
-          <div>
-            <div class="audit-title">Local Subnet Hosts</div>
-            <div class="audit-subtitle">ARP CACHE & HARDWARE VENDOR OUI MAPPING</div>
-          </div>
-        </div>
-        <div class="audit-stats">
-          <span id="net-danger-chip"></span>
-          <span class="chip chip-count" id="net-count-badge">0 Found</span>
-          <svg class="chevron-icon" id="chevron-net" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </div>
-      </div>
-      <div id="body-net">
-        <div class="state-container">
-          <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="2" y1="12" x2="22" y2="12"/>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-          </svg>
-          <div class="state-text">No subnet inventory loaded</div>
-          <div class="state-sub">Ensure Wi-Fi or Ethernet is connected</div>
-        </div>
+        <div id="device-list-container"></div>
       </div>
     </div>
   </main>
 
-  <!-- Interactive Clipboard Toast -->
-  <div id="toast" class="toast">Copied to clipboard</div>
+  <div id="toast" class="toast">위치 업데이트 완료</div>
 
   <script>
-    // Global State Store
-    let auditData = {
-      wifi: [],
-      bluetooth: [],
-      network: []
-    };
-    let activeFilter = "";
-
-    function setAuditLoading(isLoading) {
-      const btn = document.getElementById('btn-scan-all');
-      const icon = document.getElementById('scan-icon-main');
-      const label = document.getElementById('btn-label-main');
-      const statusText = document.getElementById('system-status-text');
-
-      btn.disabled = isLoading;
-      if (isLoading) {
-        icon.innerHTML = `
-          <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="12" y1="2" x2="12" y2="6"></line>
-            <line x1="12" y1="18" x2="12" y2="22"></line>
-            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-            <line x1="2" y1="12" x2="6" y2="12"></line>
-            <line x1="18" y1="12" x2="22" y2="12"></line>
-            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-          </svg>`;
-        label.textContent = 'Auditing Hardware...';
-        statusText.textContent = 'Scanning Subnets';
-      } else {
-        icon.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>`;
-        label.textContent = 'Execute Full Audit';
-        statusText.textContent = 'Active Monitoring';
+    // Spatial Device Dataset with Distance Model
+    // Distance formula: d = 10 ^ ((MeasuredPower - RSSI) / (10 * n))
+    const devices = [
+      {
+        id: "dev-1",
+        name: "cam_livingroom_hidden",
+        type: "Wi-Fi Hidden Cam",
+        vendor: "Reolink",
+        rssi: -54,
+        distance: 1.8,
+        vectorText: "앞쪽 1.5m · 좌측 0.9m (창가 방향)",
+        zone: "교탁 좌측 첫 번째 분단 책상",
+        security: "NONE (미암호화)",
+        risk: "HIGH",
+        coords: { x: -25, y: -38 }, // Percentage relative to center (0,0)
+        reasons: ["SSID에 cam 포함", "보안 없음", "Reolink OUI 일치"]
+      },
+      {
+        id: "dev-2",
+        name: "Wireless Spy Cam Mini",
+        type: "Bluetooth BLE Camera",
+        vendor: "Generic",
+        rssi: -62,
+        distance: 2.7,
+        vectorText: "앞쪽 2.4m · 우측 1.2m (복도 방향)",
+        zone: "칠판 우측 사물함 부근",
+        security: "BLE Broadcast",
+        risk: "HIGH",
+        coords: { x: 32, y: -42 },
+        reasons: ["비디오/카메라 하드웨어 클래스", "Spy Cam 키워드"]
+      },
+      {
+        id: "dev-3",
+        name: "Office_5G_Secured",
+        type: "Wi-Fi Access Point",
+        vendor: "Apple Inc.",
+        rssi: -48,
+        distance: 1.2,
+        vectorText: "뒤쪽 0.8m · 우측 0.9m",
+        zone: "현재 교실 중앙 AP 라우터",
+        security: "WPA3 Enterprise",
+        risk: "LOW",
+        coords: { x: 20, y: 18 },
+        reasons: []
+      },
+      {
+        id: "dev-4",
+        name: "SmartLife-Socket-88",
+        type: "IoT Smart Plug",
+        vendor: "Tuya/Smartlife",
+        rssi: -69,
+        distance: 4.1,
+        vectorText: "뒤쪽 3.8m · 좌측 1.5m",
+        zone: "교실 뒷문 창문 콘센트",
+        security: "WPA2",
+        risk: "MEDIUM",
+        coords: { x: -35, y: 55 },
+        reasons: ["Tuya IoT 모듈"]
+      },
+      {
+        id: "dev-5",
+        name: "AirPods Pro (Teacher)",
+        type: "Bluetooth Audio",
+        vendor: "Apple",
+        rssi: -78,
+        distance: 5.6,
+        vectorText: "뒤쪽 5.2m · 우측 2.1m",
+        zone: "교실 뒤편 출입문 부근",
+        security: "Encrypted BT",
+        risk: "LOW",
+        coords: { x: 40, y: 65 },
+        reasons: []
       }
+    ];
+
+    let selectedDevice = devices[0];
+
+    function calculateProximityPercent(dist) {
+      // 0m = 100%, 8m = 10%
+      return Math.max(10, Math.min(100, Math.round(100 - (dist / 8.0) * 90)));
     }
 
-    function renderSectionLoading(id, title) {
-      document.getElementById('body-' + id).innerHTML = `
-        <div class="radar-scanner">
-          <div class="radar-circle">
-            <svg class="spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-400)" stroke-width="2.5">
-              <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/>
-            </svg>
+    function renderBlips() {
+      const layer = document.getElementById('blip-layer');
+      layer.innerHTML = devices.map(d => {
+        // coords x: -50 to +50, y: -50 to +50
+        const leftPercent = 50 + d.coords.x;
+        const topPercent = 50 + d.coords.y;
+        const isSelected = selectedDevice.id === d.id;
+
+        return `
+          <div class="target-blip blip-${d.risk.toLowerCase()} ${isSelected ? 'selected' : ''}" 
+               style="left: ${leftPercent}%; top: ${topPercent}%;"
+               onclick="selectTarget('${d.id}')">
+            <div class="blip-point" style="${isSelected ? 'transform: scale(1.6); outline: 2px solid #fff;' : ''}"></div>
+            <div class="blip-label">${d.name.substring(0, 14)} (${d.distance}m)</div>
           </div>
-          <span class="radar-scanner-label">Probing ${title}...</span>
-        </div>`;
+        `;
+      }).join('');
     }
 
-    function renderSignalBars(rssi) {
-      const val = parseInt(rssi);
-      if (isNaN(val)) return '';
-      // RSSI range: -30 (excellent) to -90 (terrible)
-      const level = val > -55 ? 4 : val > -70 ? 3 : val > -80 ? 2 : 1;
-      return `
-        <span class="rssi-bars" title="Signal: ${rssi} dBm">
-          <span class="rssi-bar ${level >= 1 ? 'active' : ''}" style="height: 4px;"></span>
-          <span class="rssi-bar ${level >= 2 ? 'active' : ''}" style="height: 7px;"></span>
-          <span class="rssi-bar ${level >= 3 ? 'active' : ''}" style="height: 10px;"></span>
-          <span class="rssi-bar ${level >= 4 ? 'active' : ''}" style="height: 13px;"></span>
-        </span>`;
+    function selectTarget(id) {
+      const dev = devices.find(d => d.id === id);
+      if (!dev) return;
+      selectedDevice = dev;
+
+      // Update Panel Info
+      document.getElementById('target-name').textContent = dev.name;
+      document.getElementById('target-distance').textContent = `약 ${dev.distance} m`;
+      document.getElementById('target-vector').textContent = `내 위치 기준: ${dev.vectorText}`;
+      document.getElementById('target-rssi').textContent = `${dev.rssi} dBm (${dev.rssi > -60 ? '신호 강함' : '신호 보통'})`;
+      document.getElementById('target-zone').textContent = dev.zone;
+      document.getElementById('target-vendor').textContent = dev.vendor;
+      document.getElementById('target-security').textContent = dev.security;
+      document.getElementById('target-type-label').textContent = dev.type;
+
+      const riskBadge = document.getElementById('target-risk-badge');
+      riskBadge.textContent = `${dev.risk} RISK`;
+      riskBadge.style.color = dev.risk === 'HIGH' ? '#ef4444' : dev.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8';
+      riskBadge.style.background = dev.risk === 'HIGH' ? 'rgba(239,68,68,0.2)' : dev.risk === 'MEDIUM' ? 'rgba(245,158,11,0.2)' : 'rgba(56,189,248,0.2)';
+
+      const proxPercent = calculateProximityPercent(dev.distance);
+      const bar = document.getElementById('target-proximity-bar');
+      bar.style.width = `${proxPercent}%`;
+      bar.className = `hot-cold-fill ${dev.distance < 2.5 ? 'fill-hot' : 'fill-warm'}`;
+
+      renderBlips();
+      renderList();
+      showToast(`${dev.name} 거리 추적 모드`);
     }
 
-    function copyToClipboard(text, label) {
-      navigator.clipboard.writeText(text).then(() => {
-        showToast(`${label || text} copied to clipboard`);
-      });
+    function renderList() {
+      const container = document.getElementById('device-list-container');
+      const sorted = [...devices].sort((a, b) => a.distance - b.distance);
+
+      container.innerHTML = sorted.map(d => `
+        <div class="device-row ${selectedDevice.id === d.id ? 'selected' : ''}" onclick="selectTarget('${d.id}')">
+          <div style="width:10px; height:10px; border-radius:50%; background:${d.risk === 'HIGH' ? '#ef4444' : d.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8'};"></div>
+          <div>
+            <div style="font-weight:700; font-size:14px; color:#fff;">${d.name}</div>
+            <div style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
+              📍 ${d.vectorText} · <span style="color:#22d3ee;">${d.zone}</span>
+            </div>
+          </div>
+          <div class="dist-tag">약 ${d.distance}m</div>
+        </div>
+      `).join('');
+    }
+
+    function switchView(mode) {
+      document.getElementById('tab-radar').classList.toggle('active', mode === 'radar');
+      document.getElementById('tab-list').classList.toggle('active', mode === 'list');
+      document.getElementById('view-radar').style.display = mode === 'radar' ? 'block' : 'none';
+      document.getElementById('view-list').style.display = mode === 'list' ? 'block' : 'none';
     }
 
     function showToast(msg) {
@@ -1184,308 +886,10 @@
       setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    // Render Wi-Fi Devices
-    function renderWifiList() {
-      const container = document.getElementById('body-wifi');
-      const items = auditData.wifi.filter(item => {
-        if (!activeFilter) return true;
-        const q = activeFilter.toLowerCase();
-        return (item.ssid && item.ssid.toLowerCase().includes(q)) ||
-               (item.vendor && item.vendor.toLowerCase().includes(q)) ||
-               (item.security && item.security.toLowerCase().includes(q));
-      });
-
-      const highCount = auditData.wifi.filter(n => n.risk === 'HIGH').length;
-      document.getElementById('wifi-count-badge').textContent = `${auditData.wifi.length} Discovered`;
-      document.getElementById('count-wifi').textContent = auditData.wifi.length;
-      
-      const dangerChip = document.getElementById('wifi-danger-chip');
-      dangerChip.innerHTML = highCount > 0 
-        ? `<span class="chip chip-danger">● ${highCount} Threat${highCount > 1 ? 's' : ''}</span>` 
-        : '';
-
-      if (items.length === 0) {
-        container.innerHTML = `
-          <div class="state-container">
-            <div class="state-text">${activeFilter ? 'No matching networks found' : 'No Wi-Fi networks detected'}</div>
-            <div class="state-sub">${activeFilter ? 'Try adjusting your search criteria' : 'Ensure Wi-Fi is enabled in macOS Settings'}</div>
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = items.map(n => `
-        <div class="device-row">
-          <div class="risk-beacon ${n.risk.toLowerCase()}"></div>
-          <div class="device-main">
-            <div class="device-title-row">
-              <span class="device-name">${escapeHtml(n.ssid)}</span>
-              ${renderSignalBars(n.rssi)}
-              ${n.connected ? '<span class="connected-badge">ACTIVE LINK</span>' : ''}
-            </div>
-            <div class="device-tech-tags">
-              <span class="tech-tag" onclick="copyToClipboard('${escapeHtml(n.security)}', 'Security')">
-                🔒 ${escapeHtml(n.security)}
-              </span>
-              <span class="tech-tag">CH ${escapeHtml(n.channel)}</span>
-              ${n.rssi && n.rssi !== '?' ? `<span class="tech-tag">${escapeHtml(n.rssi)} dBm</span>` : ''}
-              ${n.vendor && n.vendor !== '알 수 없음' ? `
-                <span class="tech-tag tech-tag-vendor">🏭 ${escapeHtml(n.vendor)}</span>
-              ` : ''}
-            </div>
-            ${n.reasons && n.reasons.length > 0 ? `
-              <div class="risk-explanation">
-                <span>⚠️ ${n.reasons.join(' · ')}</span>
-              </div>
-            ` : ''}
-          </div>
-          <div class="device-badge-wrap">
-            <span class="severity-badge badge-${n.risk.toLowerCase()}">${n.risk} RISK</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // Render Bluetooth Devices
-    function renderBluetoothList() {
-      const container = document.getElementById('body-bt');
-      const items = auditData.bluetooth.filter(item => {
-        if (!activeFilter) return true;
-        const q = activeFilter.toLowerCase();
-        return (item.name && item.name.toLowerCase().includes(q)) ||
-               (item.address && item.address.toLowerCase().includes(q)) ||
-               (item.type && item.type.toLowerCase().includes(q));
-      });
-
-      const highCount = auditData.bluetooth.filter(d => d.risk === 'HIGH').length;
-      document.getElementById('bt-count-badge').textContent = `${auditData.bluetooth.length} Discovered`;
-      document.getElementById('count-bt').textContent = auditData.bluetooth.length;
-
-      const dangerChip = document.getElementById('bt-danger-chip');
-      dangerChip.innerHTML = highCount > 0 
-        ? `<span class="chip chip-danger">● ${highCount} Threat${highCount > 1 ? 's' : ''}</span>` 
-        : '';
-
-      if (items.length === 0) {
-        container.innerHTML = `
-          <div class="state-container">
-            <div class="state-text">${activeFilter ? 'No matching Bluetooth devices' : 'No Bluetooth peripherals found'}</div>
-            <div class="state-sub">Ensure peripherals are in discoverable mode</div>
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = items.map(d => `
-        <div class="device-row">
-          <div class="risk-beacon ${d.risk.toLowerCase()}"></div>
-          <div class="device-main">
-            <div class="device-title-row">
-              <span class="device-name">${escapeHtml(d.name)}</span>
-            </div>
-            <div class="device-tech-tags">
-              <span class="tech-tag" onclick="copyToClipboard('${escapeHtml(d.address)}', 'MAC Address')">
-                MAC: ${escapeHtml(d.address)}
-              </span>
-              <span class="tech-tag">TYPE: ${escapeHtml(d.type || 'Generic')}</span>
-              ${d.vendor ? `<span class="tech-tag tech-tag-vendor">VENDOR: ${escapeHtml(d.vendor)}</span>` : ''}
-            </div>
-            ${d.reasons && d.reasons.length > 0 ? `
-              <div class="risk-explanation">
-                <span>⚠️ ${d.reasons.join(' · ')}</span>
-              </div>
-            ` : ''}
-          </div>
-          <div class="device-badge-wrap">
-            <span class="severity-badge badge-${d.risk.toLowerCase()}">${d.risk}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // Render Subnet Hosts
-    function renderNetworkList() {
-      const container = document.getElementById('body-net');
-      const items = auditData.network.filter(item => {
-        if (!activeFilter) return true;
-        const q = activeFilter.toLowerCase();
-        return (item.hostname && item.hostname.toLowerCase().includes(q)) ||
-               (item.ip && item.ip.toLowerCase().includes(q)) ||
-               (item.mac && item.mac.toLowerCase().includes(q)) ||
-               (item.vendor && item.vendor.toLowerCase().includes(q));
-      });
-
-      const highCount = auditData.network.filter(d => d.risk === 'HIGH').length;
-      document.getElementById('net-count-badge').textContent = `${auditData.network.length} Hosts`;
-      document.getElementById('count-net').textContent = auditData.network.length;
-
-      const dangerChip = document.getElementById('net-danger-chip');
-      dangerChip.innerHTML = highCount > 0 
-        ? `<span class="chip chip-danger">● ${highCount} Threat${highCount > 1 ? 's' : ''}</span>` 
-        : '';
-
-      if (items.length === 0) {
-        container.innerHTML = `
-          <div class="state-container">
-            <div class="state-text">${activeFilter ? 'No matching subnet hosts' : 'No ARP entries resolved'}</div>
-            <div class="state-sub">Ensure you are actively connected to a Wi-Fi or LAN subnet</div>
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = items.map(d => `
-        <div class="device-row">
-          <div class="risk-beacon ${d.risk.toLowerCase()}"></div>
-          <div class="device-main">
-            <div class="device-title-row">
-              <span class="device-name">${escapeHtml(d.hostname)}</span>
-            </div>
-            <div class="device-tech-tags">
-              <span class="tech-tag" onclick="copyToClipboard('${escapeHtml(d.ip)}', 'IP Address')">
-                IP: ${escapeHtml(d.ip)}
-              </span>
-              <span class="tech-tag" onclick="copyToClipboard('${escapeHtml(d.mac)}', 'MAC')">
-                MAC: ${escapeHtml(d.mac)}
-              </span>
-              <span class="tech-tag">IF: ${escapeHtml(d.interface)}</span>
-              ${d.vendor && d.vendor !== '알 수 없음' ? `
-                <span class="tech-tag tech-tag-vendor">OUI: ${escapeHtml(d.vendor)}</span>
-              ` : ''}
-            </div>
-            ${d.reasons && d.reasons.length > 0 ? `
-              <div class="risk-explanation">
-                <span>⚠️ ${d.reasons.join(' · ')}</span>
-              </div>
-            ` : ''}
-          </div>
-          <div class="device-badge-wrap">
-            <span class="severity-badge badge-${d.risk.toLowerCase()}">${d.risk}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function updateTotalRisks() {
-      const allDevices = [
-        ...auditData.wifi,
-        ...auditData.bluetooth,
-        ...auditData.network
-      ];
-      const totalHigh = allDevices.filter(d => d.risk === 'HIGH').length;
-      document.getElementById('count-high').textContent = totalHigh;
-
-      const alertBanner = document.getElementById('alert-banner');
-      if (totalHigh > 0) {
-        document.getElementById('alert-heading').textContent = `🚨 Security Alert: ${totalHigh} Critical Device(s) Detected`;
-        document.getElementById('alert-detail').textContent = 
-          `Unidentified hardware matching known surveillance OUI or unencrypted video transmitters detected on your subnet.`;
-        alertBanner.classList.remove('hidden');
-      } else {
-        alertBanner.classList.add('hidden');
-      }
-    }
-
-    function handleFilter(val) {
-      activeFilter = val;
-      renderWifiList();
-      renderBluetoothList();
-      renderNetworkList();
-    }
-
-    function toggleSection(id) {
-      const body = document.getElementById('body-' + id);
-      const chevron = document.getElementById('chevron-' + id);
-      body.classList.toggle('collapsed-body');
-      chevron.classList.toggle('closed');
-    }
-
-    async function scanAll() {
-      setAuditLoading(true);
-      renderSectionLoading('wifi', 'Wi-Fi Access Points');
-      renderSectionLoading('bt', 'Bluetooth Peripherals');
-      renderSectionLoading('net', 'Subnet Hosts');
-
-      try {
-        const res = await fetch('/api/scan/all');
-        const data = await res.json();
-
-        auditData.wifi = data.wifi?.networks || [];
-        auditData.bluetooth = data.bluetooth?.devices || [];
-        auditData.network = data.network?.devices || [];
-
-        renderWifiList();
-        renderBluetoothList();
-        renderNetworkList();
-        updateTotalRisks();
-
-        const timestamp = new Date().toLocaleTimeString('ko-KR', { hour12: false });
-        document.getElementById('last-timestamp').textContent = `Last Complete Audit: ${timestamp}`;
-        showToast('Audit complete. All subnets synchronized.');
-      } catch (err) {
-        showToast(`Audit failed: ${err.message}`);
-      } finally {
-        setAuditLoading(false);
-      }
-    }
-
-    async function scanSingle(type) {
-      const bodyId = type === 'bluetooth' ? 'bt' : type === 'network' ? 'net' : type;
-      renderSectionLoading(bodyId, type.toUpperCase());
-
-      try {
-        const res = await fetch('/api/scan/' + type);
-        const data = await res.json();
-
-        if (type === 'wifi') {
-          auditData.wifi = data.networks || [];
-          renderWifiList();
-        } else if (type === 'bluetooth') {
-          auditData.bluetooth = data.devices || [];
-          renderBluetoothList();
-        } else if (type === 'network') {
-          auditData.network = data.devices || [];
-          renderNetworkList();
-        }
-        updateTotalRisks();
-        showToast(`${type.toUpperCase()} sweep complete`);
-      } catch (err) {
-        showToast(`Scan error: ${err.message}`);
-      }
-    }
-
-    function exportAuditLog() {
-      const exportBlob = {
-        exported_at: new Date().toISOString(),
-        engine: "AI-Inspector v2.0",
-        summary: {
-          wifi_count: auditData.wifi.length,
-          bluetooth_count: auditData.bluetooth.length,
-          network_count: auditData.network.length,
-          total_critical: [
-            ...auditData.wifi,
-            ...auditData.bluetooth,
-            ...auditData.network
-          ].filter(x => x.risk === 'HIGH').length
-        },
-        data: auditData
-      };
-
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportBlob, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `ai_inspector_audit_${Date.now()}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      showToast('Audit log downloaded as JSON');
-    }
+    // Init
+    renderBlips();
+    renderList();
+    selectTarget('dev-1');
   </script>
 </body>
 </html>
