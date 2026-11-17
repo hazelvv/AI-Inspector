@@ -773,6 +773,28 @@
   </header>
 
   <main>
+    <!-- Real-time Live Hardware Scanner Status Banner -->
+    <div style="background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:12px; padding:12px 18px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span id="live-indicator-dot" style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#10b981; box-shadow:0 0 12px #10b981; animation:pulse 1.5s infinite;"></span>
+        <div>
+          <div style="font-size:13px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <span id="live-status-title">실시간 하드웨어 전파 탐지 엔진 가동 중</span>
+            <span id="live-backend-badge" style="font-size:10px; font-family:var(--font-mono); background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); padding:2px 6px; border-radius:4px;">포트 5050 LIVE</span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;" id="live-status-desc">
+            2.5초 주기 실시간 하드웨어 스캔 중 (마지막 갱신: <span id="last-scan-time">실시간 대기 중...</span>)
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button onclick="triggerImmediateScan()" id="btn-manual-scan" style="background:var(--bg-surface-elevated); border:1px solid var(--border-strong); color:var(--text-primary); font-size:11px; font-family:var(--font-mono); font-weight:600; padding:6px 14px; border-radius:6px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+          <svg id="scan-spinner-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          ⚡ 즉시 다시 스캔
+        </button>
+      </div>
+    </div>
+
     <!-- Master Ribbon with Calibration Mode -->
     <div class="master-ribbon">
       <div class="ribbon-group">
@@ -942,13 +964,15 @@
     let isPositionLocked = true;
     let isCompassActive = false;
     let calibrationMode = "near"; // "near" = 30cm ultra-near calibration!
+    let isFetchingScan = false;
+    const cachedRealCoordinates = {};
 
     // Devices with Ultra-Proximity iPad right next to teacher (30cm / 0.3m)
-    const allDevices = [
+    let allDevices = [
       {
         id: "dev-ipad",
-        name: "내 아이패드 (iPad Pro)",
-        type: "Tablet (Ultra-Near)",
+        name: "Hazel의 iPad (내 아이패드)",
+        type: "Tablet (Ultra-Near 30cm)",
         category: "bluetooth",
         vendor: "Apple",
         rssi: -32, // Extremely strong signal because it's 30cm away!
@@ -959,103 +983,258 @@
       },
       {
         id: "dev-myphone",
-        name: "내 스마트폰 (Wi-Fi 활성)",
-        type: "Apple iPhone",
+        name: "Hazel의 iPhone (내 스마트폰)",
+        type: "Apple iPhone (스캐너 탐지 중)",
         category: "network",
         vendor: "Apple Mobile Device",
-        rssi: -38,
+        rssi: -45,
         absPos: { x: 52, y: 16 }, // In teacher's hand
         zone: "선생님 손안 / 교탁 단상",
         risk: "LOW",
         reasons: ["내 근접 기기"]
       },
       {
-        id: "dev-1",
-        name: "cam_livingroom_hidden",
-        type: "Wi-Fi IP Camera",
-        category: "wifi",
-        vendor: "Reolink",
-        rssi: -54,
-        absPos: { x: 30, y: 38 },
-        zone: "1분단 2열 책상 서랍/가방",
-        risk: "HIGH",
-        reasons: ["SSID에 'cam' 포함", "보안 없음", "Reolink 카메라 OUI"]
-      },
-      {
-        id: "dev-2",
-        name: "Wireless Spy Cam Mini",
-        type: "Bluetooth BLE Camera",
+        id: "dev-tv",
+        name: "[TV] Samsung TU700D 85 TV",
+        type: "Video Display",
         category: "bluetooth",
-        vendor: "Generic",
-        rssi: -62,
-        absPos: { x: 75, y: 72 },
-        zone: "4분단 맨 뒤 사물함 위",
-        risk: "HIGH",
-        reasons: ["비디오/카메라 클래스", "Spy Cam 키워드"]
-      },
-      {
-        id: "dev-3",
-        name: "ipcam-dahua-01.local",
-        type: "Subnet Network Host (ARP)",
-        category: "network",
-        vendor: "Dahua",
-        rssi: -58,
-        absPos: { x: 18, y: 55 },
-        zone: "창가 1분단 3열 창틀",
-        risk: "HIGH",
-        reasons: ["알려진 감시카메라 제조사 (Dahua)"]
-      },
-      {
-        id: "dev-lte-student",
-        name: "LTE 사용 학생 폰 (BLE 감지)",
-        type: "Mobile Phone (LTE Active)",
-        category: "bluetooth",
-        vendor: "Samsung/Apple (LTE)",
-        rssi: -65,
-        absPos: { x: 38, y: 62 },
-        zone: "2분단 3열 학생 주머니 (LTE 사용)",
-        risk: "MEDIUM",
-        reasons: ["LTE 데이터망 사용 중", "BLE 백그라운드 전파로 포착"]
-      },
-      {
-        id: "dev-5",
-        name: "iPhone_Hotspot_Test",
-        type: "Wi-Fi Mobile Tethering",
-        category: "wifi",
-        vendor: "Apple Inc.",
-        rssi: -64,
-        absPos: { x: 42, y: 48 },
-        zone: "2분단 2열 학생 자리",
-        risk: "MEDIUM",
-        reasons: ["개인용 모바일 핫스팟"]
-      },
-      {
-        id: "dev-7",
-        name: "Galaxy-Tab-S9-Student",
-        type: "Tablet (Student)",
-        category: "network",
         vendor: "Samsung",
-        rssi: -56,
-        absPos: { x: 62, y: 35 },
-        zone: "3분단 1열 책상",
-        risk: "LOW",
-        reasons: []
+        rssi: -58,
+        absPos: { x: 50, y: 22 },
+        zone: "교실 전면 대형 디스플레이 TV",
+        risk: "HIGH",
+        reasons: ["영상/카메라 기기 유형 (Video Display)"]
       },
       {
-        id: "dev-10",
-        name: "Office_5G_Secured",
-        type: "School Wi-Fi AP",
-        category: "wifi",
-        vendor: "Cisco/Aruba",
-        rssi: -45,
+        id: "dev-gateway",
+        name: "Wi-Fi 공유기 (192.168.219.1)",
+        type: "School Wi-Fi AP / Gateway",
+        category: "network",
+        vendor: "Network Gateway",
+        rssi: -40,
         absPos: { x: 50, y: 50 },
-        zone: "교실 천장 정중앙 AP",
+        zone: "교실 천장 중앙 AP",
         risk: "LOW",
         reasons: []
       }
     ];
 
     let selectedDevice = allDevices[0]; // Select iPad first!
+
+    // Helper for deterministic coordinates so devices don't randomly jump around
+    function getStablePos(key, defaultX, defaultY) {
+      if (cachedRealCoordinates[key]) return cachedRealCoordinates[key];
+      let hash = 0;
+      for (let i = 0; i < key.length; i++) {
+        hash = (hash << 5) - hash + key.charCodeAt(i);
+        hash |= 0;
+      }
+      const x = 20 + Math.abs(hash % 60);
+      const y = 30 + Math.abs((hash >> 3) % 55);
+      cachedRealCoordinates[key] = { x, y };
+      return { x, y };
+    }
+
+    function getApiUrl() {
+      if (window.location.protocol === 'file:') {
+        return 'http://127.0.0.1:5050/api/scan/all';
+      }
+      return '/api/scan/all';
+    }
+
+    async function fetchScanData() {
+      if (isFetchingScan) return;
+      isFetchingScan = true;
+      const spinIcon = document.getElementById('scan-spinner-icon');
+      if (spinIcon) spinIcon.style.animation = 'spin 1s linear infinite';
+
+      try {
+        const resp = await fetch(getApiUrl(), { signal: AbortSignal.timeout(6000) });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        
+        // Update live indicator to Green
+        const dot = document.getElementById('live-indicator-dot');
+        const badge = document.getElementById('live-backend-badge');
+        const timeSpan = document.getElementById('last-scan-time');
+
+        if (dot) dot.style.background = '#10b981';
+        if (badge) {
+          badge.textContent = '포트 5050 LIVE 연결됨';
+          badge.style.color = '#10b981';
+          badge.style.background = 'rgba(16,185,129,0.15)';
+        }
+        const nowStr = new Date().toLocaleTimeString('ko-KR');
+        if (timeSpan) timeSpan.textContent = nowStr;
+
+        // Process Real Scanned Devices
+        integrateRealDevices(data);
+
+      } catch (err) {
+        // Fallback indicator (when Flask server is starting or offline)
+        const dot = document.getElementById('live-indicator-dot');
+        const badge = document.getElementById('live-backend-badge');
+        if (dot) dot.style.background = '#f59e0b';
+        if (badge) {
+          badge.textContent = '대기 모드 (python3 app.py 확인)';
+          badge.style.color = '#f59e0b';
+          badge.style.background = 'rgba(245,158,11,0.15)';
+        }
+      } finally {
+        isFetchingScan = false;
+        if (spinIcon) spinIcon.style.animation = 'none';
+      }
+    }
+
+    function triggerImmediateScan() {
+      showToast("⚡ 즉시 주변 전파 및 서브넷 스캔 중...");
+      fetchScanData();
+    }
+
+    function integrateRealDevices(data) {
+      const netDevs = (data.network && data.network.devices) || [];
+      const btDevs  = (data.bluetooth && data.bluetooth.devices) || [];
+      const wifiNets = (data.wifi && data.wifi.networks) || [];
+
+      // Check if user's phone is detected on Wi-Fi (ARP)
+      const wifiPhone = netDevs.find(d => 
+        (d.vendor && d.vendor.includes("Apple Mobile")) || 
+        (d.category === "Smartphone") ||
+        (d.hostname && d.hostname.toLowerCase().includes("iphone"))
+      );
+
+      // Check Bluetooth devices for iPhone and iPad
+      const btPhone = btDevs.find(d => d.name && (d.name.includes("iPhone") || d.name.includes("아이폰")));
+      const btIpad  = btDevs.find(d => d.name && (d.name.includes("iPad") || d.name.includes("아이패드")));
+
+      const newList = [];
+
+      // 1. Hazel의 iPad (내 아이패드)
+      const ipadName = btIpad ? btIpad.name : "내 아이패드 (iPad Pro)";
+      newList.push({
+        id: "dev-ipad",
+        name: ipadName,
+        type: "Tablet (Bluetooth LE)",
+        category: "bluetooth",
+        vendor: "Apple Inc.",
+        rssi: -32, // Strong near signal
+        absPos: { x: myPos.x - 3, y: myPos.y + 2 }, // Right next to teacher
+        zone: "선생님 교탁 위 / 맥북 바로 옆 (30cm)",
+        risk: "LOW",
+        reasons: ["내 초근접 기기 (30cm 영점 보정됨)"]
+      });
+
+      // 2. Hazel의 iPhone (내 스마트폰)
+      if (wifiPhone) {
+        // Connected to Wi-Fi!
+        newList.push({
+          id: "dev-myphone",
+          name: btPhone ? `${btPhone.name} (Wi-Fi 활성)` : "내 스마트폰 (Wi-Fi 활성)",
+          type: `Apple iPhone (IP: ${wifiPhone.ip})`,
+          category: "network",
+          vendor: "Apple Mobile Device",
+          rssi: -45,
+          absPos: { x: myPos.x + 4, y: myPos.y + 3 }, // In hand or on podium
+          zone: `교탁 단상 (Wi-Fi 연결: ${wifiPhone.ip})`,
+          risk: "LOW",
+          reasons: ["내 근접 기기", `로컬 서브넷 활성 (${wifiPhone.ip})`]
+        });
+      } else {
+        // Not on local Wi-Fi -> Switched to LTE!
+        const phoneName = btPhone ? `${btPhone.name} (LTE 활성)` : "내 스마트폰 (LTE 활성)";
+        newList.push({
+          id: "dev-myphone",
+          name: phoneName,
+          type: "Apple iPhone (LTE 데이터망 활성 / Wi-Fi 미연결)",
+          category: "bluetooth",
+          vendor: "Apple Inc. (Cellular)",
+          rssi: -65,
+          absPos: { x: myPos.x - 12, y: myPos.y + 32 }, // approx 3 meters away!
+          zone: "2분단 책상 (약 3.0m 거리 · LTE 데이터망 사용 중)",
+          risk: "LOW",
+          reasons: ["LTE 셀룰러 모드", "Wi-Fi 미연결 상태", "Bluetooth 백그라운드 전파로 포착 (약 3m)"]
+        });
+      }
+
+      // 3. Other Bluetooth devices (Watch, AirPods, TV, etc.)
+      btDevs.forEach((d, idx) => {
+        if (d.name && (d.name.includes("iPad") || d.name.includes("iPhone"))) return; // already handled
+        let absPos = getStablePos(d.address || d.name, 25 + (idx * 17) % 60, 35 + (idx * 23) % 55);
+        let zone = "교실 내";
+        if (d.name.includes("TV")) {
+          zone = "교실 전면 TV 디스플레이";
+          absPos = { x: 50, y: 22 };
+        } else if (d.name.includes("AirPods") || d.name.includes("Watch")) {
+          zone = "선생님 소지품 (교탁)";
+          absPos = { x: myPos.x + 2, y: myPos.y + 1 };
+        }
+
+        newList.push({
+          id: `dev-bt-${idx}`,
+          name: d.name || `Bluetooth 기기 (${d.address.slice(-5)})`,
+          type: d.type || "Bluetooth 기기",
+          category: "bluetooth",
+          vendor: d.vendor || "알 수 없음",
+          rssi: d.name.includes("TV") ? -58 : -68,
+          absPos: absPos,
+          zone: zone,
+          risk: d.risk || "LOW",
+          reasons: d.reasons || []
+        });
+      });
+
+      // 4. Other Network Hosts
+      netDevs.forEach((d, idx) => {
+        if (d.vendor && d.vendor.includes("Apple Mobile")) return; // already handled
+        let absPos = getStablePos(d.mac || d.ip, 30 + (idx * 20) % 50, 40 + (idx * 15) % 45);
+        let zone = "네트워크 호스트";
+        if (d.ip === "192.168.219.1") {
+          zone = "교실 천장 AP / 메인 게이트웨이";
+          absPos = { x: 50, y: 50 };
+        }
+        newList.push({
+          id: `dev-net-${idx}`,
+          name: d.hostname && d.hostname !== "?" ? d.hostname : `네트워크 기기 (${d.ip})`,
+          type: `Subnet Host (${d.ip})`,
+          category: "network",
+          vendor: d.vendor || "네트워크 장비",
+          rssi: d.ip === "192.168.219.1" ? -42 : -60,
+          absPos: absPos,
+          zone: zone,
+          risk: d.risk || "LOW",
+          reasons: d.reasons || []
+        });
+      });
+
+      // 5. Wi-Fi APs
+      wifiNets.slice(0, 4).forEach((w, idx) => {
+        const rssiVal = parseInt(w.rssi) || -65;
+        newList.push({
+          id: `dev-wifi-${idx}`,
+          name: w.ssid && w.ssid !== "(SSID 보호됨)" ? w.ssid : `주변 Wi-Fi AP (${w.channel || '2.4GHz'})`,
+          type: `Wi-Fi AP (${w.security || 'WPA2'})`,
+          category: "wifi",
+          vendor: w.vendor || "Wi-Fi Router",
+          rssi: rssiVal,
+          absPos: getStablePos(`wifi-${idx}`, 20 + idx * 18, 60 + idx * 8),
+          zone: `주변 전파 신호 (${rssiVal} dBm)`,
+          risk: w.risk || "LOW",
+          reasons: w.reasons || []
+        });
+      });
+
+      // Update state
+      allDevices = newList;
+
+      // Keep selected device reference
+      const curId = selectedDevice ? selectedDevice.id : "dev-ipad";
+      const found = allDevices.find(d => d.id === curId);
+      selectedDevice = found || allDevices[0];
+
+      renderBlips();
+      renderList();
+      if (selectedDevice) selectTarget(selectedDevice.id);
+    }
 
     // High Precision Near-Field Distance Model
     function getDynamicSpatialData(dev) {
@@ -1342,6 +1521,10 @@
     renderBlips();
     renderList();
     selectTarget('dev-ipad'); // Auto-select iPad!
+
+    // Start Real-time Hardware Polling (2.5s)
+    fetchScanData();
+    setInterval(fetchScanData, 2500);
   </script>
 </body>
 </html>

@@ -6,6 +6,13 @@ from scanner import scan_wifi, scan_bluetooth, scan_network, full_scan
 
 app = Flask(__name__)
 
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    return response
+
 
 @app.route("/")
 def index():
@@ -38,3 +45,4 @@ if __name__ == "__main__":
     print("  브라우저에서 http://localhost:5050 접속")
     print("=" * 50)
     app.run(host="0.0.0.0", port=5050, debug=False)
+
