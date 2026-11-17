@@ -26,14 +26,14 @@
       --cyan-glow: rgba(6, 182, 212, 0.25);
 
       --danger: #ef4444;
-      --danger-bg: rgba(239, 68, 68, 0.12);
+      --danger-bg: rgba(239, 68, 68, 0.14);
       --danger-border: rgba(239, 68, 68, 0.35);
 
       --warning: #f59e0b;
-      --warning-bg: rgba(245, 158, 11, 0.12);
+      --warning-bg: rgba(245, 158, 11, 0.14);
 
       --success: #10b981;
-      --success-bg: rgba(16, 185, 129, 0.12);
+      --success-bg: rgba(16, 185, 129, 0.14);
 
       --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
@@ -50,9 +50,8 @@
       padding-bottom: 40px;
     }
 
-    /* Header */
     header {
-      background: rgba(11, 15, 23, 0.9);
+      background: rgba(11, 15, 23, 0.92);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-subtle);
       position: sticky;
@@ -103,7 +102,6 @@
       font-family: var(--font-mono);
     }
 
-    /* View Switcher Tabs */
     .tab-pills {
       display: flex;
       background: var(--bg-surface-elevated);
@@ -140,12 +138,12 @@
       padding: 16px;
     }
 
-    /* Mobile Quick Status Header */
-    .mobile-locator-banner {
-      background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.05));
+    /* Teacher's Vantage Point Control Bar */
+    .viewpoint-bar {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(16, 185, 129, 0.06));
       border: 1px solid var(--border-accent);
       border-radius: 12px;
-      padding: 14px 18px;
+      padding: 12px 18px;
       margin-bottom: 16px;
       display: flex;
       align-items: center;
@@ -154,7 +152,7 @@
       flex-wrap: wrap;
     }
 
-    .locator-title {
+    .viewpoint-title {
       font-size: 13px;
       font-weight: 700;
       color: var(--cyan-400);
@@ -163,38 +161,51 @@
       gap: 8px;
     }
 
-    .locator-coords {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-secondary);
-      background: rgba(0,0,0,0.3);
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid var(--border-subtle);
+    .spot-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
-    /* Radar Map View */
+    .spot-btn {
+      padding: 5px 11px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      background: rgba(18, 24, 36, 0.8);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .spot-btn.active {
+      background: var(--cyan-500);
+      color: #041219;
+      font-weight: 700;
+      border-color: var(--cyan-400);
+    }
+
+    /* Radar Map Layout */
     .radar-container-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
       border-radius: 16px;
       padding: 20px;
       margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
     }
 
     .radar-layout-grid {
       display: grid;
-      grid-template-columns: 1fr 340px;
+      grid-template-columns: 1fr 360px;
       gap: 20px;
       align-items: start;
     }
 
-    @media (max-width: 900px) {
-      .radar-layout-grid {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 960px) {
+      .radar-layout-grid { grid-template-columns: 1fr; }
     }
 
     /* 2D Classroom Scope */
@@ -202,13 +213,14 @@
       position: relative;
       width: 100%;
       aspect-ratio: 1 / 1;
-      max-width: 580px;
+      max-width: 620px;
       margin: 0 auto;
-      background: radial-gradient(circle, #0e1624 0%, #06090f 100%);
+      background: radial-gradient(circle at 50% 15%, #111a2d 0%, #06090f 100%);
       border: 2px solid var(--border-strong);
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 0 25px rgba(6, 182, 212, 0.1);
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.85), 0 0 30px rgba(6, 182, 212, 0.1);
+      cursor: crosshair;
     }
 
     /* Classroom Wall Landmarks */
@@ -217,102 +229,105 @@
       font-family: var(--font-mono);
       font-size: 10px;
       font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      letter-spacing: 0.08em;
       user-select: none;
+      z-index: 10;
     }
 
     .wall-front {
-      top: 8px;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(6, 182, 212, 0.15);
+      background: rgba(6, 182, 212, 0.2);
       color: var(--cyan-400);
-      padding: 2px 10px;
+      padding: 3px 12px;
       border-radius: 4px;
       border: 1px solid var(--border-accent);
     }
 
     .wall-back {
-      bottom: 8px;
+      bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
+      background: rgba(39, 53, 79, 0.6);
+      color: var(--text-muted);
+      padding: 2px 10px;
+      border-radius: 4px;
     }
 
     .wall-left {
-      left: 8px;
+      left: 10px;
       top: 50%;
       transform: translateY(-50%) rotate(-90deg);
+      color: #38bdf8;
     }
 
     .wall-right {
-      right: 8px;
+      right: 10px;
       top: 50%;
       transform: translateY(-50%) rotate(90deg);
+      color: #94a3b8;
     }
 
-    /* Concentric Distance Rings */
-    .radar-circle-grid {
+    /* Student Desk Rows Visualization */
+    .desks-grid-overlay {
       position: absolute;
-      inset: 0;
+      top: 26%;
+      bottom: 16%;
+      left: 14%;
+      right: 14%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 8px;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    .desk-cell {
+      border: 1px dashed rgba(6, 182, 212, 0.6);
+      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 9px;
+      color: var(--cyan-400);
+      font-family: var(--font-mono);
+    }
+
+    /* Concentric Distance Rings from Teacher */
+    .radar-circle-grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
     }
 
     .distance-ring {
       position: absolute;
       border-radius: 50%;
-      border: 1px dashed rgba(6, 182, 212, 0.2);
-      pointer-events: none;
+      border: 1px dashed rgba(6, 182, 212, 0.25);
+      transform: translate(-50%, -50%);
     }
-
-    .ring-1m { width: 22%; height: 22%; }
-    .ring-3m { width: 44%; height: 44%; }
-    .ring-5m { width: 68%; height: 68%; }
-    .ring-8m { width: 92%; height: 92%; }
 
     .ring-label {
       position: absolute;
       font-family: var(--font-mono);
       font-size: 9px;
-      color: rgba(6, 182, 212, 0.6);
-      top: 2px;
+      color: rgba(6, 182, 212, 0.75);
+      top: 0;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       background: #06090f;
       padding: 0 4px;
-    }
-
-    /* Axis crosshairs */
-    .radar-axis-x {
-      position: absolute;
-      left: 5%;
-      right: 5%;
-      top: 50%;
-      height: 1px;
-      background: rgba(39, 53, 79, 0.6);
-    }
-
-    .radar-axis-y {
-      position: absolute;
-      top: 5%;
-      bottom: 5%;
-      left: 50%;
-      width: 1px;
-      background: rgba(39, 53, 79, 0.6);
     }
 
     /* Sweeper beam */
     .radar-sweep-beam {
       position: absolute;
-      width: 50%;
-      height: 50%;
-      top: 0;
-      left: 0;
-      transform-origin: 100% 100%;
-      background: linear-gradient(135deg, rgba(6, 182, 212, 0.35) 0%, transparent 60%);
+      width: 45%;
+      height: 45%;
+      transform-origin: 0% 0%;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.3) 0%, transparent 60%);
       border-bottom-right-radius: 100%;
       animation: radarRotate 4s linear infinite;
       pointer-events: none;
@@ -323,47 +338,53 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Center (My Position) */
+    /* Teacher's Position Node */
     .my-position-node {
       position: absolute;
-      left: 50%;
-      top: 50%;
       transform: translate(-50%, -50%);
-      z-index: 20;
+      z-index: 30;
       display: flex;
       flex-direction: column;
       align-items: center;
-      cursor: pointer;
+      cursor: grab;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .my-node-pulse {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       background: var(--cyan-400);
-      box-shadow: 0 0 16px var(--cyan-400);
+      box-shadow: 0 0 20px var(--cyan-400);
       border: 3px solid #06090f;
+      animation: beaconPulse 2s infinite;
+    }
+
+    @keyframes beaconPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); box-shadow: 0 0 25px var(--cyan-300); }
     }
 
     .my-node-tag {
       font-family: var(--font-mono);
       font-size: 10px;
-      font-weight: 700;
-      background: rgba(6, 182, 212, 0.9);
+      font-weight: 800;
+      background: var(--cyan-400);
       color: #041219;
-      padding: 1px 6px;
-      border-radius: 3px;
+      padding: 2px 7px;
+      border-radius: 4px;
       margin-top: 4px;
       white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
 
-    /* Target Device Blips on Radar */
+    /* Target Blips */
     .target-blip {
       position: absolute;
       transform: translate(-50%, -50%);
       z-index: 25;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
     }
 
     .blip-point {
@@ -375,8 +396,8 @@
 
     .blip-high .blip-point {
       background: var(--danger);
-      box-shadow: 0 0 14px var(--danger);
-      animation: blipPulse 1.2s infinite;
+      box-shadow: 0 0 16px var(--danger);
+      animation: blipPulse 1.1s infinite;
     }
 
     .blip-medium .blip-point {
@@ -391,7 +412,7 @@
 
     @keyframes blipPulse {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.6; }
+      50% { transform: scale(1.5); opacity: 0.6; }
     }
 
     .blip-label {
@@ -402,7 +423,7 @@
       font-family: var(--font-mono);
       font-size: 10px;
       font-weight: 600;
-      background: rgba(11, 15, 23, 0.92);
+      background: rgba(11, 15, 23, 0.94);
       border: 1px solid var(--border-strong);
       color: var(--text-primary);
       padding: 2px 6px;
@@ -416,7 +437,7 @@
       color: #fca5a5;
     }
 
-    /* Active Target Focus Sidebar */
+    /* Tracker Sidebar */
     .tracker-panel {
       background: var(--bg-surface-elevated);
       border: 1px solid var(--border-subtle);
@@ -455,7 +476,6 @@
       color: #fff;
     }
 
-    /* Distance & Direction Meter */
     .proximity-meter {
       background: rgba(6, 182, 212, 0.08);
       border: 1px solid var(--border-accent);
@@ -476,7 +496,7 @@
     .distance-direction {
       font-size: 12px;
       font-weight: 600;
-      color: var(--text-secondary);
+      color: #f8fafc;
       margin-top: 4px;
     }
 
@@ -486,7 +506,6 @@
       border-radius: 3px;
       margin-top: 10px;
       overflow: hidden;
-      position: relative;
     }
 
     .hot-cold-fill {
@@ -519,7 +538,7 @@
       font-weight: 600;
     }
 
-    /* Device List View in Accordions */
+    /* Device List View */
     .device-table-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-subtle);
@@ -540,7 +559,7 @@
     }
 
     .device-row:hover { background: var(--bg-surface-hover); }
-    .device-row.selected { background: rgba(6, 182, 212, 0.1); border-left: 3px solid var(--cyan-400); }
+    .device-row.selected { background: rgba(6, 182, 212, 0.12); border-left: 3px solid var(--cyan-400); }
 
     .dist-tag {
       font-family: var(--font-mono);
@@ -586,67 +605,81 @@
           </svg>
         </div>
         <div class="brand-text">
-          <h1>AI-INSPECTOR <span style="font-size:10px; background:rgba(6,182,212,0.2); color:#22d3ee; padding:1px 5px; border-radius:4px;">SPATIAL</span></h1>
-          <p>Classroom Radar & Distance Locator</p>
+          <h1>AI-INSPECTOR <span style="font-size:10px; background:rgba(6,182,212,0.2); color:#22d3ee; padding:1px 5px; border-radius:4px;">CLASSROOM 2D</span></h1>
+          <p>교실 공간 스마트기기 탐지 & 실시간 거리 측정기</p>
         </div>
       </div>
 
       <div class="tab-pills">
         <button class="tab-btn active" id="tab-radar" onclick="switchView('radar')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          2D Radar Map
+          교실 2D 레이더
         </button>
         <button class="tab-btn" id="tab-list" onclick="switchView('list')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg>
-          Device List
+          전체 기기 (<span id="total-count-label">12</span>개)
         </button>
       </div>
     </div>
   </header>
 
   <main>
-    <!-- Mobile Orientation & Status Ribbon -->
-    <div class="mobile-locator-banner">
-      <div class="locator-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path></svg>
-        <span>내 스마트폰 기준 실시간 교실 탐색 활성화</span>
+    <!-- Viewpoint Selector -->
+    <div class="viewpoint-bar">
+      <div class="viewpoint-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span>내 현재 서 있는 위치 (시점 변경):</span>
       </div>
-      <div class="locator-coords">
-        중심: 내 위치 (0m) · 탐지 반경: 8.0m
+      <div class="spot-selector">
+        <button class="spot-btn active" id="btn-spot-podium" onclick="setMySpot('podium')">👨‍🏫 교탁 (학생들 바라봄 - 기본)</button>
+        <button class="spot-btn" id="btn-spot-center" onclick="setMySpot('center')">📍 교실 중앙 (2분단 책상)</button>
+        <button class="spot-btn" id="btn-spot-back" onclick="setMySpot('back')">🚪 교실 뒷문</button>
+        <button class="spot-btn" id="btn-spot-window" onclick="setMySpot('window')">🪟 창가 쪽</button>
       </div>
     </div>
 
-    <!-- RADAR VIEW CONTAINER -->
+    <!-- RADAR VIEW -->
     <div id="view-radar">
       <div class="radar-container-card">
         <div class="radar-layout-grid">
           
           <!-- 2D Scope Visualizer -->
-          <div class="classroom-scope-wrap" id="scope-box">
-            <!-- Wall Landmarks -->
-            <div class="classroom-wall wall-front">교탁 / 칠판 (앞쪽 - FRONT)</div>
-            <div class="classroom-wall wall-back">교실 뒷문 (뒤쪽 - BACK)</div>
-            <div class="classroom-wall wall-left">창가 쪽 (좌측)</div>
-            <div class="classroom-wall wall-right">복도 쪽 (우측)</div>
+          <div class="classroom-scope-wrap" id="scope-box" onclick="handleScopeClick(event)">
+            <div class="classroom-wall wall-front">칠판 / 교탁 (앞쪽 - FRONT)</div>
+            <div class="classroom-wall wall-back">교실 뒷문 & 사물함 (뒤쪽 - BACK)</div>
+            <div class="classroom-wall wall-left">창가 (좌측)</div>
+            <div class="classroom-wall wall-right">복도 (우측)</div>
 
-            <!-- Concentric Distance Rings -->
-            <div class="radar-circle-grid">
-              <div class="distance-ring ring-1m"><span class="ring-label">1m</span></div>
-              <div class="distance-ring ring-3m"><span class="ring-label">3m</span></div>
-              <div class="distance-ring ring-5m"><span class="ring-label">5m</span></div>
-              <div class="distance-ring ring-8m"><span class="ring-label">8m</span></div>
-              <div class="radar-axis-x"></div>
-              <div class="radar-axis-y"></div>
-              <div class="radar-sweep-beam"></div>
+            <!-- Student Desk Rows (1분단 ~ 4분단 / 1열 ~ 4열) -->
+            <div class="desks-grid-overlay">
+              <div class="desk-cell">1-1 책상</div>
+              <div class="desk-cell">2-1 책상</div>
+              <div class="desk-cell">3-1 책상</div>
+              <div class="desk-cell">4-1 책상</div>
+              <div class="desk-cell">1-2 책상</div>
+              <div class="desk-cell">2-2 책상</div>
+              <div class="desk-cell">3-2 책상</div>
+              <div class="desk-cell">4-2 책상</div>
+              <div class="desk-cell">1-3 책상</div>
+              <div class="desk-cell">2-3 책상</div>
+              <div class="desk-cell">3-3 책상</div>
+              <div class="desk-cell">4-3 책상</div>
+              <div class="desk-cell">1-4 책상</div>
+              <div class="desk-cell">2-4 책상</div>
+              <div class="desk-cell">3-4 책상</div>
+              <div class="desk-cell">4-4 책상</div>
             </div>
 
-            <!-- Center Origin: My Location -->
-            <div class="my-position-node" onclick="showToast('내 현재 위치 (기준점: 0m, 0m)')">
+            <!-- Dynamic Range Rings Centered at Teacher -->
+            <div class="radar-circle-grid" id="rings-layer"></div>
+
+            <!-- Teacher (Me) Position -->
+            <div class="my-position-node" id="my-node">
               <div class="my-node-pulse"></div>
-              <div class="my-node-tag">내 위치 (ME)</div>
+              <div class="my-node-tag" id="my-node-label">내 위치 (교탁)</div>
             </div>
 
-            <!-- Dynamic Blips Rendered by JS -->
+            <!-- Target Blips -->
             <div id="blip-layer"></div>
           </div>
 
@@ -654,7 +687,7 @@
           <div class="tracker-panel">
             <h3>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              선택된 기기 실시간 거리 & 방향
+              선택 기기 실시간 거리 & 위치 추적
             </h3>
 
             <div class="target-focus-card">
@@ -670,11 +703,11 @@
 
               <!-- Distance meter -->
               <div class="proximity-meter">
-                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">추정 직선 거리</div>
-                <div class="distance-highlight" id="target-distance">약 1.8 m</div>
-                <div class="distance-direction" id="target-vector">내 위치 기준: 앞쪽 1.5m · 좌측 0.9m</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">내 위치 기준 추정 거리</div>
+                <div class="distance-highlight" id="target-distance">약 2.1 m</div>
+                <div class="distance-direction" id="target-vector">학생들 바라보고: 앞쪽 2.0m · 좌측 0.8m</div>
                 <div class="hot-cold-bar">
-                  <div class="hot-cold-fill fill-hot" id="target-proximity-bar" style="width: 82%;"></div>
+                  <div class="hot-cold-fill fill-hot" id="target-proximity-bar" style="width: 80%;"></div>
                 </div>
               </div>
 
@@ -685,22 +718,22 @@
                   <span id="target-rssi">-54 dBm (매우 강함)</span>
                 </div>
                 <div class="spec-item">
-                  <span>추정 구역</span>
-                  <span id="target-zone">칠판 앞 / 교탁 좌측 책상</span>
+                  <span>추정 교실 좌석</span>
+                  <span id="target-zone" style="color:var(--cyan-400); font-weight:700;">1분단 2번째 줄 책상 부근</span>
                 </div>
                 <div class="spec-item">
                   <span>하드웨어 제조사</span>
                   <span id="target-vendor">Reolink</span>
                 </div>
                 <div class="spec-item">
-                  <span>보안 프로토콜</span>
-                  <span id="target-security" style="color:var(--danger)">OPEN (암호 없음)</span>
+                  <span>통신 규격</span>
+                  <span id="target-security">Wi-Fi (802.11 Open)</span>
                 </div>
               </div>
             </div>
 
             <div style="font-size:11px; color:var(--text-muted); line-height:1.5; background:rgba(0,0,0,0.25); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
-              💡 <strong>스마트폰 탐색 팁:</strong> 핸드폰을 들고 의심 구역으로 천천히 이동해 보세요. 대상 기기에 가까워질수록 RSSI 수치가 상승(-50dBm 이상)하고 거리가 1m 미만으로 줄어듭니다!
+              💡 <strong>교실 순회 팁:</strong> 지도 위 원하는 위치를 터치하거나 상단 버튼을 눌러 내 위치를 이동시키면, 그 자리 기준으로 모든 학생 책상까지의 거리가 즉시 다시 계산됩니다!
             </div>
           </div>
 
@@ -712,8 +745,8 @@
     <div id="view-list" style="display:none;">
       <div class="device-table-card">
         <div style="padding:14px 18px; border-bottom:1px solid var(--border-subtle); display:flex; justify-content:space-between; align-items:center;">
-          <strong style="font-size:14px;">탐지된 전체 기기 목록 및 거리 순 정렬</strong>
-          <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">클릭하여 레이더에서 집중 추적</span>
+          <strong style="font-size:14px;">탐지된 전체 기기 목록 (총 12개 · 거리 순 정렬)</strong>
+          <span style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono);">터치하면 레이더에서 해당 기기 위치 확인</span>
         </div>
         <div id="device-list-container"></div>
       </div>
@@ -723,153 +756,319 @@
   <div id="toast" class="toast">위치 업데이트 완료</div>
 
   <script>
-    // Spatial Device Dataset with Distance Model
-    // Distance formula: d = 10 ^ ((MeasuredPower - RSSI) / (10 * n))
-    const devices = [
+    // Classroom Coordinate Space (0 to 100%)
+    // (50, 15) = Teacher's Podium (Front center)
+    // (50, 90) = Back Door
+    // (10, y)  = Window side (Left)
+    // (90, y)  = Corridor side (Right)
+
+    let myPos = { x: 50, y: 15, name: "교탁" };
+
+    // Full 12 Devices (Wi-Fi, Bluetooth, Subnet ARP)
+    const allDevices = [
       {
         id: "dev-1",
         name: "cam_livingroom_hidden",
-        type: "Wi-Fi Hidden Cam",
+        type: "Wi-Fi IP Camera",
+        category: "wifi",
         vendor: "Reolink",
         rssi: -54,
-        distance: 1.8,
-        vectorText: "앞쪽 1.5m · 좌측 0.9m (창가 방향)",
-        zone: "교탁 좌측 첫 번째 분단 책상",
+        absPos: { x: 30, y: 38 }, // 1분단 2열 책상
+        zone: "1분단 2열 책상 서랍/가방",
         security: "NONE (미암호화)",
         risk: "HIGH",
-        coords: { x: -25, y: -38 }, // Percentage relative to center (0,0)
-        reasons: ["SSID에 cam 포함", "보안 없음", "Reolink OUI 일치"]
+        reasons: ["SSID에 'cam' 포함", "보안 없음", "Reolink 카메라 OUI"]
       },
       {
         id: "dev-2",
         name: "Wireless Spy Cam Mini",
         type: "Bluetooth BLE Camera",
+        category: "bluetooth",
         vendor: "Generic",
         rssi: -62,
-        distance: 2.7,
-        vectorText: "앞쪽 2.4m · 우측 1.2m (복도 방향)",
-        zone: "칠판 우측 사물함 부근",
+        absPos: { x: 75, y: 72 }, // 4분단 4열 사물함
+        zone: "4분단 맨 뒤 사물함 위",
         security: "BLE Broadcast",
         risk: "HIGH",
-        coords: { x: 32, y: -42 },
         reasons: ["비디오/카메라 하드웨어 클래스", "Spy Cam 키워드"]
       },
       {
         id: "dev-3",
-        name: "Office_5G_Secured",
-        type: "Wi-Fi Access Point",
-        vendor: "Apple Inc.",
-        rssi: -48,
-        distance: 1.2,
-        vectorText: "뒤쪽 0.8m · 우측 0.9m",
-        zone: "현재 교실 중앙 AP 라우터",
-        security: "WPA3 Enterprise",
-        risk: "LOW",
-        coords: { x: 20, y: 18 },
-        reasons: []
+        name: "ipcam-dahua-01.local",
+        type: "Subnet Network Host (ARP)",
+        category: "network",
+        vendor: "Dahua",
+        rssi: -58,
+        absPos: { x: 18, y: 55 }, // 창가 블라인드 근처
+        zone: "창가 1분단 3열 창틀",
+        security: "Subnet Host (IP: 192.168.1.142)",
+        risk: "HIGH",
+        reasons: ["알려진 감시카메라 제조사 (Dahua)"]
       },
       {
         id: "dev-4",
         name: "SmartLife-Socket-88",
         type: "IoT Smart Plug",
+        category: "wifi",
         vendor: "Tuya/Smartlife",
         rssi: -69,
-        distance: 4.1,
-        vectorText: "뒤쪽 3.8m · 좌측 1.5m",
-        zone: "교실 뒷문 창문 콘센트",
+        absPos: { x: 82, y: 85 }, // 뒤편 청소함 콘센트
+        zone: "교실 뒤편 복도 쪽 콘센트",
         security: "WPA2",
         risk: "MEDIUM",
-        coords: { x: -35, y: 55 },
         reasons: ["Tuya IoT 모듈"]
       },
       {
         id: "dev-5",
-        name: "AirPods Pro (Teacher)",
-        type: "Bluetooth Audio",
+        name: "iPhone_Hotspot_Test",
+        type: "Wi-Fi Mobile Tethering",
+        category: "wifi",
+        vendor: "Apple Inc.",
+        rssi: -64,
+        absPos: { x: 42, y: 48 }, // 2분단 2열 학생
+        zone: "2분단 2열 학생 스마트폰",
+        security: "WPA2 Personal",
+        risk: "MEDIUM",
+        reasons: ["개인용 모바일 핫스팟"]
+      },
+      {
+        id: "dev-6",
+        name: "iPad-Pro-Classroom",
+        type: "Tablet (Student)",
+        category: "bluetooth",
         vendor: "Apple",
-        rssi: -78,
-        distance: 5.6,
-        vectorText: "뒤쪽 5.2m · 우측 2.1m",
-        zone: "교실 뒤편 출입문 부근",
+        rssi: -52,
+        absPos: { x: 38, y: 28 }, // 2분단 1열 (맨 앞)
+        zone: "2분단 1열 앞자리 책상",
         security: "Encrypted BT",
         risk: "LOW",
-        coords: { x: 40, y: 65 },
+        reasons: []
+      },
+      {
+        id: "dev-7",
+        name: "Galaxy-Tab-S9-Student",
+        type: "Tablet (Student)",
+        category: "network",
+        vendor: "Samsung",
+        rssi: -56,
+        absPos: { x: 62, y: 35 }, // 3분단 1열
+        zone: "3분단 1열 책상",
+        security: "Subnet Host (IP: 192.168.1.118)",
+        risk: "LOW",
+        reasons: []
+      },
+      {
+        id: "dev-8",
+        name: "AirPods Pro (Student)",
+        type: "Bluetooth Audio",
+        category: "bluetooth",
+        vendor: "Apple",
+        rssi: -74,
+        absPos: { x: 65, y: 58 }, // 3분단 3열
+        zone: "3분단 3열 학생 자리",
+        security: "Encrypted BT",
+        risk: "LOW",
+        reasons: []
+      },
+      {
+        id: "dev-9",
+        name: "Apple Watch Series 9",
+        type: "Wearable Watch",
+        category: "bluetooth",
+        vendor: "Apple",
+        rssi: -68,
+        absPos: { x: 25, y: 45 }, // 1분단 2열
+        zone: "1분단 2열 학생 손목",
+        security: "Encrypted BT",
+        risk: "LOW",
+        reasons: []
+      },
+      {
+        id: "dev-10",
+        name: "Office_5G_Secured",
+        type: "School Wi-Fi AP",
+        category: "wifi",
+        vendor: "Cisco/Aruba",
+        rssi: -45,
+        absPos: { x: 50, y: 50 }, // 천장 중앙
+        zone: "교실 천장 정중앙 AP",
+        security: "WPA3 Enterprise",
+        risk: "LOW",
+        reasons: []
+      },
+      {
+        id: "dev-11",
+        name: "philips-hue-bridge",
+        type: "Smart Lighting Bridge",
+        category: "network",
+        vendor: "Signify",
+        rssi: -50,
+        absPos: { x: 45, y: 18 }, // 교탁 아래
+        zone: "교탁 아래 멀티탭/단상",
+        security: "Subnet Host (IP: 192.168.1.105)",
+        risk: "LOW",
+        reasons: []
+      },
+      {
+        id: "dev-12",
+        name: "gateway.router",
+        type: "School Network Gateway",
+        category: "network",
+        vendor: "ASUSTek",
+        rssi: -58,
+        absPos: { x: 88, y: 15 }, // 앞쪽 벽 구석
+        zone: "교실 앞문 쪽 네트워크 단자함",
+        security: "Subnet Host (IP: 192.168.1.1)",
+        risk: "LOW",
         reasons: []
       }
     ];
 
-    let selectedDevice = devices[0];
+    let selectedDevice = allDevices[0];
 
-    function calculateProximityPercent(dist) {
-      // 0m = 100%, 8m = 10%
-      return Math.max(10, Math.min(100, Math.round(100 - (dist / 8.0) * 90)));
+    // Recalculate dynamic relative distance & orientation based on Teacher's current spot
+    function getDynamicSpatialData(dev) {
+      // 100% in X = 8 meters wide classroom
+      // 100% in Y = 10 meters deep classroom
+      const dxMeter = ((dev.absPos.x - myPos.x) / 100) * 8.0;
+      const dyMeter = ((dev.absPos.y - myPos.y) / 100) * 10.0;
+
+      const distMeter = Math.sqrt(dxMeter * dxMeter + dyMeter * dyMeter);
+      const roundedDist = Math.max(0.5, Math.round(distMeter * 10) / 10);
+
+      // Orientation relative to Teacher facing front (downwards into student seats)
+      let lrText = "";
+      if (Math.abs(dxMeter) < 0.4) lrText = "정면";
+      else if (dxMeter < 0) lrText = `좌측 ${Math.abs(Math.round(dxMeter * 10) / 10)}m (창가 쪽)`;
+      else lrText = `우측 ${Math.round(dxMeter * 10) / 10}m (복도 쪽)`;
+
+      let fbText = "";
+      if (dyMeter >= 0) fbText = `앞쪽 ${Math.round(dyMeter * 10) / 10}m`;
+      else fbText = `뒤쪽 ${Math.abs(Math.round(dyMeter * 10) / 10)}m`;
+
+      return {
+        dist: roundedDist,
+        vectorText: `${fbText} · ${lrText}`
+      };
+    }
+
+    function renderTeacherNode() {
+      const node = document.getElementById('my-node');
+      node.style.left = `${myPos.x}%`;
+      node.style.top = `${myPos.y}%`;
+      document.getElementById('my-node-label').textContent = `내 위치 (${myPos.name})`;
+
+      // Render rings centered on Teacher
+      const ringsContainer = document.getElementById('rings-layer');
+      ringsContainer.innerHTML = `
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:160px; height:160px;"><span class="ring-label">약 2m</span></div>
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:320px; height:320px;"><span class="ring-label">약 4m</span></div>
+        <div class="distance-ring" style="left:${myPos.x}%; top:${myPos.y}%; width:500px; height:500px;"><span class="ring-label">약 7m</span></div>
+      `;
     }
 
     function renderBlips() {
       const layer = document.getElementById('blip-layer');
-      layer.innerHTML = devices.map(d => {
-        // coords x: -50 to +50, y: -50 to +50
-        const leftPercent = 50 + d.coords.x;
-        const topPercent = 50 + d.coords.y;
+      layer.innerHTML = allDevices.map(d => {
+        const spatial = getDynamicSpatialData(d);
         const isSelected = selectedDevice.id === d.id;
 
         return `
           <div class="target-blip blip-${d.risk.toLowerCase()} ${isSelected ? 'selected' : ''}" 
-               style="left: ${leftPercent}%; top: ${topPercent}%;"
-               onclick="selectTarget('${d.id}')">
+               style="left: ${d.absPos.x}%; top: ${d.absPos.y}%;"
+               onclick="event.stopPropagation(); selectTarget('${d.id}')">
             <div class="blip-point" style="${isSelected ? 'transform: scale(1.6); outline: 2px solid #fff;' : ''}"></div>
-            <div class="blip-label">${d.name.substring(0, 14)} (${d.distance}m)</div>
+            <div class="blip-label">${d.name.substring(0, 12)} (${spatial.dist}m)</div>
           </div>
         `;
       }).join('');
     }
 
     function selectTarget(id) {
-      const dev = devices.find(d => d.id === id);
+      const dev = allDevices.find(d => d.id === id);
       if (!dev) return;
       selectedDevice = dev;
 
-      // Update Panel Info
+      const spatial = getDynamicSpatialData(dev);
+
       document.getElementById('target-name').textContent = dev.name;
-      document.getElementById('target-distance').textContent = `약 ${dev.distance} m`;
-      document.getElementById('target-vector').textContent = `내 위치 기준: ${dev.vectorText}`;
-      document.getElementById('target-rssi').textContent = `${dev.rssi} dBm (${dev.rssi > -60 ? '신호 강함' : '신호 보통'})`;
+      document.getElementById('target-distance').textContent = `약 ${spatial.dist} m`;
+      document.getElementById('target-vector').textContent = `학생들 바라보고: ${spatial.vectorText}`;
+      document.getElementById('target-rssi').textContent = `${dev.rssi} dBm (${dev.rssi > -60 ? '신호 매우 강함' : '신호 보통'})`;
       document.getElementById('target-zone').textContent = dev.zone;
       document.getElementById('target-vendor').textContent = dev.vendor;
       document.getElementById('target-security').textContent = dev.security;
-      document.getElementById('target-type-label').textContent = dev.type;
+      document.getElementById('target-type-label').textContent = `${dev.category.toUpperCase()} · ${dev.type}`;
 
       const riskBadge = document.getElementById('target-risk-badge');
       riskBadge.textContent = `${dev.risk} RISK`;
       riskBadge.style.color = dev.risk === 'HIGH' ? '#ef4444' : dev.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8';
       riskBadge.style.background = dev.risk === 'HIGH' ? 'rgba(239,68,68,0.2)' : dev.risk === 'MEDIUM' ? 'rgba(245,158,11,0.2)' : 'rgba(56,189,248,0.2)';
 
-      const proxPercent = calculateProximityPercent(dev.distance);
+      const proxPercent = Math.max(10, Math.min(100, Math.round(100 - (spatial.dist / 8.0) * 85)));
       const bar = document.getElementById('target-proximity-bar');
       bar.style.width = `${proxPercent}%`;
-      bar.className = `hot-cold-fill ${dev.distance < 2.5 ? 'fill-hot' : 'fill-warm'}`;
+      bar.className = `hot-cold-fill ${spatial.dist < 2.5 ? 'fill-hot' : 'fill-warm'}`;
 
       renderBlips();
       renderList();
-      showToast(`${dev.name} 거리 추적 모드`);
     }
 
     function renderList() {
       const container = document.getElementById('device-list-container');
-      const sorted = [...devices].sort((a, b) => a.distance - b.distance);
+      const sorted = [...allDevices].map(d => {
+        return { ...d, spatial: getDynamicSpatialData(d) };
+      }).sort((a, b) => a.spatial.dist - b.spatial.dist);
 
       container.innerHTML = sorted.map(d => `
         <div class="device-row ${selectedDevice.id === d.id ? 'selected' : ''}" onclick="selectTarget('${d.id}')">
           <div style="width:10px; height:10px; border-radius:50%; background:${d.risk === 'HIGH' ? '#ef4444' : d.risk === 'MEDIUM' ? '#f59e0b' : '#38bdf8'};"></div>
           <div>
-            <div style="font-weight:700; font-size:14px; color:#fff;">${d.name}</div>
+            <div style="font-weight:700; font-size:14px; color:#fff;">
+              ${d.name} <span style="font-size:11px; font-weight:400; color:var(--text-muted); font-family:var(--font-mono);">(${d.vendor})</span>
+            </div>
             <div style="font-size:12px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
-              📍 ${d.vectorText} · <span style="color:#22d3ee;">${d.zone}</span>
+              📍 <span style="color:#22d3ee; font-weight:600;">${d.zone}</span> · ${d.spatial.vectorText}
             </div>
           </div>
-          <div class="dist-tag">약 ${d.distance}m</div>
+          <div class="dist-tag">약 ${d.spatial.dist}m</div>
         </div>
       `).join('');
+    }
+
+    function setMySpot(spot) {
+      document.querySelectorAll('.spot-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`btn-spot-${spot}`)?.classList.add('active');
+
+      if (spot === 'podium') {
+        myPos = { x: 50, y: 15, name: "교탁 앞" };
+      } else if (spot === 'center') {
+        myPos = { x: 50, y: 50, name: "교실 중앙" };
+      } else if (spot === 'back') {
+        myPos = { x: 50, y: 88, name: "교실 뒷문" };
+      } else if (spot === 'window') {
+        myPos = { x: 15, y: 50, name: "창가 1분단" };
+      }
+
+      renderTeacherNode();
+      renderBlips();
+      selectTarget(selectedDevice.id);
+      showToast(`내 위치를 '${myPos.name}'(으)로 변경했습니다. 거리가 재계산되었습니다.`);
+    }
+
+    function handleScopeClick(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+      const clickY = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+
+      // Set custom position
+      myPos = { x: clickX, y: clickY, name: `직접 이동 (${clickX}%, ${clickY}%)` };
+      document.querySelectorAll('.spot-btn').forEach(b => b.classList.remove('active'));
+
+      renderTeacherNode();
+      renderBlips();
+      selectTarget(selectedDevice.id);
+      showToast(`터치한 위치로 내 위치가 이동되었습니다!`);
     }
 
     function switchView(mode) {
@@ -887,6 +1086,7 @@
     }
 
     // Init
+    renderTeacherNode();
     renderBlips();
     renderList();
     selectTarget('dev-1');
