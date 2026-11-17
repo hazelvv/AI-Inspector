@@ -1137,60 +1137,20 @@
         floor: "current",
         floorDetail: "동일 층 수평 전파 (교실 내부)",
         reasons: []
-      },
-      {
-        id: "dev-floor-up",
-        name: "Class302_WiFi_Upstairs",
-        type: "Wi-Fi AP (위층 교실)",
-        category: "wifi",
-        vendor: "iptime",
-        rssi: -82,
-        absPos: { x: 52, y: 30 },
-        zone: "🏢 3층 교실 (천장 콘크리트 슬래브 통과)",
-        security: "WPA2",
-        risk: "LOW",
-        floor: "other",
-        floorDetail: "위층 (3층) 추정: 콘크리트 슬래브 층간 감쇠 (-82dBm)",
-        reasons: ["층간 전파 감쇠 특성 감지됨"]
-      },
-      {
-        id: "dev-floor-down",
-        name: "Printer_1stFloor_Office",
-        type: "Network Printer (아래층)",
-        category: "network",
-        vendor: "HP Network",
-        rssi: -85,
-        absPos: { x: 80, y: 20 },
-        zone: "🏢 1층 교무실 (바닥 슬래브 통과)",
-        security: "Subnet Host (IP: 192.168.1.200)",
-        risk: "LOW",
-        floor: "other",
-        floorDetail: "아래층 (1층) 추정: 바닥 슬래브 통과 약한 신호 (-85dBm)",
-        reasons: ["층간 전파 감쇠 특성 감지됨"]
-      },
-      {
-        id: "dev-floor-up-bt",
-        name: "Galaxy Buds (위층 복도)",
-        type: "Bluetooth Audio",
-        category: "bluetooth",
-        vendor: "Samsung",
-        rssi: -86,
-        absPos: { x: 22, y: 80 },
-        zone: "🏢 3층 복도 추정",
-        security: "BLE",
-        risk: "LOW",
-        floor: "other",
-        floorDetail: "위층 복도 추정 (초약신호 -86dBm)",
-        reasons: ["층간 전파 감쇠 특성 감지됨"]
       }
     ];
 
     let selectedDevice = allDevices[1];
 
+    function isLikelyOtherFloor(d) {
+      // 실제 RSSI 신호 강도 기반: -75dBm 이하로 극심하게 감쇠된 신호는 콘크리트 슬래브(위/아래층) 또는 벽 너머 신호로 판정
+      return d.rssi <= -75;
+    }
+
     function getVisibleDevices() {
       return allDevices.filter(d => {
         if (excludedDeviceIds.has(d.id)) return false;
-        if (hideOtherFloors && d.floor === 'other') return false;
+        if (hideOtherFloors && isLikelyOtherFloor(d)) return false;
         return true;
       });
     }
@@ -1388,7 +1348,7 @@
       layer.innerHTML = visible.map(d => {
         const spatial = getDynamicSpatialData(d);
         const isSelected = selectedDevice && selectedDevice.id === d.id;
-        const isOtherFloor = d.floor === 'other';
+        const isOtherFloor = isLikelyOtherFloor(d);
 
         return `
           <div class="target-blip blip-${d.risk.toLowerCase()} ${isOtherFloor ? 'blip-other-floor' : ''}" 
@@ -1419,16 +1379,17 @@
 
       const floorBadge = document.getElementById('target-floor-badge');
       const floorAnalysis = document.getElementById('target-floor-analysis');
-      if (dev.floor === 'other') {
+      const isOther = isLikelyOtherFloor(dev);
+      if (isOther) {
         floorBadge.className = "floor-pill pill-other";
-        floorBadge.textContent = "🏢 위/아래층 의심";
+        floorBadge.textContent = "🏢 다른 층/벽 너머 의심";
         floorAnalysis.style.color = "#c084fc";
-        floorAnalysis.textContent = dev.floorDetail;
+        floorAnalysis.textContent = `신호 감쇠 극심 (${dev.rssi}dBm) - 층간 슬래브 통과 의심`;
       } else {
         floorBadge.className = "floor-pill pill-current";
         floorBadge.textContent = "현재 층 (2층 교실)";
         floorAnalysis.style.color = "#34d399";
-        floorAnalysis.textContent = dev.floorDetail;
+        floorAnalysis.textContent = `동일 층 수평 전파 (${dev.rssi}dBm - 정상 수신)`;
       }
 
       const riskBadge = document.getElementById('target-risk-badge');
@@ -1464,8 +1425,8 @@
             </div>
           </div>
           <div>
-            <span class="floor-pill ${d.floor === 'other' ? 'pill-other' : 'pill-current'}">
-              ${d.floor === 'other' ? '🏢 다른 층' : '현재 층'}
+            <span class="floor-pill ${isLikelyOtherFloor(d) ? 'pill-other' : 'pill-current'}">
+              ${isLikelyOtherFloor(d) ? '🏢 다른 층 의심' : '현재 층'}
             </span>
           </div>
           <div class="dist-tag">약 ${d.spatial.dist}m</div>
